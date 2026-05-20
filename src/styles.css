@@ -4,6 +4,188 @@
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 @import "tailwindcss";
 
+:root, html, body, .mat-app-background {
+  /* Angular Material Theme Customizations with Primary Color #d63f3f */
+  --mat-sys-primary: #d63f3f !important;
+  --mat-sys-on-primary: #ffffff !important;
+  --mat-sys-primary-container: #fde2e2 !important;
+  --mat-sys-on-primary-container: #821c1c !important;
+  --mat-sys-primary-fixed: #fde2e2 !important;
+  --mat-sys-primary-fixed-dim: #fbcaca !important;
+  --mat-sys-on-primary-fixed: #821c1c !important;
+  --mat-sys-on-primary-fixed-variant: #9e2323 !important;
+
+  /* Secondary Color mapped to slate/emerald/violet as used in components */
+  --mat-sys-secondary: #059669 !important;
+  --mat-sys-on-secondary: #ffffff !important;
+  --mat-sys-secondary-container: #ecfdf5 !important;
+  --mat-sys-on-secondary-container: #065f46 !important;
+
+  --mat-sys-tertiary: #7c3aed !important;
+  --mat-sys-on-tertiary: #ffffff !important;
+  --mat-sys-tertiary-container: #f3e8ff !important;
+  --mat-sys-on-tertiary-container: #5b21b6 !important;
+
+  /* Material 2 / MDC Base Token Overrides for complete coverage */
+  --mdc-theme-primary: #d63f3f !important;
+  --mdc-theme-on-primary: #ffffff !important;
+  --mdc-theme-secondary: #059669 !important;
+  --mdc-theme-on-secondary: #ffffff !important;
+  
+  --mat-option-selected-state-label-text-color: #d63f3f !important;
+  --mat-datepicker-calendar-selected-date-background-color: #d63f3f !important;
+  --mat-datepicker-calendar-selected-date-text-color: #ffffff !important;
+  --mat-datepicker-calendar-today-outline-color: #d63f3f !important;
+  
+  --mat-form-field-focus-outline-color: #d63f3f !important;
+  --mat-form-field-active-indicator-color: #d63f3f !important;
+  --mat-form-field-focus-label-text-color: #d63f3f !important;
+  --mat-form-field-hover-outline-color: #d63f3f !important;
+}
+
+/* Dynamic MDC Class Overrides to bypass compiled prebuilt styles */
+.mat-mdc-button.mat-primary,
+.mat-mdc-unelevated-button.mat-primary,
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-flat-button.mat-primary,
+.mat-mdc-fab.mat-primary,
+.mat-mdc-mini-fab.mat-primary,
+[color="primary"] {
+  --mdc-filled-button-container-color: #d63f3f !important;
+  --mdc-filled-button-label-text-color: #ffffff !important;
+  --mdc-protected-button-container-color: #d63f3f !important;
+  --mdc-protected-button-label-text-color: #ffffff !important;
+  --mdc-outlined-button-label-text-color: #d63f3f !important;
+  --mdc-outlined-button-outline-color: #d63f3f !important;
+  --mdc-button-label-text-color: #d63f3f !important;
+  --mdc-theme-primary: #d63f3f !important;
+  background-color: #d63f3f !important;
+  color: #ffffff !important;
+}
+
+/* Datepicker specific override */
+.mat-calendar-body-selected {
+  background-color: #d63f3f !important;
+  color: #ffffff !important;
+}
+.mat-calendar-body-today:not(.mat-calendar-body-selected) {
+  border-color: #d63f3f !important;
+}
+
+/* Outline Form Field colors */
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: #d63f3f !important;
+}
+.mdc-notched-outline__leading {
+  border-right: none !important;
+}
+.mdc-notched-outline__notch {
+  border-left: none !important;
+  border-right: none !important;
+}
+.mdc-notched-outline__trailing {
+  border-left: none !important;
+}
+.mat-mdc-form-field.mat-focused .mat-mdc-select-arrow,
+.mat-mdc-form-field.mat-focused .mat-mdc-floating-label,
+.mat-mdc-form-field.mat-focused mat-label,
+.mat-mdc-form-field.mat-focused mat-icon {
+  color: #d63f3f !important;
+}
+
+/* Fix double outline/border on inputs/textareas inside Material form fields (e.g. next to icons) */
+.mat-mdc-form-field input,
+.mat-mdc-form-field textarea,
+.mat-mdc-form-field input:focus,
+.mat-mdc-form-field textarea:focus,
+.mat-mdc-form-field input:active,
+.mat-mdc-form-field textarea:active,
+input,
+textarea,
+input:focus,
+textarea:focus,
+input:active,
+textarea:active {
+  outline: none !important;
+  outline-style: none !important;
+  outline-width: 0px !important;
+  box-shadow: none !important;
+  border: none !important;
+  border-width: 0px !important;
+  ring: none !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-width: 0px !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-outline-style: none !important;
+  --tw-box-shadow: 0 0 #0000 !important;
+  box-shadow: 0 0 0 0 transparent !important;
+}
+
+/* Custom styles for Mat Chips to match #d63f3f */
+mat-chip-set, .mat-mdc-chip-set {
+  gap: 8px !important;
+}
+
+.mat-mdc-chip-set .mat-mdc-chip,
+.preset-chip-item {
+  --mdc-chip-container-color: #f1f5f9 !important;
+  --mdc-chip-label-text-color: #475569 !important;
+  --mdc-chip-elevated-container-color: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 9999px !important;
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+}
+
+.mat-mdc-chip-set .mat-mdc-chip.mat-mdc-chip-highlighted,
+.mat-mdc-chip-set .mat-mdc-chip.mat-mdc-chip-selected,
+.mat-mdc-chip-set .mat-mdc-chip[highlighted="true"],
+mat-chip[highlighted="true"],
+.preset-chip-active {
+  background-color: #d63f3f !important;
+  --mdc-chip-selected-container-color: #d63f3f !important;
+  --mdc-chip-label-text-color: #ffffff !important;
+  --mdc-chip-selected-label-text-color: #ffffff !important;
+  color: #ffffff !important;
+  border-color: #d63f3f !important;
+}
+
+.mat-mdc-chip-set .mat-mdc-chip.mat-mdc-chip-highlighted:hover,
+.mat-mdc-chip-set .mat-mdc-chip[highlighted="true"]:hover,
+.preset-chip-active:hover {
+  background-color: #be3232 !important;
+  color: #ffffff !important;
+}
+
+/* Button Toggle overrides to use brand red style */
+.select-history-toggle,
+#client-history-toggles,
+.mat-button-toggle-group {
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 0.75rem !important;
+  overflow: hidden !important;
+}
+
+.mat-button-toggle {
+  background-color: #ffffff !important;
+  color: #475569 !important;
+}
+
+.mat-button-toggle-checked {
+  background-color: #fdf2f2 !important; /* light brand red */
+  color: #d63f3f !important;            /* red text */
+}
+
+.mat-button-toggle-checked .mat-button-toggle-label-content,
+.mat-button-toggle-checked span,
+.mat-button-toggle-checked mat-icon {
+  color: #d63f3f !important;
+}
+
 @theme {
   --font-sans: "Golos Text", ui-sans-serif, system-ui, sans-serif;
   --color-brand-50: #fdf2f2;
