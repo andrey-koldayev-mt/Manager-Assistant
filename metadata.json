@@ -1,0 +1,6 @@
+{
+  "name": "Скрипт Реактивации",
+  "description": "Интерактивный скрипт реактивации клиентов туроператора Русский Экспресс",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

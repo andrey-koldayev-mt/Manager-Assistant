@@ -1,0 +1,714 @@
+<!-- Top progress indication bar during server interaction -->
+@if (b24Loading()) {
+  <mat-progress-bar mode="indeterminate" class="absolute top-0 left-0 right-0 z-50"></mat-progress-bar>
+}
+
+<!-- Header -->
+<header class="bg-white border-b border-slate-200 shadow-xs px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+  <div class="flex items-center space-x-3" id="header-logo-section">
+    <div class="bg-brand-500 w-9 h-9 rounded-xl flex items-center justify-center text-white font-extrabold text-base tracking-wider shadow-sm">
+      РЭ
+    </div>
+    <div class="flex items-center gap-3">
+      <div>
+        <h1 class="text-base font-bold tracking-tight text-slate-900 leading-none">Русский Экспресс</h1>
+        <p class="text-[11px] text-slate-500 font-medium mt-1">Интерактивный скрипт «Реактивация клиентов»</p>
+      </div>
+      <div class="px-2 py-1 bg-slate-100 rounded-md text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-none">
+        Material v21
+      </div>
+    </div>
+  </div>
+  
+  <div class="flex items-center space-x-3 flex-wrap">
+    <!-- Bitrix24 Context Active Badge -->
+    @if (b24DealId()) {
+      <div id="b24-deal-badge" class="bg-red-50 border border-red-200 text-red-800 px-3 py-1.5 rounded-full text-xs flex items-center space-x-1.5 shadow-2xs font-semibold">
+        <span class="w-1.5 h-1.5 bg-brand-500 rounded-full animate-pulse"></span>
+        <span>Сделка #{{ b24DealId() }}</span>
+      </div>
+    }
+
+    <!-- Call Live Timer Badge -->
+    <div id="call-timer" class="bg-slate-50 px-4 py-1.5 rounded-full text-xs flex items-center space-x-2 border border-slate-200 shadow-2xs">
+      <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+      <span class="flex items-center gap-1.5 text-slate-600 font-medium">
+        <mat-icon class="text-xs leading-none opacity-80">timer</mat-icon>
+        Длительность разговора: <strong class="text-slate-900 font-bold font-mono">{{ formattedTimer() }}</strong>
+      </span>
+    </div>
+    
+    <!-- Refresh Reset Button -->
+    <button 
+      mat-stroked-button 
+      id="reset-btn" 
+      (click)="resetCall()" 
+      class="cursor-pointer"
+    >
+      <mat-icon>restart_alt</mat-icon>
+      Сбросить данные
+    </button>
+  </div>
+</header>
+
+<!-- Main Responsive Workspace View -->
+<main class="flex-1 max-w-[1600px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+  
+  <!-- LEFT: Configurator & Data Inputs Panel -->
+  <section class="lg:col-span-4 flex flex-col gap-4">
+    <mat-card class="p-5 flex flex-col gap-4 shadow-sm border border-slate-200/60 rounded-2xl bg-white" id="sidebar-panel">
+      
+      <div class="flex flex-col gap-1 border-b border-slate-100 pb-3.5 mb-2">
+        <div class="flex items-center gap-2">
+          <mat-icon color="primary" class="font-bold">tune</mat-icon>
+          <h2 class="text-base font-bold text-slate-800 leading-none">Данные для подстановки</h2>
+        </div>
+        <p class="text-xs text-slate-500">Заполните поля, и значения мгновенно появятся в скрипте справа</p>
+      </div>
+
+      <!-- Identity Custom Form Inputs -->
+      <div class="flex flex-col gap-3">
+        <!-- Agent Name Input -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Ваше имя (менеджер)</mat-label>
+          <mat-icon matPrefix>support_agent</mat-icon>
+          <input 
+            matInput 
+            [value]="agentName()" 
+            (input)="agentName.set($any($event.target).value)" 
+            placeholder="Елена" 
+            id="input-agent-name"
+          >
+        </mat-form-field>
+
+        <!-- Client Name Input -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Имя клиента</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
+          <input 
+            matInput 
+            [value]="clientName()" 
+            (input)="clientName.set($any($event.target).value)" 
+            placeholder="Александр" 
+            id="input-client-name"
+          >
+        </mat-form-field>
+
+        <!-- History Relationship Segment Selector -->
+        <div class="flex flex-col gap-2 pt-1 border-t border-slate-50">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">История взаимодействия</span>
+          <mat-button-toggle-group 
+            class="w-full select-history-toggle" 
+            [value]="historyType()" 
+            (change)="setHistoryType($event.value)"
+            id="client-history-toggles"
+          >
+            <mat-button-toggle value="buyer" class="flex-1">
+              <div class="flex items-center justify-center gap-2 py-0.5 font-semibold text-xs">
+                <mat-icon class="text-sm">shopping_bag</mat-icon>
+                <span>Покупал ранее</span>
+              </div>
+            </mat-button-toggle>
+            <mat-button-toggle value="lead" class="flex-1">
+              <div class="flex items-center justify-center gap-2 py-0.5 font-semibold text-xs">
+                <mat-icon class="text-sm">query_stats</mat-icon>
+                <span>Не покупал</span>
+              </div>
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        <!-- Conditional form blocks inside standard layouts -->
+        @if (historyType() === 'buyer') {
+          <div class="space-y-3 bg-red-50/50 p-3.5 rounded-xl border border-red-100" id="buyer-fields-container">
+            <span class="block text-[11px] font-extrabold text-brand-800 uppercase tracking-wider mb-1">Сведения о прошлой поездке</span>
+            
+            <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+              <mat-label>Направление поездки</mat-label>
+              <mat-icon matPrefix>travel_explore</mat-icon>
+              <input 
+                matInput 
+                [value]="destination()" 
+                (input)="destination.set($any($event.target).value)" 
+                placeholder="Турцию (Анталию)" 
+                id="input-destination"
+              >
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full mt-2" subscriptSizing="dynamic">
+              <mat-label>Когда состоялась поездка</mat-label>
+              <mat-icon matPrefix>date_range</mat-icon>
+              <input 
+                matInput 
+                [value]="tripDate()" 
+                (input)="tripDate.set($any($event.target).value)" 
+                placeholder="в сентябре прошлого года" 
+                id="input-trip-date"
+              >
+            </mat-form-field>
+          </div>
+        } @else {
+          <div class="space-y-3 bg-emerald-50/50 p-3.5 rounded-xl border border-emerald-100" id="lead-fields-container">
+            <span class="block text-[11px] font-extrabold text-emerald-800 uppercase tracking-wider mb-1">Заявка на подбор без покупки</span>
+
+            <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+              <mat-label>Когда подбирали тур (сезон)</mat-label>
+              <mat-icon matPrefix>schedule</mat-icon>
+              <input 
+                matInput 
+                [value]="season()" 
+                (input)="season.set($any($event.target).value)" 
+                placeholder="Прошлой осенью" 
+                id="input-season"
+              >
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full mt-2" subscriptSizing="dynamic">
+              <mat-label>Какое направление подбирали</mat-label>
+              <mat-icon matPrefix>place</mat-icon>
+              <input 
+                matInput 
+                [value]="destinationLead()" 
+                (input)="destinationLead.set($any($event.target).value)" 
+                placeholder="Египет" 
+                id="input-destination-lead"
+              >
+            </mat-form-field>
+          </div>
+        }
+
+        <!-- Next Trip Planned Context Input -->
+        <div class="border-t border-slate-100 pt-3 flex flex-col gap-2">
+          <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+            <mat-label>Контекст предстоящего путешествия</mat-label>
+            <mat-icon matPrefix>beach_access</mat-icon>
+            <input 
+              matInput 
+              [value]="travelContext()" 
+              (input)="travelContext.set($any($event.target).value)" 
+              placeholder="предстоящий летний сезон" 
+              id="input-travel-context"
+            >
+          </mat-form-field>
+          
+          <!-- Season selection presets chips -->
+          <mat-chip-set id="travel-presets-grp" class="mt-1">
+            <mat-chip 
+              class="cursor-pointer" 
+              [highlighted]="travelContext() === 'предстоящий летний сезон'"
+              (click)="setPresetContext('предстоящий летний сезон')"
+            >
+              Летний сезон
+            </mat-chip>
+            <mat-chip 
+              class="cursor-pointer" 
+              [highlighted]="travelContext() === 'майские праздники'"
+              (click)="setPresetContext('майские праздники')"
+            >
+              Майские праздники
+            </mat-chip>
+            <mat-chip 
+              class="cursor-pointer" 
+              [highlighted]="travelContext() === 'бархатный сезон осенью'"
+              (click)="setPresetContext('бархатный сезон осенью')"
+            >
+              Бархатный сезон
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+      </div>
+
+      <!-- CRM Interactions draft Notepad & date adapters -->
+      <div class="border-t border-slate-100 pt-4.5 flex flex-col gap-3.5">
+        
+        <!-- Beautiful Material Datepicker -->
+        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+          <mat-label>Дата следующего контакта</mat-label>
+          <input 
+            matInput 
+            [matDatepicker]="picker" 
+            [value]="nextContactDateObj()" 
+            (dateChange)="onNextContactDateChange($event.value)"
+            placeholder="ДД.ММ.ГГГГ"
+            id="input-next-contact"
+          >
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <!-- CRM Draft notepad space -->
+        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+          <mat-label>Черновик заметок для CRM</mat-label>
+          <textarea 
+            matInput 
+            rows="3" 
+            [value]="crmNotes()"
+            (input)="crmNotes.set($any($event.target).value)"
+            placeholder="Итоги созвона и пожелания по отелям..." 
+            id="textarea-crm-notes"
+            class="resize-none"
+          ></textarea>
+          <mat-icon matSuffix class="opacity-60">rate_review</mat-icon>
+        </mat-form-field>
+
+        <!-- Dynamic integration Action Buttons Row -->
+        <div class="flex gap-2">
+          <button 
+            mat-stroked-button 
+            class="flex-1 cursor-pointer py-5" 
+            (click)="copyText(crmNotes())"
+            id="btn-copy-crm-draft"
+          >
+            <mat-icon>content_copy</mat-icon>
+            Копировать
+          </button>
+
+          @if (accessToken()) {
+            <button 
+              mat-flat-button 
+              color="primary"
+              class="flex-1 cursor-pointer py-5 font-bold"
+              [disabled]="b24Saving()"
+              (click)="saveActivityToB24()"
+              id="btn-save-crm-activities"
+            >
+              <mat-icon>{{ b24Saving() ? 'sync' : 'cloud_upload' }}</mat-icon>
+              <span>{{ b24Saving() ? 'Сохранение...' : 'В CRM' }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    </mat-card>
+  </section>
+
+  <!-- RIGHT: Walkthrough Scripts & Steps Container Area -->
+  <section class="lg:col-span-8 flex flex-col gap-5 overflow-y-auto max-h-[85vh] pr-1">
+    
+    <!-- Walkthrough Step Tabs Bar -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/70 p-3.5 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 w-full" id="steps-tab-group">
+        <!-- Step 1 Trigger -->
+        <button 
+          mat-flat-button
+          [color]="activeStep() === 1 ? 'primary' : ''"
+          (click)="scrollToStep(1)"
+          class="flex-1 py-5.5 rounded-xl font-bold text-xs sm:text-sm"
+          [style.background-color]="activeStep() !== 1 ? '#f1f5f9' : ''"
+          [style.color]="activeStep() !== 1 ? '#475569' : 'white'"
+          id="tab-step-1"
+        >
+          <span class="mr-1.5 px-2 py-0.5 rounded-full bg-black/10 text-[10px]">1</span>
+          <span>Присоединение</span>
+        </button>
+        
+        <!-- Step 2 Trigger -->
+        <button 
+          mat-flat-button
+          (click)="scrollToStep(2)"
+          class="flex-1 py-5.5 rounded-xl font-bold text-xs sm:text-sm"
+          [style.background-color]="activeStep() === 2 ? '#059669' : '#f1f5f9'"
+          [style.color]="activeStep() === 2 ? 'white' : '#475569'"
+          id="tab-step-2"
+        >
+          <span class="mr-1.5 px-2 py-0.5 rounded-full bg-black/10 text-[10px]">2</span>
+          <span>Вбиваем крюк</span>
+        </button>
+        
+        <!-- Step 3 Trigger -->
+        <button 
+          mat-flat-button
+          (click)="scrollToStep(3)"
+          class="flex-1 py-5.5 rounded-xl font-bold text-xs sm:text-sm"
+          [style.background-color]="activeStep() === 3 ? '#7c3aed' : '#f1f5f9'"
+          [style.color]="activeStep() === 3 ? 'white' : '#475569'"
+          id="tab-step-3"
+        >
+          <span class="mr-1.5 px-2 py-0.5 rounded-full bg-black/10 text-[10px]">3</span>
+          <span>Сделка</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scrollable individual Cards for Each Step -->
+    <div class="space-y-6">
+
+      <!-- STEP 1: Присоединение Card Panel -->
+      <mat-card 
+        id="step-1" 
+        [class]="activeStep() === 1
+          ? 'bg-white rounded-2xl shadow-md border-2 border-brand-500/30 p-6 space-y-4 transition-all duration-300'
+          : 'bg-white rounded-2xl shadow-sm border border-slate-200/70 p-6 space-y-4 transition-all duration-300 opacity-75'"
+      >
+        <mat-card-header class="border-b border-slate-100 pb-3 mb-3 flex justify-between items-start" id="step-1-header">
+          <div class="flex flex-col">
+            <span class="text-[10px] font-bold text-brand-600 uppercase tracking-widest block mb-0.5">Шаг 1 из 3</span>
+            <mat-card-title class="text-lg font-extrabold text-slate-850">Присоединение (Метод «3 ДА»)</mat-card-title>
+          </div>
+          <span class="bg-brand-5 border border-brand-100 text-brand-700 text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+            <mat-icon class="text-base">handshake</mat-icon>
+            <span>Начало разговора</span>
+          </span>
+        </mat-card-header>
+
+        <mat-card-content class="space-y-4 text-slate-700 leading-relaxed text-base pt-1 p-0">
+          <!-- Greeting blocks -->
+          <div class="p-3.5 bg-slate-50 border-l-4 border-slate-400 rounded-r-xl">
+            <span class="text-[10px] font-bold uppercase text-slate-500 block mb-1">Приветствие & Идентификация:</span>
+            <p class="text-lg font-medium text-slate-800">
+              — <span class="highlight-variable" [class.filled]="clientName()">{{ clientName() || '[Имя клиента]' }}</span>?
+            </p>
+          </div>
+
+          <!-- Presenting agent identity block -->
+          <div class="p-3.5 bg-slate-50 border-l-4 border-slate-400 rounded-r-xl">
+            <span class="text-[10px] font-bold uppercase text-slate-500 block mb-1">Представление компании:</span>
+            <p class="text-lg font-medium text-slate-800">
+              — Меня зовут <span class="highlight-variable" [class.filled]="agentName()">{{ agentName() || '[Ваше имя]' }}</span>, компания <strong class="text-brand-700 font-bold">Русский Экспресс</strong>.
+            </p>
+          </div>
+
+          <!-- Past Contact context card section -->
+          <div class="bg-red-50/50 border border-red-200/60 p-4 rounded-xl space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold uppercase text-brand-800 block">Установление контакта (на базе CRM):</span>
+              <span [class]="historyType() === 'buyer' ? 'text-[10px] bg-red-100/80 text-brand-800 px-2.5 py-0.5 rounded-full font-bold border border-red-200' : 'text-[10px] bg-emerald-100/80 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold border border-emerald-250'" id="step1-history-badge">
+                {{ historyType() === 'buyer' ? 'Клиент покупал ранее' : 'Клиент не совершал покупок' }}
+              </span>
+            </div>
+
+            <!-- Buyer past deal script prompt -->
+            @if (historyType() === 'buyer') {
+              <div id="script-buyer-block" class="transition-all animate-fadeIn">
+                <p class="text-lg italic text-slate-900 leading-relaxed font-normal">
+                  «Мы помогали вам организовать вашу поездку в <span class="highlight-variable font-semibold" [class.filled]="destination()">{{ destination() || '[Направление прошлой поездки]' }}</span> <span class="highlight-variable font-semibold" [class.filled]="tripDate()">{{ tripDate() || '[Когда состоялась поездка]' }}</span>, помните?»
+                </p>
+                <span class="text-[11px] text-brand-700 mt-2.5 flex items-center gap-1 font-semibold">
+                  <mat-icon class="text-sm">info</mat-icon>
+                  <span>Ждем ответ: первое «ДА» от клиента.</span>
+                </span>
+              </div>
+            } @else {
+              <!-- Lead past select script prompt -->
+              <div id="script-lead-block" class="transition-all animate-fadeIn">
+                <p class="text-lg italic text-slate-900 leading-relaxed font-normal">
+                  «<span class="highlight-variable font-semibold" [class.filled]="season()">{{ season() || '[Время года]' }}</span> мы подбирали для вас тур в <span class="highlight-variable font-semibold" [class.filled]="destinationLead()">{{ destinationLead() || '[Направление]' }}</span>, помните?»
+                </p>
+                <span class="text-[11px] text-emerald-800 mt-2.5 flex items-center gap-1 font-semibold">
+                  <mat-icon class="text-sm">info</mat-icon>
+                  <span>Ждем ответ: первое «ДА» от клиента.</span>
+                </span>
+              </div>
+            }
+          </div>
+
+          <!-- Convenient talk checking block -->
+          <div class="p-3.5 bg-slate-50 border-l-4 border-slate-400 rounded-r-xl">
+            <span class="text-[10px] font-bold uppercase text-slate-500 block mb-1">Проверка готовности к диалогу:</span>
+            <p class="text-lg font-medium text-slate-800">
+              — Вам удобно сейчас говорить?
+            </p>
+            <span class="text-[11px] text-slate-500 mt-1 flex items-center gap-1 font-semibold">
+              <mat-icon class="text-sm">info</mat-icon>
+              <span>Получаем второе «ДА» (или соглашение уделить минуту).</span>
+            </span>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions class="pt-4 border-t border-slate-100 flex justify-between items-center p-0" id="step-1-actions">
+          <button 
+            mat-stroked-button 
+            (click)="copyText(step1Text())"
+            class="cursor-pointer"
+          >
+            <mat-icon>content_copy</mat-icon>
+            Скопировать шаг
+          </button>
+          
+          <button 
+            mat-flat-button 
+            color="primary" 
+            (click)="scrollToStep(2)"
+            class="cursor-pointer font-bold px-5"
+          >
+            <span>Далее</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+      <!-- STEP 2: Вбиваем крюк Card Panel -->
+      <mat-card 
+        id="step-2" 
+        [class]="activeStep() === 2
+          ? 'bg-white rounded-2xl shadow-md border-2 border-emerald-500/30 p-6 space-y-4 transition-all duration-300'
+          : 'bg-white rounded-2xl shadow-sm border border-slate-200/70 p-6 space-y-4 transition-all duration-300 opacity-75'"
+      >
+        <mat-card-header class="border-b border-slate-100 pb-3 mb-3 flex justify-between items-start" id="step-2-header">
+          <div class="flex flex-col">
+            <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest block mb-0.5">Шаг 2 из 3</span>
+            <mat-card-title class="text-lg font-extrabold text-slate-850">Вбиваем крюк (Ценностное предложение)</mat-card-title>
+          </div>
+          <span class="bg-emerald-50 text-emerald-800 text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+            <mat-icon class="text-base">anchor</mat-icon>
+            <span>Фиксация интереса</span>
+          </span>
+        </mat-card-header>
+
+        <!-- Smile Interaction tips banner inside step 2 -->
+        <div class="bg-amber-50 border border-amber-200/60 text-amber-805 text-sm p-4 rounded-xl flex items-start gap-3">
+          <mat-icon class="text-amber-600 shrink-0 mt-0.5">sentiment_satisfied_alt</mat-icon>
+          <div>
+            <strong>Важное правило ведения диалога:</strong> Произносите эти фразы с искренней улыбкой! Клиент почувствует теплоту интонации, что залог дружелюбного диалога.
+          </div>
+        </div>
+
+        <mat-card-content class="space-y-4 text-slate-700 leading-relaxed text-base pt-1 p-0">
+          <div class="p-4 bg-emerald-50/30 border border-emerald-100 rounded-xl space-y-4">
+            
+            <!-- Pitch part 1 -->
+            <div>
+              <span class="text-[10px] font-bold uppercase text-emerald-800 block mb-1">Основная суть созвона:</span>
+              <p class="text-lg text-slate-900 leading-relaxed font-semibold">
+                «Звоню сказать, что у нас сейчас активно идет раннее / активное бронирование на <span class="highlight-variable font-bold" [class.filled]="travelContext()">{{ travelContext() || '[сезон предстоящего путешествия]' }}</span>.»
+              </p>
+            </div>
+
+            <!-- Pitch part 2: Urgency element -->
+            <div class="border-t border-emerald-100 pt-3">
+              <span class="text-[10px] font-bold uppercase text-emerald-850 block mb-1">Создание дефицита и выгода раннего бронирования:</span>
+              <p class="text-lg text-slate-900 leading-relaxed font-semibold">
+                «Пока ещё есть по-настоящему интересные, очень выгодные варианты — от полноценного двухнедельного путешествия до коротких туров выходного дня на 2–3 ночи...»
+              </p>
+            </div>
+
+            <!-- Pitch part 3: Question prompt -->
+            <div class="border-t border-emerald-100 pt-3">
+              <span class="text-[10px] font-bold uppercase text-emerald-850 block mb-1">Вопрос-крючок (Передача инициативы клиенту):</span>
+              <p class="text-lg text-slate-900 leading-relaxed font-semibold">
+                «...поэтому хотела спросить: есть ли у вас какие-то планы на <span class="highlight-variable font-bold" [class.filled]="travelContext()">{{ travelContext() || '[сезон предстоящего путешествия]' }}</span>? :) Может, присмотреть для вас парочку вариантов?»
+              </p>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions class="pt-4 border-t border-slate-100 flex justify-between items-center p-0" id="step-2-actions">
+          <button 
+            mat-stroked-button 
+            (click)="copyText(step2Text())"
+            class="cursor-pointer"
+          >
+            <mat-icon>content_copy</mat-icon>
+            Скопировать шаг
+          </button>
+          
+          <button 
+            mat-flat-button 
+            (click)="scrollToStep(3)"
+            class="cursor-pointer font-bold px-5 text-white"
+            style="background-color: #059669;"
+          >
+            <span>Далее</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+      <!-- STEP 3: Подводим к сделке Card Panel -->
+      <mat-card 
+        id="step-3" 
+        [class]="activeStep() === 3
+          ? 'bg-white rounded-2xl shadow-md border-2 border-violet-500/30 p-6 space-y-4 transition-all duration-300'
+          : 'bg-white rounded-2xl shadow-sm border border-slate-200/70 p-6 space-y-4 transition-all duration-300 opacity-75'"
+      >
+        <mat-card-header class="border-b border-slate-100 pb-3 mb-3 flex justify-between items-start" id="step-3-header">
+          <div class="flex flex-col">
+            <span class="text-[10px] font-bold text-violet-600 uppercase tracking-widest block mb-0.5">Шаг 3 из 3</span>
+            <mat-card-title class="text-lg font-extrabold text-slate-850">Подводим к сделке (Закрытие на подбор)</mat-card-title>
+          </div>
+          <span class="bg-violet-5 border border-violet-100 text-violet-700 text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+            <mat-icon class="text-base">check_circle</mat-icon>
+            <span>Завершение контакта</span>
+          </span>
+        </mat-card-header>
+
+        <mat-card-content class="space-y-4 text-slate-700 leading-relaxed text-base pt-1 p-0">
+          <!-- Quick buttons to toggle client interest branching -->
+          <div>
+            <span class="block text-xs font-bold uppercase text-slate-500 mb-2">Какова реакция клиента на предложение?</span>
+            <div class="grid grid-cols-2 gap-3" id="interest-branch-selection">
+              <button 
+                type="button" 
+                (click)="setInterest(true)"
+                [class]="interest() === true 
+                  ? 'py-3 px-4 border-2 rounded-xl font-bold flex flex-col items-center gap-1 transition-all focus:outline-none bg-violet-600 border-violet-600 text-white shadow-md cursor-pointer' 
+                  : 'py-3 px-4 border-2 rounded-xl border-slate-200 font-bold flex flex-col items-center gap-1 transition-all focus:outline-none bg-white text-slate-700 hover:bg-slate-50 cursor-pointer'"
+                id="btn-interest-yes"
+              >
+                <span class="text-sm flex items-center gap-1.5 font-bold">
+                  <mat-icon class="text-green-600 bg-white rounded-full">check_circle</mat-icon>
+                  Есть интерес
+                </span>
+                <span [class]="interest() === true ? 'text-[10px] text-violet-100 font-normal mt-0.5' : 'text-[10px] text-slate-400 font-normal mt-0.5'">
+                  Клиент готов на подбор отелей
+                </span>
+              </button>
+              
+              <button 
+                type="button" 
+                (click)="setInterest(false)"
+                [class]="interest() === false 
+                  ? 'py-3 px-4 border-2 rounded-xl font-bold flex flex-col items-center gap-1 transition-all focus:outline-none bg-rose-600 border-rose-600 text-white shadow-md cursor-pointer' 
+                  : 'py-3 px-4 border-2 rounded-xl border-slate-200 font-bold flex flex-col items-center gap-1 transition-all focus:outline-none bg-white text-slate-700 hover:bg-slate-50 cursor-pointer'"
+                id="btn-interest-no"
+              >
+                <span class="text-sm flex items-center gap-1.5 font-bold">
+                  <mat-icon class="text-red-500 bg-white rounded-full">highlight_off</mat-icon>
+                  Нет интереса
+                </span>
+                <span [class]="interest() === false ? 'text-[10px] text-rose-100 font-normal mt-0.5' : 'text-[10px] text-slate-400 font-normal mt-0.5'">
+                  Отказывается / Позже
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Branching Module Display -->
+          <div class="mt-4" id="step3-branching-content">
+            @if (interest() === true) {
+              <!-- YES Interest Speech module -->
+              <div id="branch-yes-interest" class="p-4 bg-violet-50 border border-violet-200 rounded-xl space-y-3 transition-all duration-300 animate-fadeIn">
+                <div class="flex items-center gap-1.5 text-violet-800 font-bold text-xs tracking-wider uppercase">
+                  <mat-icon class="text-lg">play_circle_filled</mat-icon>
+                  <span>Речевой модуль:</span>
+                </div>
+                
+                <p class="text-lg text-slate-800 italic leading-relaxed">
+                  «Сейчас есть несколько очень классных туров на эти даты, но тянуть не стоит. Сами понимаете: <span class="highlight-variable font-semibold" [class.filled]="travelContext()">{{ travelContext() || '[сезон предстоящего путешествия]' }}</span> пользуется большой популярностью — места в лучших отелях очень быстро разбирают.»
+                </p>
+                
+                <p class="text-lg text-slate-850 italic font-bold border-t border-violet-200/50 pt-2.5">
+                  «Давайте задам вам пару уточняющих вопросов и после этого обсудим конкретные отели. <span class="highlight-variable font-bold" [class.filled]="clientName()">{{ clientName() || '[Имя клиента]' }}</span>, скажите пожалуйста, с кем поедете? :)»
+                </p>
+                
+                <div class="mt-3.5 bg-white p-3.5 rounded-xl border border-violet-100 text-xs text-slate-500 shadow-3xs">
+                  <strong class="text-violet-900 block mb-0.5">Разговор на Шаге 3:</strong>
+                  Запишите в черновик CRM число участников, даты, бюджет, тип питания и отеля. Договоритесь, в какой мессенджер отправить предложение.
+                </div>
+              </div>
+            } @else if (interest() === false) {
+              <!-- NO Interest Speech module -->
+              <div id="branch-no-interest" class="p-4 bg-rose-50 border border-rose-200 rounded-xl space-y-3 transition-all duration-300 animate-fadeIn">
+                <div class="flex items-center gap-1.5 text-rose-800 font-bold text-xs tracking-wider uppercase">
+                  <mat-icon class="text-lg">stop_circle</mat-icon>
+                  <span>Речевой модуль:</span>
+                </div>
+                
+                <p class="text-lg text-slate-850 italic leading-relaxed font-medium">
+                  «Хорошо, <span class="highlight-variable font-bold" [class.filled]="clientName()">{{ clientName() || '[Имя клиента]' }}</span>. Тогда чтобы лишний раз вас не беспокоила, скажите пожалуйста, когда вопрос с поездкой может стать для вас актуален?»
+                </p>
+                
+                <div class="mt-3.5 bg-white p-3.5 rounded-xl border border-rose-100 text-xs text-slate-500 shadow-3xs">
+                  <strong class="text-rose-950 block mb-0.5">Действия менеджера:</strong>
+                  Вежливо попрощайтесь, зафиксируйте в Битрикс24 дату следующего созвона / перезвона в зависимости от ответа.
+                </div>
+              </div>
+            } @else {
+              <!-- Fallback reminder prompt if selection is unmade -->
+              <div id="branch-fallback" class="p-6 text-center text-slate-400 border border-dashed border-slate-300 rounded-2xl bg-slate-50/50">
+                <mat-icon class="text-4xl mb-1.5 text-slate-350">call_split</mat-icon>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Определите интерес клиента</p>
+                <p class="text-xs text-slate-400 mt-1 max-w-md mx-auto">Выберите «Есть интерес» или «Нет интереса» выше, чтобы отобразить соответствующий сценарий речевого модуля диалога.</p>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions class="pt-4 border-t border-slate-100 flex justify-between items-center p-0" id="step-3-actions">
+          <button 
+            mat-stroked-button 
+            [disabled]="interest() === null" 
+            (click)="copyText(step3Text())"
+            id="copy-step3-btn"
+            class="cursor-pointer"
+          >
+            <mat-icon>content_copy</mat-icon>
+            Скопировать модуль
+          </button>
+          
+          <button 
+            mat-flat-button 
+            (click)="finishCall()"
+            id="finish-call-btn"
+            class="cursor-pointer font-bold px-5 text-white bg-red-600 hover:bg-red-700"
+          >
+            <mat-icon>call_end</mat-icon>
+            Завершить звонок
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+    </div>
+
+    <!-- Call Completed Summary card -->
+    @if (isCallFinished()) {
+      <mat-card 
+        id="summary-panel" 
+        class="text-white rounded-2xl p-6 shadow-md space-y-4 transition-all duration-300 animate-fadeIn border-none"
+        style="background: linear-gradient(135deg, #10b981 0%, #047857 100%);"
+      >
+        <mat-card-content class="p-0 space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="bg-white/20 p-2.5 rounded-full flex items-center justify-center">
+              <mat-icon class="text-2xl text-white">check_circle</mat-icon>
+            </div>
+            <div>
+              <h3 class="text-base font-extrabold text-white leading-tight">Звонок успешно зафиксирован!</h3>
+              <p class="text-xs text-emerald-100 mt-0.5">Вся сводная информация собрана и подготовлена к переносу.</p>
+            </div>
+          </div>
+          
+          <div class="bg-emerald-950/40 p-4 rounded-xl text-sm space-y-2 text-white">
+            <p><strong>Менеджер:</strong> <span class="font-medium text-emerald-50 ml-1">{{ agentName() || 'Не заполнено' }}</span></p>
+            <p><strong>Имя клиента:</strong> <span class="font-medium text-emerald-50 ml-1">{{ clientName() || 'Не указано' }}</span></p>
+            <p><strong>Результат:</strong> 
+              <span class="font-bold underline text-white ml-1">
+                @if (interest() === true) {
+                  Интерес зафиксирован (Формируем подборку)
+                } @else if (interest() === false) {
+                  Отказ (спросить позже)
+                } @else {
+                  Не определено
+                }
+              </span>
+            </p>
+            <p><strong>Итоги CRM:</strong> <span class="italic text-emerald-50 font-medium ml-1">"{{ crmNotes() || 'Заметка не введена' }}"</span></p>
+            @if (nextContactDate()) {
+              <p><strong>Дата следующего контакта:</strong> <span class="font-bold text-white ml-1">{{ nextContactDate() }}</span></p>
+            }
+          </div>
+          
+          <div class="flex gap-2.5 pt-1">
+            <button 
+              mat-flat-button
+              (click)="copyText(crmNotesReport())" 
+              class="flex-1 font-bold py-5 cursor-pointer bg-white text-emerald-900 text-xs hover:bg-emerald-50"
+            >
+              <mat-icon>content_copy</mat-icon>
+              Скопировать отчет для CRM
+            </button>
+            
+            <button 
+              mat-stroked-button
+              (click)="resetCall()" 
+              class="flex-1 font-bold py-5 cursor-pointer text-white border-white/40 hover:bg-white/10 text-xs"
+            >
+              <mat-icon>refresh</mat-icon>
+              Новый звонок
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+  </section>
+</main>

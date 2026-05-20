@@ -1,0 +1,44 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Golos Text", ui-sans-serif, system-ui, sans-serif;
+  --color-brand-50: #fdf2f2;
+  --color-brand-100: #fde2e2;
+  --color-brand-200: #fbcaca;
+  --color-brand-300: #f9a5a5;
+  --color-brand-400: #f47171;
+  --color-brand-500: #d63f3f;
+  --color-brand-600: #be3232;
+  --color-brand-700: #9e2323;
+  --color-brand-800: #821c1c;
+  --color-brand-900: #6c1a1a;
+  --color-brand-950: #3b0a0a;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+.step-active {
+  border-color: #d63f3f;
+  background-color: #fdf2f2;
+}
+
+.highlight-variable {
+  background-color: #fef08a;
+  color: #854d0e;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.highlight-variable.filled {
+  background-color: #fde2e2;
+  color: #be3232;
+}
