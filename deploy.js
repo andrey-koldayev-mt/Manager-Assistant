@@ -1,10 +1,39 @@
 const fs = require('fs');
 const path = require('path');
 
-const API_KEY = 'vibe_app_local_6a0ddbbead6605_09776884_raaSgV0GudcDgDpT7Wwj0A6uYdw9alzPzbGxN3PlR1U7n2y1tz_dba8ff';
-const SERVER_ID = '9555e753-47cb-4f31-a7db-b7919f0d90bd';
+const BASE_URL = process.env.VIBE_BASE_URL || 'https://vibecode.bitrix24.tech/v1';
+
+function requiredEnv(name) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
+
+function createDeployPayload(fileBuffer, apiKey) {
+  return {
+    source: {
+      content: fileBuffer.toString('base64'),
+      format: 'zip'
+    },
+    runtime: 'node20',
+    install: 'cd /opt/app && npm install',
+    preStart: 'cd /opt/app && npm run build',
+    start: 'cd /opt/app && PORT=3000 node dist/app/server/server.mjs',
+    port: 3000,
+    env: {
+      NODE_ENV: 'production',
+      VIBE_API_KEY: apiKey
+    },
+    cleanDeploy: true
+  };
+}
 
 async function deploy() {
+  const apiKey = requiredEnv('VIBE_API_KEY');
+  const serverId = requiredEnv('VIBE_SERVER_ID');
+
   console.log('Reading app.zip archive...');
   const zipPath = path.join(__dirname, 'app.zip');
   if (!fs.existsSync(zipPath)) {
@@ -12,31 +41,15 @@ async function deploy() {
   }
 
   const fileBuffer = fs.readFileSync(zipPath);
-  const base64Content = fileBuffer.toString('base64');
-  console.log(`Payload size: ${fileBuffer.length} bytes (${base64Content.length} chars base64)`);
+  const payload = createDeployPayload(fileBuffer, apiKey);
+  console.log(`Payload size: ${fileBuffer.length} bytes (${payload.source.content.length} chars base64)`);
 
-  const payload = {
-    source: {
-      content: base64Content,
-      format: 'zip'
-    },
-    runtime: 'node20',
-    install: 'cd /opt/app && npm install',
-    preStart: 'cd /opt/app && npm run build',
-    start: 'cd /opt/app && node dist/app/server/server.mjs',
-    port: 3000,
-    env: {
-      NODE_ENV: 'production'
-    },
-    cleanDeploy: true
-  };
-
-  console.log(`Sending deployment request to server ${SERVER_ID}...`);
-  const response = await fetch(`https://vibecode.bitrix24.tech/v1/infra/servers/${SERVER_ID}/deploy?stream=false`, {
+  console.log(`Sending deployment request to server ${serverId}...`);
+  const response = await fetch(`${BASE_URL}/infra/servers/${serverId}/deploy`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Api-Key': API_KEY
+      'X-Api-Key': apiKey
     },
     body: JSON.stringify(payload)
   });
@@ -51,7 +64,15 @@ async function deploy() {
   }
 }
 
-deploy().catch(err => {
-  console.error('Fatal Deployment Error:', err);
-  process.exit(1);
-});
+if (require.main === module) {
+  deploy().catch(err => {
+    console.error('Fatal Deployment Error:', err);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  createDeployPayload,
+  deploy,
+  requiredEnv
+};

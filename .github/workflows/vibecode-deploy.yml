@@ -1,0 +1,44 @@
+name: Deploy to VibeCode
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vibecode-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy application
+    runs-on: ubuntu-latest
+    env:
+      VIBE_API_KEY: ${{ secrets.VIBE_API_KEY }}
+      VIBE_SERVER_ID: ${{ secrets.VIBE_SERVER_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Create deployment archive
+        run: npm run archive
+
+      - name: Deploy to VibeCode
+        run: npm run deploy:vibecode

@@ -16,7 +16,8 @@ const angularApp = new AngularNodeAppEngine({
     '127.0.0.1:3000',
     'localhost',
     'localhost:3000',
-    'app-14d60207d8cf.vibecode.bitrix24.tech'
+    'app-14d60207d8cf.vibecode.bitrix24.tech',
+    'app-e0a07762e6a1.vibecode.bitrix24.tech'
   ],
   trustProxyHeaders: true
 });
@@ -25,7 +26,16 @@ const angularApp = new AngularNodeAppEngine({
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const B24_API_KEY = 'vibe_app_local_6a0ddbbead6605_09776884_raaSgV0GudcDgDpT7Wwj0A6uYdw9alzPzbGxN3PlR1U7n2y1tz_dba8ff';
+const B24_API_KEY = process.env['VIBE_API_KEY'] ?? '';
+
+function ensureVibeApiKey(res: express.Response): boolean {
+  if (B24_API_KEY) {
+    return true;
+  }
+
+  res.status(500).json({ success: false, error: 'VIBE_API_KEY is not configured' });
+  return false;
+}
 
 /**
  * Bitrix24 Placement Bootstrap Handler
@@ -33,6 +43,10 @@ const B24_API_KEY = 'vibe_app_local_6a0ddbbead6605_09776884_raaSgV0GudcDgDpT7Wwj
  */
 app.post('/api/bitrix-handler', async (req, res) => {
   try {
+    if (!ensureVibeApiKey(res)) {
+      return;
+    }
+
     const response = await fetch('https://vibecode.bitrix24.tech/v1/bitrix-handler', {
       method: 'POST',
       headers: {
@@ -84,6 +98,9 @@ app.get('/api/b24/load-deal-context', async (req, res) => {
     }
     if (!authHeader) {
       res.status(401).json({ success: false, error: 'Missing authorization header' });
+      return;
+    }
+    if (!ensureVibeApiKey(res)) {
       return;
     }
 
@@ -194,6 +211,9 @@ app.post('/api/b24/create-call-activity', async (req, res) => {
     }
     if (!authHeader) {
       res.status(401).json({ success: false, error: 'Missing authorization header' });
+      return;
+    }
+    if (!ensureVibeApiKey(res)) {
       return;
     }
 
