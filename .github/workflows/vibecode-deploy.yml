@@ -19,14 +19,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VIBE_API_KEY: ${{ secrets.VIBE_API_KEY }}
-      VIBE_SERVER_ID: ${{ secrets.VIBE_SERVER_ID }}
+      VIBE_SERVER_ID: 25afbe82-1162-4bb8-9bd9-770e52b1ff3f
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
@@ -39,6 +39,11 @@ jobs:
 
       - name: Create deployment archive
         run: npm run archive
+
+      - name: Validate deployment configuration
+        run: |
+          test -n "$VIBE_API_KEY"
+          test -n "$VIBE_SERVER_ID"
 
       - name: Deploy to VibeCode
         run: npm run deploy:vibecode
