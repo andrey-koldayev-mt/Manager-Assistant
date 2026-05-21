@@ -92,26 +92,75 @@ export class App implements OnInit, OnDestroy {
     }
   }
 
+  private extractDealIdFromPlacementOptions(rawOptions: string | null): number | null {
+    if (!rawOptions) {
+      return null;
+    }
+
+    const valuesToCheck: unknown[] = [rawOptions];
+    try {
+      const parsed = JSON.parse(rawOptions);
+      valuesToCheck.push(parsed);
+      if (parsed && typeof parsed === 'object') {
+        valuesToCheck.push(
+          parsed.ID,
+          parsed.id,
+          parsed.DEAL_ID,
+          parsed.dealId,
+          parsed.ENTITY_ID,
+          parsed.entityId,
+          parsed.ENTITY_VALUE_ID,
+          parsed.entityValueId,
+          parsed.OWNER_ID,
+          parsed.ownerId,
+          parsed.value
+        );
+      }
+    } catch {
+      // Plain string placement options are handled below.
+    }
+
+    for (const value of valuesToCheck) {
+      if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
+        return value;
+      }
+
+      if (typeof value === 'string') {
+        const directNumber = Number(value);
+        if (Number.isFinite(directNumber) && directNumber > 0) {
+          return directNumber;
+        }
+
+        const match = value.match(/\d+/);
+        if (match) {
+          const parsedNumber = Number(match[0]);
+          if (Number.isFinite(parsedNumber) && parsedNumber > 0) {
+            return parsedNumber;
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
   // Bitrix24 launcher detection
   initB24Integration() {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      const token = params.get('access_token');
-      const placementOpts = params.get('placement_options');
+      const token = params.get('access_token') || params.get('AUTH_ID') || params.get('auth_id');
+      const placementOpts = params.get('placement_options') || params.get('PLACEMENT_OPTIONS');
 
-      if (token && placementOpts) {
+      if (token) {
         this.accessToken.set(token);
-        let dealId: string | number | null = null;
-        try {
-          const parsed = JSON.parse(placementOpts);
-          dealId = parsed.ID || null;
-        } catch {
-          dealId = placementOpts;
-        }
+        const dealId = this.extractDealIdFromPlacementOptions(placementOpts);
 
         if (dealId) {
-          this.b24DealId.set(Number(dealId));
+          this.b24DealId.set(dealId);
           this.loadDealContextFromServer();
+        } else {
+          this.b24Error.set('Не удалось определить ID сделки из параметров запуска');
+          console.warn('Bitrix24 placement options without deal id:', placementOpts);
         }
       }
     }

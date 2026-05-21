@@ -184,9 +184,9 @@ app.post('/api/bitrix-handler', async (req, res) => {
  * Parse access_token, PLACEMENT, and PLACEMENT_OPTIONS, then redirect to GET /
  */
 app.post('/', (req, res) => {
-  const accessToken = req.body.access_token || req.body.auth?.access_token || '';
-  const placement = req.body.PLACEMENT || '';
-  const placementOptions = req.body.PLACEMENT_OPTIONS || '';
+  const accessToken = req.body.access_token || req.body.AUTH_ID || req.body.auth?.access_token || req.body.auth?.AUTH_ID || '';
+  const placement = req.body.PLACEMENT || req.body.placement || '';
+  const placementOptions = req.body.PLACEMENT_OPTIONS || req.body.placement_options || '';
 
   const q = new URLSearchParams();
   if (accessToken) q.set('access_token', accessToken);
