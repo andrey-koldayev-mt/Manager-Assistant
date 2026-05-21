@@ -22,10 +22,6 @@ const angularApp = new AngularNodeAppEngine({
   trustProxyHeaders: true
 });
 
-// Parse urlencoded and json bodies for Bitrix24 and local API requests
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
 const B24_API_KEY = process.env['VIBE_API_KEY'] ?? '';
 
 function ensureVibeApiKey(res: express.Response): boolean {
@@ -153,51 +149,112 @@ function formatTripDatePhrase(startDateValue: string, endDateValue: string): str
   return `с ${primaryMonth} ${primaryYearPhrase} по ${endMonth} ${endYearPhrase}`;
 }
 
-/**
- * Bitrix24 Placement Bootstrap Handler
- * Forwards B24 authentication details to VibeCode, which returns an auto-submit form
- */
-app.post('/api/bitrix-handler', async (req, res) => {
-  try {
-    if (!ensureVibeApiKey(res)) {
+function buildBitrixLaunchUrl(body: Record<string, unknown> | null | undefined): string {
+  const source = body || {};
+  const auth = typeof source['auth'] === 'object' && source['auth'] !== null
+    ? source['auth'] as Record<string, unknown>
+    : {};
+
+  const accessToken = firstString(
+    source['access_token'],
+    source['AUTH_ID'],
+    source['auth_id'],
+    auth['access_token'],
+    auth['AUTH_ID'],
+    auth['auth_id']
+  );
+  const refreshToken = firstString(source['REFRESH_ID'], source['refresh_id'], auth['refresh_token']);
+  const memberId = firstString(source['member_id'], source['MEMBER_ID'], auth['member_id']);
+  const placement = firstString(source['PLACEMENT'], source['placement']);
+  const placementOptionsRaw = source['PLACEMENT_OPTIONS'] || source['placement_options'] || '';
+  const placementOptions = typeof placementOptionsRaw === 'object'
+    ? JSON.stringify(placementOptionsRaw)
+    : firstString(placementOptionsRaw);
+
+  const q = new URLSearchParams();
+  if (accessToken) q.set('access_token', accessToken);
+  if (refreshToken) q.set('refresh_id', refreshToken);
+  if (memberId) q.set('member_id', memberId);
+  if (placement) q.set('placement', placement);
+  if (placementOptions) q.set('placement_options', placementOptions);
+
+  const query = q.toString();
+  return query ? `/?${query}` : '/';
+}
+
+function parseBitrixLaunchBody(rawBody: string, contentType: string): Record<string, string> {
+  const fields: Record<string, string> = {};
+
+  if (contentType.includes('multipart/form-data')) {
+    const boundaryMatch = contentType.match(/boundary=(?:"([^"]+)"|([^;]+))/i);
+    const boundary = boundaryMatch?.[1] || boundaryMatch?.[2];
+    if (!boundary) {
+      return fields;
+    }
+
+    for (const part of rawBody.split(`--${boundary}`)) {
+      const nameMatch = part.match(/name="([^"]+)"/);
+      const valueStart = part.indexOf('\r\n\r\n');
+      if (!nameMatch || valueStart === -1) {
+        continue;
+      }
+
+      fields[nameMatch[1]] = part
+        .slice(valueStart + 4)
+        .replace(/\r\n--$/, '')
+        .replace(/\r\n$/, '');
+    }
+
+    return fields;
+  }
+
+  if (contentType.includes('application/json') || rawBody.trim().startsWith('{')) {
+    try {
+      return JSON.parse(rawBody);
+    } catch {
+      return fields;
+    }
+  }
+
+  for (const [key, value] of new URLSearchParams(rawBody)) {
+    fields[key] = value;
+  }
+
+  return fields;
+}
+
+function handleBitrixLaunchPost(req: express.Request, res: express.Response) {
+  const chunks: Buffer[] = [];
+  req.on('data', (chunk: Buffer) => chunks.push(chunk));
+  req.on('end', () => {
+    const rawBody = Buffer.concat(chunks).toString('utf8');
+    const body = parseBitrixLaunchBody(rawBody, req.headers['content-type'] || '');
+    const launchUrl = buildBitrixLaunchUrl(body);
+
+    if (launchUrl === '/') {
+      res.status(400).send('Missing Bitrix24 launch payload');
       return;
     }
 
-    const response = await fetch('https://vibecode.bitrix24.tech/v1/bitrix-handler', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Api-Key': B24_API_KEY
-      },
-      body: JSON.stringify(req.body)
-    });
-    const html = await response.text();
-    res.send(html);
-  } catch (error) {
-    console.error('Error in bitrix-handler proxy:', error);
+    res.redirect(303, launchUrl);
+  });
+  req.on('error', (error) => {
+    console.error('Error reading Bitrix24 launch body:', error);
     res.status(500).send('Internal Server Error');
-  }
-});
+  });
+}
+
+app.post('/api/bitrix-handler', handleBitrixLaunchPost);
 
 /**
  * Handle POST / (Auto-submit landing page from VibeCode gateway)
  * Parse access_token, PLACEMENT, and PLACEMENT_OPTIONS, then redirect to GET /
  */
-app.post('/', (req, res) => {
-  const accessToken = req.body.access_token || req.body.AUTH_ID || req.body.auth?.access_token || req.body.auth?.AUTH_ID || '';
-  const placement = req.body.PLACEMENT || req.body.placement || '';
-  const placementOptions = req.body.PLACEMENT_OPTIONS || req.body.placement_options || '';
+app.post('/', handleBitrixLaunchPost);
 
-  const q = new URLSearchParams();
-  if (accessToken) q.set('access_token', accessToken);
-  if (placement) q.set('placement', placement);
-  if (placementOptions) {
-    const optStr = typeof placementOptions === 'object' ? JSON.stringify(placementOptions) : placementOptions;
-    q.set('placement_options', optStr);
-  }
-
-  res.redirect(`/?${q.toString()}`);
-});
+// Parse urlencoded and json bodies for local API requests
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 /**
  * Load CRM context for a specific deal:
