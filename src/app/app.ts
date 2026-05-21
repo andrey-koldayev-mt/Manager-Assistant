@@ -35,6 +35,7 @@ import {ClipboardModule, Clipboard} from '@angular/cdk/clipboard';
 export class App implements OnInit, OnDestroy {
   private clipboard = inject(Clipboard);
   private snackBar = inject(MatSnackBar);
+  private readonly bx24SdkUrl = 'https://api.bitrix24.com/api/v1/';
 
   // Identity variables
   agentName = signal<string>('Елена');
@@ -126,12 +127,25 @@ export class App implements OnInit, OnDestroy {
       }
 
       if (typeof value === 'string') {
-        const directNumber = Number(value);
+        const trimmedValue = value.trim();
+        const directNumber = Number(trimmedValue);
         if (Number.isFinite(directNumber) && directNumber > 0) {
           return directNumber;
         }
 
-        const match = value.match(/\d+/);
+        const explicitDealMatch = trimmedValue.match(/(?:deal\/details\/|DEAL[_=:]|dealId[=:]|DEAL_ID[=:]|ENTITY_VALUE_ID[=:])(\d+)/i);
+        if (explicitDealMatch) {
+          const parsedNumber = Number(explicitDealMatch[1]);
+          if (Number.isFinite(parsedNumber) && parsedNumber > 0) {
+            return parsedNumber;
+          }
+        }
+
+        if (trimmedValue.startsWith('{') || trimmedValue.startsWith('[') || trimmedValue.includes('://')) {
+          continue;
+        }
+
+        const match = trimmedValue.match(/\d+/);
         if (match) {
           const parsedNumber = Number(match[0]);
           if (Number.isFinite(parsedNumber) && parsedNumber > 0) {
@@ -144,24 +158,112 @@ export class App implements OnInit, OnDestroy {
     return null;
   }
 
+  private extractDealIdFromAnySource(...sources: unknown[]): number | null {
+    for (const source of sources) {
+      if (typeof source === 'number' && Number.isFinite(source) && source > 0) {
+        return source;
+      }
+
+      if (typeof source === 'string') {
+        const dealId = this.extractDealIdFromPlacementOptions(source);
+        if (dealId) {
+          return dealId;
+        }
+      } else if (source && typeof source === 'object') {
+        const dealId = this.extractDealIdFromPlacementOptions(JSON.stringify(source));
+        if (dealId) {
+          return dealId;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  private loadBitrixSdk(): Promise<any> {
+    const w = window as any;
+    if (w.BX24) {
+      return Promise.resolve(w.BX24);
+    }
+
+    return new Promise((resolve, reject) => {
+      const existingScript = document.querySelector<HTMLScriptElement>(`script[src="${this.bx24SdkUrl}"]`);
+      if (existingScript) {
+        existingScript.addEventListener('load', () => resolve((window as any).BX24), { once: true });
+        existingScript.addEventListener('error', reject, { once: true });
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = this.bx24SdkUrl;
+      script.async = true;
+      script.onload = () => resolve((window as any).BX24);
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  private initB24FromSdk() {
+    this.loadBitrixSdk()
+      .then((BX24) => {
+        if (!BX24) {
+          throw new Error('BX24 SDK is unavailable');
+        }
+
+        BX24.init(() => {
+          const auth = BX24.getAuth ? BX24.getAuth() : {};
+          const token = auth?.access_token || auth?.AUTH_ID || auth?.auth_id || '';
+          const placementInfo = BX24.placement?.info ? BX24.placement.info() : null;
+          const dealId = this.extractDealIdFromAnySource(
+            placementInfo?.options,
+            placementInfo?.OPTIONS,
+            placementInfo,
+            document.referrer,
+            window.location.href
+          );
+
+          if (token) {
+            this.accessToken.set(token);
+          }
+
+          if (dealId && token) {
+            this.b24DealId.set(dealId);
+            this.loadDealContextFromServer();
+          } else if (dealId) {
+            this.b24DealId.set(dealId);
+            this.b24Error.set('ID сделки найден, но Bitrix24 SDK не вернул токен доступа');
+          } else {
+            this.b24Error.set('Не удалось определить ID сделки через Bitrix24 SDK');
+            console.warn('Bitrix24 SDK placement info without deal id:', placementInfo);
+          }
+        });
+      })
+      .catch((err) => {
+        this.b24Error.set('Не удалось загрузить Bitrix24 SDK');
+        console.warn('Bitrix24 SDK initialization failed:', err);
+      });
+  }
+
   // Bitrix24 launcher detection
   initB24Integration() {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const token = params.get('access_token') || params.get('AUTH_ID') || params.get('auth_id');
       const placementOpts = params.get('placement_options') || params.get('PLACEMENT_OPTIONS');
+      const referrerDealId = this.extractDealIdFromAnySource(document.referrer, window.location.href);
 
       if (token) {
         this.accessToken.set(token);
-        const dealId = this.extractDealIdFromPlacementOptions(placementOpts);
+        const dealId = this.extractDealIdFromAnySource(placementOpts, referrerDealId);
 
         if (dealId) {
           this.b24DealId.set(dealId);
           this.loadDealContextFromServer();
         } else {
-          this.b24Error.set('Не удалось определить ID сделки из параметров запуска');
-          console.warn('Bitrix24 placement options without deal id:', placementOpts);
+          this.initB24FromSdk();
         }
+      } else {
+        this.initB24FromSdk();
       }
     }
   }
