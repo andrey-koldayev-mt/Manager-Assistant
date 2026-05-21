@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const BASE_URL = process.env.VIBE_BASE_URL || 'https://vibecode.bitrix24.tech/v1';
+const INSTALL_NODE_22 = 'apt-get update && apt-get install -y ca-certificates curl && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs';
 
 function requiredEnv(name) {
   const value = process.env[name];
@@ -17,9 +18,8 @@ function createDeployPayload(fileBuffer, apiKey) {
       content: fileBuffer.toString('base64'),
       format: 'zip'
     },
-    runtime: 'node20',
-    install: 'cd /opt/app && npm install',
-    preStart: 'cd /opt/app && npm run build',
+    install: `${INSTALL_NODE_22} && cd /opt/app && node --version && npm ci`,
+    preStart: 'cd /opt/app && node --version && npm run build',
     start: 'cd /opt/app && PORT=3000 node dist/app/server/server.mjs',
     port: 3000,
     env: {

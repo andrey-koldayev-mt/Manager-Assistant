@@ -13,8 +13,7 @@ const EXCLUDE_DIRS = new Set([
 
 const EXCLUDE_FILES = new Set([
   'app.zip',
-  'archive.js',
-  'package-lock.json' // exclude package-lock to keep upload payload small
+  'archive.js'
 ]);
 
 function addDirectory(localPath, zipPath = '') {
