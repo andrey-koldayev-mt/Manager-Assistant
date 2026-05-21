@@ -158,15 +158,15 @@ export class App implements OnInit, OnDestroy {
             this.destination.set('не указано');
           }
 
-          let tripDateStr = '';
-          if (data.previousTrip.startDate) {
+          let tripDateStr = data.previousTrip.tripDateText || '';
+          if (!tripDateStr && data.previousTrip.startDate) {
             const startStr = new Date(data.previousTrip.startDate).toLocaleDateString('ru-RU');
             tripDateStr = `${startStr}`;
             if (data.previousTrip.endDate) {
               const endStr = new Date(data.previousTrip.endDate).toLocaleDateString('ru-RU');
               tripDateStr += ` — ${endStr}`;
             }
-          } else {
+          } else if (!tripDateStr) {
             tripDateStr = 'неизвестно';
           }
           this.tripDate.set(tripDateStr);

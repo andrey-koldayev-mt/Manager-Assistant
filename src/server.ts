@@ -37,6 +37,122 @@ function ensureVibeApiKey(res: express.Response): boolean {
   return false;
 }
 
+const RU_MONTHS_PREPOSITIONAL = [
+  'январе',
+  'феврале',
+  'марте',
+  'апреле',
+  'мае',
+  'июне',
+  'июле',
+  'августе',
+  'сентябре',
+  'октябре',
+  'ноябре',
+  'декабре'
+];
+
+function firstString(...values: unknown[]): string {
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return String(value);
+    }
+  }
+
+  return '';
+}
+
+function getDisplayName(person: Record<string, unknown> | null | undefined, fallback: string): string {
+  if (!person) {
+    return fallback;
+  }
+
+  const directName = firstString(
+    person['name'],
+    person['NAME'],
+    person['fullName'],
+    person['FULL_NAME']
+  );
+  if (directName) {
+    return directName;
+  }
+
+  const firstName = firstString(person['firstName'], person['FIRST_NAME']);
+  const lastName = firstString(person['lastName'], person['LAST_NAME']);
+  const combined = [firstName, lastName].filter(Boolean).join(' ').trim();
+
+  return combined || fallback;
+}
+
+function parseBitrixDate(value: string): Date | null {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const ruDate = trimmed.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+  if (ruDate) {
+    const [, day, month, year] = ruDate;
+    const date = new Date(Number(year), Number(month) - 1, Number(day));
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  const parsed = new Date(trimmed);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function getYearPhrase(year: number): string {
+  const currentYear = new Date().getFullYear();
+  if (year === currentYear) {
+    return 'этого года';
+  }
+  if (year === currentYear - 1) {
+    return 'прошлого года';
+  }
+
+  return `${year} года`;
+}
+
+function formatTripDatePhrase(startDateValue: string, endDateValue: string): string {
+  const startDate = parseBitrixDate(startDateValue);
+  const endDate = parseBitrixDate(endDateValue);
+
+  if (!startDate && !endDate) {
+    return '';
+  }
+
+  const primaryDate = startDate || endDate;
+  if (!primaryDate) {
+    return '';
+  }
+
+  const primaryMonth = RU_MONTHS_PREPOSITIONAL[primaryDate.getMonth()];
+  const primaryYearPhrase = getYearPhrase(primaryDate.getFullYear());
+
+  if (!endDate || !startDate) {
+    return `в ${primaryMonth} ${primaryYearPhrase}`;
+  }
+
+  const sameMonth = startDate.getMonth() === endDate.getMonth();
+  const sameYear = startDate.getFullYear() === endDate.getFullYear();
+
+  if (sameMonth && sameYear) {
+    return `в ${primaryMonth} ${primaryYearPhrase}`;
+  }
+
+  const endMonth = RU_MONTHS_PREPOSITIONAL[endDate.getMonth()];
+  const endYearPhrase = getYearPhrase(endDate.getFullYear());
+
+  if (sameYear) {
+    return `с ${primaryMonth} по ${endMonth} ${primaryYearPhrase}`;
+  }
+
+  return `с ${primaryMonth} ${primaryYearPhrase} по ${endMonth} ${endYearPhrase}`;
+}
+
 /**
  * Bitrix24 Placement Bootstrap Handler
  * Forwards B24 authentication details to VibeCode, which returns an auto-submit form
@@ -117,6 +233,7 @@ app.get('/api/b24/load-deal-context', async (req, res) => {
     interface B24Deal {
       assignedById?: string | number | null;
       contactId?: string | number | null;
+      contactIds?: Array<string | number> | null;
       categoryId?: string | number | null;
       [key: string]: unknown;
     }
@@ -139,8 +256,8 @@ app.get('/api/b24/load-deal-context', async (req, res) => {
       try {
         const userRes = await fetch(`https://vibecode.bitrix24.tech/v1/users/${assignedById}`, { headers });
         const userData = await userRes.json();
-        if (userData.success && userData.data && userData.data.name) {
-          agentName = userData.data.name;
+        if (userData.success && userData.data) {
+          agentName = getDisplayName(userData.data, agentName);
         }
       } catch (err) {
         console.error('Error fetching user:', err);
@@ -149,19 +266,21 @@ app.get('/api/b24/load-deal-context', async (req, res) => {
 
     // 3. Fetch contact if contactId exists
     let clientName = 'Александр'; // default fallback
-    const contactId = deal.contactId;
+    const contactId = deal.contactId || deal.contactIds?.[0] || null;
 
     // Retrieve previous trip info directly from the fields of this same reactivation deal
     const destination = getField(deal, '1604438175');
     const startDate = getField(deal, '1604438397');
     const endDate = getField(deal, '1621261388273');
+    const tripDateText = formatTripDatePhrase(startDate, endDate);
 
     let previousTrip = null;
     if (destination || startDate || endDate) {
       previousTrip = {
         destination,
         startDate,
-        endDate
+        endDate,
+        tripDateText
       };
     }
 
@@ -169,8 +288,8 @@ app.get('/api/b24/load-deal-context', async (req, res) => {
       try {
         const contactRes = await fetch(`https://vibecode.bitrix24.tech/v1/contacts/${contactId}`, { headers });
         const contactData = await contactRes.json();
-        if (contactData.success && contactData.data && contactData.data.name) {
-          clientName = contactData.data.name;
+        if (contactData.success && contactData.data) {
+          clientName = getDisplayName(contactData.data, clientName);
         }
       } catch (err) {
         console.error('Error fetching contact:', err);
