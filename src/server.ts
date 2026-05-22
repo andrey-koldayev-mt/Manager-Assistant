@@ -33,6 +33,13 @@ function ensureVibeApiKey(res: express.Response): boolean {
   return false;
 }
 
+function getVibeAuthorizationHeader(req: express.Request): string {
+  return firstString(
+    req.headers['x-vibe-authorization'],
+    req.headers['authorization']
+  );
+}
+
 const RU_MONTHS_PREPOSITIONAL = [
   'январе',
   'феврале',
@@ -263,7 +270,7 @@ app.use(express.json());
 app.get('/api/b24/load-deal-context', async (req, res) => {
   try {
     const dealId = req.query['dealId'];
-    const authHeader = req.headers['authorization'];
+    const authHeader = getVibeAuthorizationHeader(req);
 
     if (!dealId) {
       res.status(400).json({ success: false, error: 'Missing dealId parameter' });
@@ -373,12 +380,38 @@ app.get('/api/b24/load-deal-context', async (req, res) => {
   }
 });
 
+app.get('/api/b24/session', async (req, res) => {
+  try {
+    const authHeader = getVibeAuthorizationHeader(req);
+    if (!authHeader) {
+      res.status(401).json({ success: false, error: 'Missing Vibe session header' });
+      return;
+    }
+    if (!ensureVibeApiKey(res)) {
+      return;
+    }
+
+    const response = await fetch('https://vibecode.bitrix24.tech/v1/me', {
+      headers: {
+        'X-Api-Key': B24_API_KEY,
+        'Authorization': authHeader
+      }
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (error) {
+    console.error('Error loading Vibe session:', error);
+    const msg = error instanceof Error ? error.message : String(error);
+    res.status(500).json({ success: false, error: msg });
+  }
+});
+
 /**
  * Create calling activity logged inside standard Bitrix24 activities
  */
 app.post('/api/b24/create-call-activity', async (req, res) => {
   try {
-    const authHeader = req.headers['authorization'];
+    const authHeader = getVibeAuthorizationHeader(req);
     const { dealId, crmNotes, nextContactDate, assignedById } = req.body;
 
     if (!dealId) {

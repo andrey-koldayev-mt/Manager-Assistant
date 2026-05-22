@@ -180,6 +180,67 @@ export class App implements OnInit, OnDestroy {
     return null;
   }
 
+  private extractDealIdFromSessionPayload(source: unknown, depth = 0): number | null {
+    if (!source || depth > 5) {
+      return null;
+    }
+
+    if (typeof source === 'string') {
+      return this.extractDealIdFromPlacementOptions(source);
+    }
+
+    if (typeof source !== 'object') {
+      return null;
+    }
+
+    const record = source as Record<string, unknown>;
+    const uriDealId = this.extractDealIdFromAnySource(record['URI'], record['uri'], record['backurl'], record['BACKURL']);
+    if (uriDealId) {
+      return uriDealId;
+    }
+
+    const placement = String(record['placement'] || record['PLACEMENT'] || '');
+    if (placement.includes('DEAL')) {
+      const directDealId = this.extractDealIdFromAnySource(
+        record['ID'],
+        record['id'],
+        record['DEAL_ID'],
+        record['dealId'],
+        record['ENTITY_VALUE_ID'],
+        record['entityValueId']
+      );
+      if (directDealId) {
+        return directDealId;
+      }
+    }
+
+    for (const [key, value] of Object.entries(record)) {
+      if (/placement|options|launch|context|data/i.test(key)) {
+        const nestedDealId = this.extractDealIdFromSessionPayload(value, depth + 1);
+        if (nestedDealId) {
+          return nestedDealId;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  private loadDealIdFromSession() {
+    fetch('/api/b24/session')
+      .then(res => res.json())
+      .then(data => {
+        const dealId = this.extractDealIdFromSessionPayload(data);
+        if (dealId) {
+          this.b24DealId.set(dealId);
+          this.loadDealContextFromServer();
+        } else {
+          console.warn('Vibe session without deal id:', data);
+        }
+      })
+      .catch(err => console.warn('Unable to load Vibe session context:', err));
+  }
+
   private loadBitrixSdk(): Promise<any> {
     const w = window as any;
     if (w.BX24) {
@@ -226,12 +287,9 @@ export class App implements OnInit, OnDestroy {
             this.accessToken.set(token);
           }
 
-          if (dealId && token) {
+          if (dealId) {
             this.b24DealId.set(dealId);
             this.loadDealContextFromServer();
-          } else if (dealId) {
-            this.b24DealId.set(dealId);
-            this.b24Error.set('ID сделки найден, но Bitrix24 SDK не вернул токен доступа');
           } else {
             this.b24Error.set('Не удалось определить ID сделки через Bitrix24 SDK');
             console.warn('Bitrix24 SDK placement info without deal id:', placementInfo);
@@ -251,18 +309,17 @@ export class App implements OnInit, OnDestroy {
       const token = params.get('access_token') || params.get('AUTH_ID') || params.get('auth_id');
       const placementOpts = params.get('placement_options') || params.get('PLACEMENT_OPTIONS');
       const referrerDealId = this.extractDealIdFromAnySource(document.referrer, window.location.href);
+      const dealId = this.extractDealIdFromAnySource(placementOpts, referrerDealId);
 
       if (token) {
         this.accessToken.set(token);
-        const dealId = this.extractDealIdFromAnySource(placementOpts, referrerDealId);
+      }
 
-        if (dealId) {
-          this.b24DealId.set(dealId);
-          this.loadDealContextFromServer();
-        } else {
-          this.initB24FromSdk();
-        }
+      if (dealId) {
+        this.b24DealId.set(dealId);
+        this.loadDealContextFromServer();
       } else {
+        this.loadDealIdFromSession();
         this.initB24FromSdk();
       }
     }
@@ -272,16 +329,17 @@ export class App implements OnInit, OnDestroy {
   loadDealContextFromServer() {
     const dealId = this.b24DealId();
     const token = this.accessToken();
-    if (!dealId || !token) return;
+    if (!dealId) return;
 
     this.b24Loading.set(true);
     this.b24Error.set('');
 
-    fetch(`/api/b24/load-deal-context?dealId=${dealId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    fetch(`/api/b24/load-deal-context?dealId=${dealId}`, { headers })
     .then(res => res.json())
     .then(res => {
       this.b24Loading.set(false);
@@ -343,7 +401,7 @@ export class App implements OnInit, OnDestroy {
   saveActivityToB24() {
     const dealId = this.b24DealId();
     const token = this.accessToken();
-    if (!dealId || !token) {
+    if (!dealId) {
       console.log('Bitrix24 integration not active in this session.');
       return;
     }
@@ -357,12 +415,16 @@ export class App implements OnInit, OnDestroy {
       assignedById: this.assignedById()
     };
 
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json'
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     fetch('/api/b24/create-call-activity', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
+      headers,
       body: JSON.stringify(body)
     })
     .then(res => res.json())
