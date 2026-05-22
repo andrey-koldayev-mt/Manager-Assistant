@@ -136,7 +136,9 @@ export class App implements OnInit, OnDestroy {
           return directNumber;
         }
 
-        const explicitDealMatch = trimmedValue.match(/(?:deal\/details\/|DEAL[_=:]|dealId[=:]|DEAL_ID[=:]|ENTITY_VALUE_ID[=:])(\d+)/i);
+        const explicitDealMatch = trimmedValue.match(
+          /(?:\/crm\/deal\/details\/|crm%2Fdeal%2Fdetails%2F|deal\/details\/|details%2F|DEAL[_=:]|dealId[=:]|DEAL_ID[=:]|ENTITY_VALUE_ID[=:]|"ID"\s*:\s*"?)(\d+)/i
+        );
         if (explicitDealMatch) {
           const parsedNumber = Number(explicitDealMatch[1]);
           if (Number.isFinite(parsedNumber) && parsedNumber > 0) {
@@ -144,7 +146,12 @@ export class App implements OnInit, OnDestroy {
           }
         }
 
-        if (trimmedValue.startsWith('{') || trimmedValue.startsWith('[') || trimmedValue.includes('://')) {
+        if (
+          trimmedValue.startsWith('{') ||
+          trimmedValue.startsWith('[') ||
+          trimmedValue.includes('://') ||
+          trimmedValue.includes('bitrix24.')
+        ) {
           continue;
         }
 
