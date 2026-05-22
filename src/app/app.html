@@ -27,6 +27,11 @@
         <span class="w-1.5 h-1.5 bg-brand-500 rounded-full animate-pulse"></span>
         <span>Сделка #{{ b24DealId() }}</span>
       </div>
+    } @else if (b24Error() || b24Debug()) {
+      <div id="b24-debug-badge" class="bg-amber-50 border border-amber-200 text-amber-900 px-3 py-1.5 rounded-full text-xs flex items-center space-x-1.5 shadow-2xs font-semibold" [matTooltip]="b24Error() || b24Debug()">
+        <mat-icon class="text-sm leading-none">info</mat-icon>
+        <span>Контекст сделки не найден</span>
+      </div>
     }
 
     <!-- Call Live Timer Badge -->

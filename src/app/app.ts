@@ -68,6 +68,7 @@ export class App implements OnInit, OnDestroy {
   b24Loading = signal<boolean>(false);
   b24Saving = signal<boolean>(false);
   b24Error = signal<string>('');
+  b24Debug = signal<string>('');
 
   // Timer trackers
   timerSeconds = signal<number>(0);
@@ -230,6 +231,7 @@ export class App implements OnInit, OnDestroy {
     fetch('/api/b24/session')
       .then(res => res.json())
       .then(data => {
+        this.b24Debug.set(`session keys: ${Object.keys(data?.data || data || {}).join(', ') || 'empty'}`);
         const dealId = this.extractDealIdFromSessionPayload(data);
         if (dealId) {
           this.b24DealId.set(dealId);
@@ -310,6 +312,7 @@ export class App implements OnInit, OnDestroy {
       const placementOpts = params.get('placement_options') || params.get('PLACEMENT_OPTIONS');
       const referrerDealId = this.extractDealIdFromAnySource(document.referrer, window.location.href);
       const dealId = this.extractDealIdFromAnySource(placementOpts, referrerDealId);
+      this.b24Debug.set(`url keys: ${Array.from(params.keys()).join(', ') || 'none'}; placement=${params.get('placement') || 'none'}`);
 
       if (token) {
         this.accessToken.set(token);

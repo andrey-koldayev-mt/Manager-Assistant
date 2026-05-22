@@ -406,6 +406,54 @@ app.get('/api/b24/session', async (req, res) => {
   }
 });
 
+app.get('/api/debug/runtime', async (req, res) => {
+  const authHeader = getVibeAuthorizationHeader(req);
+  let me: unknown = null;
+
+  if (authHeader && B24_API_KEY) {
+    try {
+      const response = await fetch('https://vibecode.bitrix24.tech/v1/me', {
+        headers: {
+          'X-Api-Key': B24_API_KEY,
+          'Authorization': authHeader
+        }
+      });
+      const data = await response.json();
+      me = data?.success && data?.data
+        ? {
+            portal: data.data.portal || data.data.portalDomain,
+            user: data.data.user ? {
+              id: data.data.user.id || data.data.user.userId,
+              name: data.data.user.name
+            } : undefined,
+            userId: data.data.userId,
+            keys: Object.keys(data.data)
+          }
+        : data;
+    } catch (error) {
+      me = { error: error instanceof Error ? error.message : String(error) };
+    }
+  }
+
+  res.json({
+    success: true,
+    data: {
+      path: req.path,
+      query: req.query,
+      hasVibeAuthorization: Boolean(authHeader),
+      hasApiKey: Boolean(B24_API_KEY),
+      headers: {
+        host: req.headers['host'],
+        referer: req.headers['referer'],
+        origin: req.headers['origin'],
+        xForwardedHost: req.headers['x-forwarded-host'],
+        xForwardedProto: req.headers['x-forwarded-proto']
+      },
+      me
+    }
+  });
+});
+
 /**
  * Create calling activity logged inside standard Bitrix24 activities
  */
