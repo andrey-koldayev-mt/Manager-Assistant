@@ -85,6 +85,7 @@ export class App implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.probeRuntime();
     this.initB24Integration();
   }
 
@@ -228,6 +229,163 @@ export class App implements OnInit, OnDestroy {
     return null;
   }
 
+  private probeRuntime() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    fetch('/api/debug/runtime')
+      .then(res => res.json())
+      .then(data => {
+        const current = this.b24Debug();
+        const runtimeDebug = `runtime=${data?.success ? 'ok' : 'fail'}; auth=${data?.data?.hasVibeAuthorization ? 'yes' : 'no'}`;
+        this.b24Debug.set(current ? `${current}; ${runtimeDebug}` : runtimeDebug);
+      })
+      .catch(err => {
+        const current = this.b24Debug();
+        const runtimeDebug = `runtime=error:${err instanceof Error ? err.message : String(err)}`;
+        this.b24Debug.set(current ? `${current}; ${runtimeDebug}` : runtimeDebug);
+      });
+  }
+
+  private getDisplayName(person: any, fallback: string): string {
+    if (!person) {
+      return fallback;
+    }
+
+    const directName = person.NAME || person.name || person.FULL_NAME || person.fullName;
+    if (directName) {
+      return String(directName);
+    }
+
+    const firstName = person.NAME || person.firstName || person.FIRST_NAME || '';
+    const lastName = person.LAST_NAME || person.lastName || '';
+    const combined = [firstName, lastName].filter(Boolean).join(' ').trim();
+
+    return combined || fallback;
+  }
+
+  private getDealField(deal: any, fieldId: string): string {
+    return String(
+      deal?.[`UF_CRM_${fieldId}`] ||
+      deal?.[`ufCrm_${fieldId}`] ||
+      deal?.[`ufCrm${fieldId}`] ||
+      ''
+    );
+  }
+
+  private parseDate(value: string): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  private formatTripDatePhrase(startDateRaw: string, endDateRaw: string): string {
+    const startDate = this.parseDate(startDateRaw);
+    const endDate = this.parseDate(endDateRaw);
+    const primaryDate = startDate || endDate;
+    if (!primaryDate) {
+      return '';
+    }
+
+    const months = [
+      '\u044f\u043d\u0432\u0430\u0440\u0435',
+      '\u0444\u0435\u0432\u0440\u0430\u043b\u0435',
+      '\u043c\u0430\u0440\u0442\u0435',
+      '\u0430\u043f\u0440\u0435\u043b\u0435',
+      '\u043c\u0430\u0435',
+      '\u0438\u044e\u043d\u0435',
+      '\u0438\u044e\u043b\u0435',
+      '\u0430\u0432\u0433\u0443\u0441\u0442\u0435',
+      '\u0441\u0435\u043d\u0442\u044f\u0431\u0440\u0435',
+      '\u043e\u043a\u0442\u044f\u0431\u0440\u0435',
+      '\u043d\u043e\u044f\u0431\u0440\u0435',
+      '\u0434\u0435\u043a\u0430\u0431\u0440\u0435'
+    ];
+    const month = months[primaryDate.getMonth()];
+    const currentYear = new Date().getFullYear();
+    const diff = currentYear - primaryDate.getFullYear();
+    const yearPhrase = diff === 0
+      ? '\u044d\u0442\u043e\u0433\u043e \u0433\u043e\u0434\u0430'
+      : diff === 1
+        ? '\u043f\u0440\u043e\u0448\u043b\u043e\u0433\u043e \u0433\u043e\u0434\u0430'
+        : `${primaryDate.getFullYear()} \u0433\u043e\u0434\u0430`;
+
+    if (startDate && endDate && startDate.getMonth() !== endDate.getMonth()) {
+      const endMonth = months[endDate.getMonth()];
+      return `\u0441 ${month} \u043f\u043e ${endMonth} ${yearPhrase}`;
+    }
+
+    return `\u0432 ${month} ${yearPhrase}`;
+  }
+
+  private bx24Call<T = any>(BX24: any, method: string, params: Record<string, unknown>): Promise<T> {
+    return new Promise((resolve, reject) => {
+      BX24.callMethod(method, params, (result: any) => {
+        if (result.error && result.error()) {
+          reject(new Error(result.error_description?.() || result.error()));
+          return;
+        }
+
+        resolve(result.data ? result.data() : result);
+      });
+    });
+  }
+
+  private loadDealContextFromBitrixSdk(BX24: any, dealId: number) {
+    this.b24Loading.set(true);
+    this.b24Error.set('');
+
+    this.bx24Call<any>(BX24, 'crm.deal.get', { id: dealId })
+      .then(async (deal) => {
+        const assignedById = deal?.ASSIGNED_BY_ID || deal?.assignedById || null;
+        const contactId = deal?.CONTACT_ID || deal?.contactId || deal?.CONTACT_IDS?.[0] || null;
+        this.dealCategoryId.set(Number(deal?.CATEGORY_ID || deal?.categoryId || 0) || null);
+        this.assignedById.set(Number(assignedById) || null);
+
+        if (assignedById) {
+          try {
+            const users = await this.bx24Call<any[]>(BX24, 'user.get', { ID: assignedById });
+            this.agentName.set(this.getDisplayName(Array.isArray(users) ? users[0] : users, this.agentName()));
+          } catch (err) {
+            console.warn('Unable to load responsible user via BX24 SDK:', err);
+          }
+        }
+
+        if (contactId) {
+          try {
+            const contact = await this.bx24Call<any>(BX24, 'crm.contact.get', { id: contactId });
+            this.clientName.set(this.getDisplayName(contact, this.clientName()));
+          } catch (err) {
+            console.warn('Unable to load contact via BX24 SDK:', err);
+          }
+        }
+
+        const destination = this.getDealField(deal, '1604438175');
+        const startDate = this.getDealField(deal, '1604438397');
+        const endDate = this.getDealField(deal, '1621261388273');
+        const tripDateText = this.formatTripDatePhrase(startDate, endDate);
+
+        if (destination || startDate || endDate) {
+          this.historyType.set('buyer');
+          if (destination) {
+            this.destination.set(destination);
+          }
+          if (tripDateText) {
+            this.tripDate.set(tripDateText);
+          }
+        }
+      })
+      .catch((err) => {
+        this.b24Error.set('\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0441\u0434\u0435\u043b\u043a\u0443 \u0447\u0435\u0440\u0435\u0437 Bitrix24 SDK');
+        console.warn('Unable to load deal via BX24 SDK:', err);
+      })
+      .finally(() => this.b24Loading.set(false));
+  }
+
   private loadDealIdFromSession() {
     fetch('/api/b24/session')
       .then(res => res.json())
@@ -292,7 +450,7 @@ export class App implements OnInit, OnDestroy {
 
           if (dealId) {
             this.b24DealId.set(dealId);
-            this.loadDealContextFromServer();
+            this.loadDealContextFromBitrixSdk(BX24, dealId);
           } else {
             this.b24Error.set('Не удалось определить ID сделки через Bitrix24 SDK');
             console.warn('Bitrix24 SDK placement info without deal id:', placementInfo);
