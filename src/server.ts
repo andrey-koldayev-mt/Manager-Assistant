@@ -90,6 +90,55 @@ function getDisplayName(person: Record<string, unknown> | null | undefined, fall
   return combined || fallback;
 }
 
+function stripBearer(value: string): string {
+  return value.replace(/^Bearer\s+/i, '').trim();
+}
+
+function toStringRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object' ? value as Record<string, unknown> : null;
+}
+
+function getFieldValue(obj: Record<string, unknown> | null | undefined, ...keys: string[]): unknown {
+  if (!obj) {
+    return undefined;
+  }
+
+  for (const key of keys) {
+    if (obj[key] !== undefined && obj[key] !== null && obj[key] !== '') {
+      return obj[key];
+    }
+  }
+
+  return undefined;
+}
+
+async function callBitrixRest(serverEndpoint: string, authToken: string, method: string, params: Record<string, unknown> = {}) {
+  const endpoint = serverEndpoint.endsWith('/') ? serverEndpoint : `${serverEndpoint}/`;
+  const body = new URLSearchParams();
+  body.set('auth', authToken);
+
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null) {
+      body.set(key, String(value));
+    }
+  }
+
+  const response = await fetch(`${endpoint}${method}.json`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body
+  });
+  const data = await response.json();
+
+  if (!response.ok || data.error) {
+    throw new Error(data.error_description || data.error || `Bitrix REST ${method} failed`);
+  }
+
+  return data.result;
+}
+
 function parseBitrixDate(value: string): Date | null {
   const trimmed = value.trim();
   if (!trimmed) {
@@ -173,6 +222,7 @@ function buildBitrixLaunchUrl(body: Record<string, unknown> | null | undefined):
   const refreshToken = firstString(source['REFRESH_ID'], source['refresh_id'], auth['refresh_token']);
   const memberId = firstString(source['member_id'], source['MEMBER_ID'], auth['member_id']);
   const placement = firstString(source['PLACEMENT'], source['placement']);
+  const serverEndpoint = firstString(source['SERVER_ENDPOINT'], source['server_endpoint']);
   const placementOptionsRaw = source['PLACEMENT_OPTIONS'] || source['placement_options'] || '';
   const placementOptions = typeof placementOptionsRaw === 'object'
     ? JSON.stringify(placementOptionsRaw)
@@ -183,6 +233,7 @@ function buildBitrixLaunchUrl(body: Record<string, unknown> | null | undefined):
   if (refreshToken) q.set('refresh_id', refreshToken);
   if (memberId) q.set('member_id', memberId);
   if (placement) q.set('placement', placement);
+  if (serverEndpoint) q.set('server_endpoint', serverEndpoint);
   if (placementOptions) q.set('placement_options', placementOptions);
 
   const query = q.toString();
@@ -271,6 +322,7 @@ app.get('/api/b24/load-deal-context', async (req, res) => {
   try {
     const dealId = req.query['dealId'];
     const authHeader = getVibeAuthorizationHeader(req);
+    const bitrixEndpoint = firstString(req.headers['x-bitrix-rest-endpoint']);
 
     if (!dealId) {
       res.status(400).json({ success: false, error: 'Missing dealId parameter' });
@@ -302,26 +354,49 @@ app.get('/api/b24/load-deal-context', async (req, res) => {
       [key: string]: unknown;
     }
 
-    // 1. Load the primary Deal (Reactivation воронка)
-    const dealRes = await fetch(`https://vibecode.bitrix24.tech/v1/deals/${dealId}`, { headers });
-    const dealData = await dealRes.json();
+    let deal = {} as B24Deal;
+    let directBitrixAuth = false;
 
-    if (!dealData.success) {
-      res.status(dealRes.status).json(dealData);
-      return;
+    try {
+      const dealRes = await fetch(`https://vibecode.bitrix24.tech/v1/deals/${dealId}`, { headers });
+      const dealData = await dealRes.json();
+
+      if (!dealData.success) {
+        throw new Error(dealData.error?.message || dealData.error || 'VibeCode deal fetch failed');
+      }
+
+      deal = dealData.data as B24Deal;
+    } catch (err) {
+      if (!bitrixEndpoint) {
+        throw err;
+      }
+
+      directBitrixAuth = true;
+      const bitrixDeal = await callBitrixRest(bitrixEndpoint, stripBearer(authHeader), 'crm.deal.get', { id: dealId });
+      const rawDeal = toStringRecord(bitrixDeal) || {};
+      deal = {
+        ...rawDeal,
+        assignedById: getFieldValue(rawDeal, 'assignedById', 'ASSIGNED_BY_ID') as string | number | null,
+        contactId: getFieldValue(rawDeal, 'contactId', 'CONTACT_ID') as string | number | null,
+        categoryId: getFieldValue(rawDeal, 'categoryId', 'CATEGORY_ID') as string | number | null
+      };
     }
-
-    const deal = dealData.data as B24Deal;
 
     // 2. Fetch responsible manager if assignedById exists
     let agentName = 'Елена'; // default fallback
     const assignedById = deal.assignedById;
     if (assignedById) {
       try {
-        const userRes = await fetch(`https://vibecode.bitrix24.tech/v1/users/${assignedById}`, { headers });
-        const userData = await userRes.json();
-        if (userData.success && userData.data) {
-          agentName = getDisplayName(userData.data, agentName);
+        if (directBitrixAuth && bitrixEndpoint) {
+          const userResult = await callBitrixRest(bitrixEndpoint, stripBearer(authHeader), 'user.get', { ID: assignedById });
+          const user = Array.isArray(userResult) ? userResult[0] : userResult;
+          agentName = getDisplayName(toStringRecord(user), agentName);
+        } else {
+          const userRes = await fetch(`https://vibecode.bitrix24.tech/v1/users/${assignedById}`, { headers });
+          const userData = await userRes.json();
+          if (userData.success && userData.data) {
+            agentName = getDisplayName(userData.data, agentName);
+          }
         }
       } catch (err) {
         console.error('Error fetching user:', err);
@@ -350,10 +425,15 @@ app.get('/api/b24/load-deal-context', async (req, res) => {
 
     if (contactId) {
       try {
-        const contactRes = await fetch(`https://vibecode.bitrix24.tech/v1/contacts/${contactId}`, { headers });
-        const contactData = await contactRes.json();
-        if (contactData.success && contactData.data) {
-          clientName = getDisplayName(contactData.data, clientName);
+        if (directBitrixAuth && bitrixEndpoint) {
+          const contact = await callBitrixRest(bitrixEndpoint, stripBearer(authHeader), 'crm.contact.get', { id: contactId });
+          clientName = getDisplayName(toStringRecord(contact), clientName);
+        } else {
+          const contactRes = await fetch(`https://vibecode.bitrix24.tech/v1/contacts/${contactId}`, { headers });
+          const contactData = await contactRes.json();
+          if (contactData.success && contactData.data) {
+            clientName = getDisplayName(contactData.data, clientName);
+          }
         }
       } catch (err) {
         console.error('Error fetching contact:', err);

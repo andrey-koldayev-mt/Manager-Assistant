@@ -61,6 +61,7 @@ export class App implements OnInit, OnDestroy {
 
   // Bitrix24 Integration state
   accessToken = signal<string>('');
+  bitrixRestEndpoint = signal<string>('');
   b24DealId = signal<number | null>(null);
   dealCategoryId = signal<number | null>(null);
   nextContactDate = signal<string>('');
@@ -309,6 +310,7 @@ export class App implements OnInit, OnDestroy {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const token = params.get('access_token') || params.get('AUTH_ID') || params.get('auth_id');
+      const serverEndpoint = params.get('server_endpoint') || params.get('SERVER_ENDPOINT');
       const placementOpts = params.get('placement_options') || params.get('PLACEMENT_OPTIONS');
       const referrerDealId = this.extractDealIdFromAnySource(document.referrer, window.location.href);
       const dealId = this.extractDealIdFromAnySource(placementOpts, referrerDealId);
@@ -316,6 +318,9 @@ export class App implements OnInit, OnDestroy {
 
       if (token) {
         this.accessToken.set(token);
+      }
+      if (serverEndpoint) {
+        this.bitrixRestEndpoint.set(serverEndpoint);
       }
 
       if (dealId) {
@@ -340,6 +345,9 @@ export class App implements OnInit, OnDestroy {
     const headers: Record<string, string> = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+    }
+    if (this.bitrixRestEndpoint()) {
+      headers['X-Bitrix-Rest-Endpoint'] = this.bitrixRestEndpoint();
     }
 
     fetch(`/api/b24/load-deal-context?dealId=${dealId}`, { headers })
