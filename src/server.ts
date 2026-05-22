@@ -534,6 +534,12 @@ app.get('/api/debug/runtime', async (req, res) => {
   });
 });
 
+app.post('/api/debug/client-context', (req, res) => {
+  const body = req.body && typeof req.body === 'object' ? req.body : {};
+  console.log('Bitrix client context debug:', JSON.stringify(body).slice(0, 4000));
+  res.json({ success: true });
+});
+
 /**
  * Create calling activity logged inside standard Bitrix24 activities
  */

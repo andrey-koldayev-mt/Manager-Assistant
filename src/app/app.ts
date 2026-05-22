@@ -248,6 +248,46 @@ export class App implements OnInit, OnDestroy {
       });
   }
 
+  private reportClientContext(stage: string, extra: Record<string, unknown> = {}) {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const w = window as any;
+    const locationParams = Object.fromEntries(new URLSearchParams(window.location.search).entries());
+    const payload = {
+      stage,
+      href: window.location.href,
+      referrer: document.referrer,
+      ancestorOrigins: Array.from(window.location.ancestorOrigins || []),
+      windowName: window.name,
+      locationParams,
+      hasBX24: Boolean(w.BX24),
+      bx24Keys: w.BX24 ? Object.keys(w.BX24).slice(0, 40) : [],
+      ...extra
+    };
+
+    fetch('/api/debug/client-context', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(err => console.warn('Unable to report client context:', err));
+  }
+
+  private sanitizeAuthForDebug(auth: any) {
+    if (!auth || typeof auth !== 'object') {
+      return auth || null;
+    }
+
+    return {
+      domain: auth.domain,
+      member_id: auth.member_id,
+      expires_in: auth.expires_in,
+      hasAccessToken: Boolean(auth.access_token || auth.AUTH_ID || auth.auth_id),
+      hasRefreshToken: Boolean(auth.refresh_token || auth.REFRESH_ID || auth.refresh_id)
+    };
+  }
+
   private getDisplayName(person: any, fallback: string): string {
     if (!person) {
       return fallback;
@@ -405,6 +445,7 @@ export class App implements OnInit, OnDestroy {
   private loadBitrixSdk(): Promise<any> {
     const w = window as any;
     if (w.BX24) {
+      this.reportClientContext('bx24-existing');
       return Promise.resolve(w.BX24);
     }
 
@@ -419,8 +460,16 @@ export class App implements OnInit, OnDestroy {
       const script = document.createElement('script');
       script.src = this.bx24SdkUrl;
       script.async = true;
-      script.onload = () => resolve((window as any).BX24);
-      script.onerror = reject;
+      script.onload = () => {
+        this.reportClientContext('bx24-script-loaded');
+        resolve((window as any).BX24);
+      };
+      script.onerror = (event) => {
+        this.reportClientContext('bx24-script-error', {
+          eventType: event instanceof Event ? event.type : String(event)
+        });
+        reject(event);
+      };
       document.head.appendChild(script);
     });
   }
@@ -463,14 +512,92 @@ export class App implements OnInit, OnDestroy {
       });
   }
 
+  private initB24FromSdkWithDiagnostics() {
+    this.loadBitrixSdk()
+      .then((BX24) => {
+        if (!BX24) {
+          throw new Error('BX24 SDK is unavailable');
+        }
+
+        this.reportClientContext('bx24-before-init', {
+          preInitPlacementInfo: BX24.placement?.info ? BX24.placement.info() : null,
+          preInitAuth: this.sanitizeAuthForDebug(BX24.getAuth ? BX24.getAuth() : null)
+        });
+
+        let initCompleted = false;
+        const initTimeout = setTimeout(() => {
+          if (!initCompleted) {
+            this.b24Error.set('Bitrix24 SDK загружен, но BX24.init не вернул контекст');
+            this.reportClientContext('bx24-init-timeout', {
+              placementInfo: BX24.placement?.info ? BX24.placement.info() : null,
+              auth: this.sanitizeAuthForDebug(BX24.getAuth ? BX24.getAuth() : null)
+            });
+          }
+        }, 5000);
+
+        const handleInit = () => {
+          initCompleted = true;
+          clearTimeout(initTimeout);
+
+          const auth = BX24.getAuth ? BX24.getAuth() : {};
+          const token = auth?.access_token || auth?.AUTH_ID || auth?.auth_id || '';
+          const placementInfo = BX24.placement?.info ? BX24.placement.info() : null;
+          this.reportClientContext('bx24-init-callback', {
+            placementInfo,
+            auth: this.sanitizeAuthForDebug(auth)
+          });
+          const dealId = this.extractDealIdFromAnySource(
+            placementInfo?.options,
+            placementInfo?.OPTIONS,
+            placementInfo,
+            document.referrer,
+            window.location.href,
+            window.name,
+            Array.from(window.location.ancestorOrigins || []).join(' ')
+          );
+
+          if (token) {
+            this.accessToken.set(token);
+          }
+
+          if (dealId) {
+            this.b24DealId.set(dealId);
+            this.loadDealContextFromBitrixSdk(BX24, dealId);
+          } else {
+            this.b24Error.set('Не удалось определить ID сделки через Bitrix24 SDK');
+            console.warn('Bitrix24 SDK placement info without deal id:', placementInfo);
+          }
+        };
+
+        if (BX24.ready) {
+          BX24.ready(() => BX24.init(handleInit));
+        } else {
+          BX24.init(handleInit);
+        }
+      })
+      .catch((err) => {
+        this.b24Error.set('Не удалось загрузить Bitrix24 SDK');
+        this.reportClientContext('bx24-init-error', {
+          message: err instanceof Error ? err.message : String(err)
+        });
+        console.warn('Bitrix24 SDK initialization failed:', err);
+      });
+  }
+
   // Bitrix24 launcher detection
   initB24Integration() {
     if (typeof window !== 'undefined') {
+      this.reportClientContext('init-start');
       const params = new URLSearchParams(window.location.search);
       const token = params.get('access_token') || params.get('AUTH_ID') || params.get('auth_id');
       const serverEndpoint = params.get('server_endpoint') || params.get('SERVER_ENDPOINT');
       const placementOpts = params.get('placement_options') || params.get('PLACEMENT_OPTIONS');
-      const referrerDealId = this.extractDealIdFromAnySource(document.referrer, window.location.href);
+      const referrerDealId = this.extractDealIdFromAnySource(
+        document.referrer,
+        window.location.href,
+        window.name,
+        Array.from(window.location.ancestorOrigins || []).join(' ')
+      );
       const dealId = this.extractDealIdFromAnySource(placementOpts, referrerDealId);
       this.b24Debug.set(`url keys: ${Array.from(params.keys()).join(', ') || 'none'}; placement=${params.get('placement') || 'none'}`);
 
@@ -486,7 +613,7 @@ export class App implements OnInit, OnDestroy {
         this.loadDealContextFromServer();
       } else {
         this.loadDealIdFromSession();
-        this.initB24FromSdk();
+        this.initB24FromSdkWithDiagnostics();
       }
     }
   }
