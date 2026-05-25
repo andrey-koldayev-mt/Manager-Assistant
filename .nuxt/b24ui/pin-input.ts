@@ -1,0 +1,180 @@
+const size = [
+  "xss",
+  "xs",
+  "sm",
+  "md",
+  "lg",
+  "xl"
+] as const
+
+const color = [
+  "air-primary",
+  "air-primary-success",
+  "air-primary-alert",
+  "air-primary-copilot",
+  "air-primary-warning",
+  "default",
+  "danger",
+  "success",
+  "warning",
+  "primary",
+  "secondary",
+  "collab",
+  "ai"
+] as const
+
+export default {
+  "slots": {
+    "root": "relative inline-flex items-center gap-1.5",
+    "base": "px-0 py-0 border-0 focus:outline-none disabled:cursor-not-allowed disabled:pointer-events-auto disabled:select-none disabled:opacity-30 disabled:resize-none text-center appearance-none transition-colors duration-300 ease-linear text-(--ui-color-base-1) style-blurred-bg-input placeholder:text-(--ui-color-design-plain-na-content-secondary) hover:text-(--ui-color-base-1) focus:text-(--ui-color-base-1) active:text-(--ui-color-base-1) font-[family-name:var(--ui-font-family-primary)] font-(--ui-font-weight-regular) focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-(--b24ui-border-color)"
+  },
+  "variants": {
+    "size": {
+      "xss": {
+        "base": "size-[20px] text-(length:--ui-font-size-4xs)/[normal]"
+      },
+      "xs": {
+        "base": "size-[24px] text-(length:--ui-font-size-xs)/[normal]"
+      },
+      "sm": {
+        "base": "size-[28px] text-(length:--ui-font-size-sm)/[normal]"
+      },
+      "md": {
+        "base": "size-[34px] text-(length:--ui-font-size-lg)/[normal]"
+      },
+      "lg": {
+        "base": "size-[38px] text-(length:--ui-font-size-lg)/[normal]"
+      },
+      "xl": {
+        "base": "size-[46px] text-(length:--ui-font-size-2xl)/[normal]"
+      }
+    },
+    "color": {
+      "air-primary": {
+        "base": "style-filled"
+      },
+      "air-primary-success": {
+        "base": "style-filled-success"
+      },
+      "air-primary-alert": {
+        "base": "style-filled-alert"
+      },
+      "air-primary-copilot": {
+        "base": "style-filled-copilot"
+      },
+      "air-primary-warning": {
+        "base": "style-filled-warning"
+      },
+      "default": {
+        "base": "style-old-default"
+      },
+      "danger": {
+        "base": "style-old-danger"
+      },
+      "success": {
+        "base": "style-old-success"
+      },
+      "warning": {
+        "base": "style-old-warning"
+      },
+      "primary": {
+        "base": "style-old-primary"
+      },
+      "secondary": {
+        "base": "style-old-secondary"
+      },
+      "collab": {
+        "base": "style-old-collab"
+      },
+      "ai": {
+        "base": "style-old-ai"
+      }
+    },
+    "rounded": {
+      "true": "rounded-(--ui-border-radius-3xl)",
+      "false": "rounded-(--ui-border-radius-sm)"
+    },
+    "noBorder": {
+      "true": "ring-0 focus-visible:ring-0 style-transparent-bg"
+    },
+    "underline": {
+      "true": "rounded-none ring-0 focus-visible:ring-0 style-transparent-bg border-b-1 border-b-(--ui-color-design-outline-stroke)"
+    },
+    "highlight": {
+      "true": "ring ring-inset ring-(--b24ui-border-color)"
+    },
+    "fixed": {
+      "false": ""
+    }
+  },
+  "compoundVariants": [
+    {
+      "highlight": false,
+      "noBorder": false,
+      "underline": false,
+      "class": {
+        "base": "ring ring-inset ring-(--ui-color-design-outline-stroke) focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-(--b24ui-border-color) hover:not-disabled:not-data-disabled:ring-1 hover:not-disabled:not-data-disabled:ring-inset hover:not-disabled:not-data-disabled:ring-(--b24ui-border-color) data-[state=open]:ring-1 data-[state=open]:ring-inset data-[state=open]:ring-(--b24ui-border-color)"
+      }
+    },
+    {
+      "highlight": true,
+      "noBorder": false,
+      "underline": false,
+      "class": {
+        "base": "ring ring-inset ring-(--b24ui-border-color) focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-(--b24ui-border-color) hover:ring-1 hover:ring-inset hover:ring-(--b24ui-border-color) data-[state=open]:ring-1 data-[state=open]:ring-inset data-[state=open]:ring-(--b24ui-border-color)"
+      }
+    },
+    {
+      "noBorder": false,
+      "underline": true,
+      "class": {
+        "base": "focus-visible:border-(--b24ui-border-color)"
+      }
+    },
+    {
+      "highlight": true,
+      "noBorder": false,
+      "underline": true,
+      "class": {
+        "base": "ring-0 border-b-(--b24ui-border-color)"
+      }
+    },
+    {
+      "highlight": true,
+      "noBorder": true,
+      "underline": false,
+      "class": {
+        "base": "ring-0"
+      }
+    },
+    {
+      "fixed": false,
+      "size": "xss" as typeof size[number],
+      "class": "md:text-(length:--ui-font-size-4xs)/[normal]"
+    },
+    {
+      "fixed": false,
+      "size": "xs" as typeof size[number],
+      "class": "md:text-(length:--ui-font-size-xs)/[normal]"
+    },
+    {
+      "fixed": false,
+      "size": "sm" as typeof size[number],
+      "class": "md:text-(length:--ui-font-size-sm)/[normal]"
+    },
+    {
+      "fixed": false,
+      "size": "md" as typeof size[number],
+      "class": "md:text-(length:--ui-font-size-lg)/[normal]"
+    },
+    {
+      "fixed": false,
+      "size": "lg" as typeof size[number],
+      "class": "md:text-(length:--ui-font-size-lg)/[normal]"
+    }
+  ],
+  "defaultVariants": {
+    "size": "md" as typeof size[number],
+    "color": "air-primary" as typeof color[number]
+  }
+}

@@ -1,0 +1,128 @@
+@import "tailwindcss";
+@import "@bitrix24/b24ui-nuxt";
+
+:root {
+  --brand-red: #d63f3f;
+  --brand-red-hover: #be3232;
+  --brand-red-soft: #fff1f1;
+  --brand-red-border: #f0c3c3;
+  --app-surface: #ffffff;
+  --app-muted: #f4f7fa;
+  --app-border: #dce3ec;
+  --app-text: #172033;
+  --b24ui-header-height: 58px;
+}
+
+html,
+body,
+#__nuxt {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #f4f7fa;
+  color: var(--app-text);
+  font-family: "Golos Text", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+input,
+textarea {
+  letter-spacing: 0;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, #f8fafc 0%, #eef3f8 100%);
+}
+
+.brand-action {
+  background: var(--brand-red) !important;
+  border-color: var(--brand-red) !important;
+  color: #fff !important;
+}
+
+.brand-action:hover {
+  background: var(--brand-red-hover) !important;
+  border-color: var(--brand-red-hover) !important;
+}
+
+.brand-soft {
+  background: var(--brand-red-soft);
+  border-color: var(--brand-red-border);
+  color: #962323;
+}
+
+.work-panel {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.field-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.script-card {
+  border-radius: 8px;
+  border: 1px solid var(--app-border);
+  background: #fff;
+  transition: border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+.script-card.active {
+  border-color: rgba(214, 63, 63, 0.42);
+  box-shadow: 0 8px 24px rgba(23, 32, 51, 0.08);
+}
+
+.script-line {
+  border-left: 3px solid #8da2bf;
+  background: #f7f9fc;
+  border-radius: 0 8px 8px 0;
+}
+
+.variable {
+  display: inline;
+  padding: 2px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--brand-red-border);
+  background: var(--brand-red-soft);
+  color: var(--brand-red-hover);
+  font-weight: 700;
+}
+
+.step-tab {
+  min-height: 38px;
+  border-radius: 6px;
+  background: #eef3f8;
+  color: #4b5f78;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.step-tab.active {
+  background: var(--brand-red);
+  color: #fff;
+}
+
+.workspace-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #b7c3d2 transparent;
+}
+
+@media (min-width: 1024px) {
+  .sidebar-sticky {
+    position: sticky;
+    top: 74px;
+    max-height: calc(100vh - 90px);
+    overflow: auto;
+  }
+
+  .script-scroll {
+    max-height: calc(100vh - 90px);
+    overflow: auto;
+  }
+}

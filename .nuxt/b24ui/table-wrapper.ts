@@ -1,0 +1,46 @@
+const size = [
+  "xs",
+  "sm",
+  "md",
+  "lg"
+] as const
+
+export default {
+  "slots": {
+    "base": "font-[family-name:var(--ui-font-family-primary)] [&>table]:text-(length:--ui-font-size-md)/(--ui-font-line-height-md) [&>table]:relative [&>table]:w-full [&>table]:text-left [&>table]:rtl:text-right [&>table]:text-label [&>table>thead>tr>td]:align-middle [&>table>thead>tr>th]:align-middle [&>table>tbody>tr>td]:align-middle [&>table>tbody>tr>th]:align-middle [&>table>tfoot>tr>td]:align-middle [&>table>tfoot>tr>th]:align-middle [&>table>thead>tr>td]:whitespace-nowrap [&>table>thead>tr>td]:text-(length:--ui-font-size-md) [&>table>thead>tr>td]:font-(--ui-font-weight-normal) [&>table>thead>tr>th]:whitespace-nowrap [&>table>thead>tr>th]:text-(length:--ui-font-size-md) [&>table>thead>tr>th]:font-(--ui-font-weight-normal) [&>table>tbody>tr>th]:whitespace-nowrap [&>table>tbody>tr>th]:text-(length:--ui-font-size-md) [&>table>tbody>tr>th]:font-(--ui-font-weight-normal) [&>table>tfoot>tr>td]:whitespace-nowrap [&>table>tfoot>tr>td]:text-(length:--ui-font-size-md) [&>table>tfoot>tr>td]:font-(--ui-font-weight-normal) [&>table>tfoot>tr>th]:whitespace-nowrap [&>table>tfoot>tr>th]:text-(length:--ui-font-size-md) [&>table>tfoot>tr>th]:font-(--ui-font-weight-normal) [&>table>thead>tr]:border-(--ui-color-design-tinted-na-stroke) [&>table>tbody>tr]:border-(--ui-color-design-tinted-na-stroke) [&>table>tfoot]:border-(--ui-color-design-tinted-na-stroke) [&>table>thead>tr]:border-b [&>table>tbody>tr:not(:last-child)]:border-b [&>table>tfoot]:border-t"
+  },
+  "variants": {
+    "size": {
+      "xs": "[&>table>thead>tr>td]:text-(length:--ui-font-size-xs)/(--ui-font-line-height-2xs) [&>table>thead>tr>td]:px-2 [&>table>thead>tr>td]:py-1 [&>table>thead>tr>th]:text-(length:--ui-font-size-xs)/(--ui-font-line-height-2xs) [&>table>thead>tr>th]:px-2 [&>table>thead>tr>th]:py-1 [&>table>tbody>tr>td]:text-(length:--ui-font-size-xs)/(--ui-font-line-height-2xs) [&>table>tbody>tr>td]:px-2 [&>table>tbody>tr>td]:py-1 [&>table>tbody>tr>th]:text-(length:--ui-font-size-xs)/(--ui-font-line-height-2xs) [&>table>tbody>tr>th]:px-2 [&>table>tbody>tr>th]:py-1 [&>table>tfoot>tr>td]:text-(length:--ui-font-size-xs)/(--ui-font-line-height-2xs) [&>table>tfoot>tr>td]:px-2 [&>table>tfoot>tr>td]:py-1 [&>table>tfoot>tr>th]:text-(length:--ui-font-size-xs)/(--ui-font-line-height-2xs) [&>table>tfoot>tr>th]:px-2 [&>table>tfoot>tr>th]:py-1",
+      "sm": "[&>table>thead>tr>td]:text-(length:--ui-font-size-sm)/(--ui-font-line-height-sm) [&>table>thead>tr>td]:px-3 [&>table>thead>tr>td]:py-2 [&>table>thead>tr>th]:text-(length:--ui-font-size-sm)/(--ui-font-line-height-sm) [&>table>thead>tr>th]:px-3 [&>table>thead>tr>th]:py-2 [&>table>tbody>tr>td]:text-(length:--ui-font-size-sm)/(--ui-font-line-height-sm) [&>table>tbody>tr>td]:px-3 [&>table>tbody>tr>td]:py-2 [&>table>tbody>tr>th]:text-(length:--ui-font-size-sm)/(--ui-font-line-height-sm) [&>table>tbody>tr>th]:px-3 [&>table>tbody>tr>th]:py-2 [&>table>tfoot>tr>td]:text-(length:--ui-font-size-sm)/(--ui-font-line-height-sm) [&>table>tfoot>tr>td]:px-3 [&>table>tfoot>tr>td]:py-2 [&>table>tfoot>tr>th]:text-(length:--ui-font-size-sm)/(--ui-font-line-height-sm) [&>table>tfoot>tr>th]:px-3 [&>table>tfoot>tr>th]:py-2",
+      "md": "[&>table>thead>tr>td]:text-(length:--ui-font-size-md)/(--ui-font-line-height-md) [&>table>thead>tr>td]:px-4 [&>table>thead>tr>td]:py-3.5 [&>table>thead>tr>th]:text-(length:--ui-font-size-md)/(--ui-font-line-height-md) [&>table>thead>tr>th]:px-4 [&>table>thead>tr>th]:py-3.5 [&>table>tbody>tr>td]:text-(length:--ui-font-size-md)/(--ui-font-line-height-md) [&>table>tbody>tr>td]:px-4 [&>table>tbody>tr>td]:py-3.5 [&>table>tbody>tr>th]:text-(length:--ui-font-size-md)/(--ui-font-line-height-md) [&>table>tbody>tr>th]:px-4 [&>table>tbody>tr>th]:py-3.5 [&>table>tfoot>tr>td]:text-(length:--ui-font-size-md)/(--ui-font-line-height-md) [&>table>tfoot>tr>td]:px-4 [&>table>tfoot>tr>td]:py-3.5 [&>table>tfoot>tr>th]:text-(length:--ui-font-size-md)/(--ui-font-line-height-md) [&>table>tfoot>tr>th]:px-4 [&>table>tfoot>tr>th]:py-3.5",
+      "lg": "[&>table>thead>tr>td]:text-(length:--ui-font-size-lg)/(--ui-font-line-height-lg) [&>table>thead>tr>td]:px-5 [&>table>thead>tr>td]:py-4 [&>table>thead>tr>th]:text-(length:--ui-font-size-lg)/(--ui-font-line-height-lg) [&>table>thead>tr>th]:px-5 [&>table>thead>tr>th]:py-4 [&>table>tbody>tr>td]:text-(length:--ui-font-size-lg)/(--ui-font-line-height-lg) [&>table>tbody>tr>td]:px-5 [&>table>tbody>tr>td]:py-4 [&>table>tbody>tr>th]:text-(length:--ui-font-size-lg)/(--ui-font-line-height-lg) [&>table>tbody>tr>th]:px-5 [&>table>tbody>tr>th]:py-4 [&>table>tfoot>tr>td]:text-(length:--ui-font-size-lg)/(--ui-font-line-height-lg) [&>table>tfoot>tr>td]:px-5 [&>table>tfoot>tr>td]:py-4 [&>table>tfoot>tr>th]:text-(length:--ui-font-size-lg)/(--ui-font-line-height-lg) [&>table>tfoot>tr>th]:px-5 [&>table>tfoot>tr>th]:py-4"
+    },
+    "rounded": {
+      "true": "rounded-(--ui-border-radius-md)",
+      "false": ""
+    },
+    "zebra": {
+      "true": "[&>table>tbody>tr]:even:bg-(--ui-color-bg-content-secondary) [&>table>tbody>tr]:even:[&>td]:bg-(--ui-color-bg-content-secondary) [&>table>tbody>tr]:even:[&>th]:bg-(--ui-color-bg-content-secondary) light:[&>table>tbody>tr]:even:bg-[#f6f8f9] light:[&>table>tbody>tr]:even:[&>td]:bg-[#f6f8f9] light:[&>table>tbody>tr]:even:[&>th]:bg-[#f6f8f9]"
+    },
+    "pinRows": {
+      "true": "[&>table>thead>tr]:sticky [&>table>thead>tr]:top-0      [&>table>thead>tr]:z-1 [&>table>thead>tr]:bg-(--ui-color-bg-content-primary) [&>table>thead>tr>th]:backdrop-blur [&>table>thead>tr]:shadow-bottom-sm [&>table>tfoot>tr]:sticky [&>table>tfoot>tr]:bottom-0   [&>table>tfoot>tr]:z-1 [&>table>tfoot>tr]:bg-(--ui-color-bg-content-primary) [&>table>tfoot>tr>th]:backdrop-blur [&>table>tfoot>tr]:shadow-top-sm"
+    },
+    "pinCols": {
+      "true": "[&>table>thead>tr>th]:sticky [&>table>thead>tr>th]:right-0 [&>table>thead>tr>th]:left-0 [&>table>thead>tr>th]:bg-(--ui-color-bg-content-primary) [&>table>thead>tr>th]:backdrop-blur [&>table>tbody>tr>th]:sticky [&>table>tbody>tr>th]:right-0 [&>table>tbody>tr>th]:left-0 [&>table>tbody>tr>th]:bg-(--ui-color-bg-content-primary) [&>table>tbody>tr>th]:backdrop-blur [&>table>tfoot>tr>th]:sticky [&>table>tfoot>tr>th]:right-0 [&>table>tfoot>tr>th]:left-0 [&>table>tfoot>tr>th]:bg-(--ui-color-bg-content-primary) [&>table>tfoot>tr>th]:backdrop-blur"
+    },
+    "rowHover": {
+      "true": "[&>table>tbody>tr]:hover:bg-(--ui-color-bg-content-secondary) [&>table>tbody>tr]:hover:[&>td]:bg-(--ui-color-bg-content-secondary) [&>table>tbody>tr]:hover:[&>th]:bg-(--ui-color-bg-content-secondary) light:[&>table>tbody>tr]:hover:bg-[#f6f8f9] light:[&>table>tbody>tr]:hover:[&>td]:bg-[#f6f8f9] light:[&>table>tbody>tr]:hover:[&>th]:bg-[#f6f8f9]"
+    },
+    "bordered": {
+      "true": "border border-(--ui-color-design-tinted-na-stroke)"
+    },
+    "scrollbarThin": {
+      "true": "scrollbar-thin"
+    }
+  },
+  "defaultVariants": {
+    "size": "md" as typeof size[number],
+    "scrollbarThin": true
+  }
+}

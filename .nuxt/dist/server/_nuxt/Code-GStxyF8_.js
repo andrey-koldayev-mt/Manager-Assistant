@@ -1,0 +1,161 @@
+import { computed, mergeProps, unref, useSSRContext } from "vue";
+import { ssrRenderAttrs, ssrRenderSlot } from "vue/server-renderer";
+import { p as useComponentProps, u as useAppConfig, n as tv } from "../server.mjs";
+import "C:/Users/andrey.koldayev/PortableGit/Manager-Assistant/node_modules/ofetch/dist/node.mjs";
+import "#internal/nuxt/paths";
+import "C:/Users/andrey.koldayev/PortableGit/Manager-Assistant/node_modules/hookable/dist/index.mjs";
+import "C:/Users/andrey.koldayev/PortableGit/Manager-Assistant/node_modules/unctx/dist/index.mjs";
+import "C:/Users/andrey.koldayev/PortableGit/Manager-Assistant/node_modules/@nuxt/nitro-server/dist/runtime/h3-compat.mjs";
+import "C:/Users/andrey.koldayev/PortableGit/Manager-Assistant/node_modules/ufo/dist/index.mjs";
+import "C:/Users/andrey.koldayev/PortableGit/Manager-Assistant/node_modules/defu/dist/defu.mjs";
+import "C:/Users/andrey.koldayev/PortableGit/Manager-Assistant/node_modules/@unhead/vue/dist/index.mjs";
+import "C:/Users/andrey.koldayev/PortableGit/Manager-Assistant/node_modules/klona/dist/index.mjs";
+import "@vueuse/core";
+import "@vueuse/shared";
+import "@bitrix24/b24icons-vue/actions/ArrowToTheLeftIcon";
+import "@bitrix24/b24icons-vue/actions/ArrowToTheRightIcon";
+import "@bitrix24/b24icons-vue/outline/CheckLIcon";
+import "@bitrix24/b24icons-vue/outline/ChevronTopLIcon";
+import "@bitrix24/b24icons-vue/outline/ChevronLeftLIcon";
+import "@bitrix24/b24icons-vue/outline/ChevronRightLIcon";
+import "@bitrix24/b24icons-vue/actions/DoubleShevronsRightIcon";
+import "@bitrix24/b24icons-vue/actions/DoubleShevronsLeftIcon";
+import "@bitrix24/b24icons-vue/outline/CrossMIcon";
+import "@bitrix24/b24icons-vue/button/DotsIcon";
+import "@bitrix24/b24icons-vue/actions/Refresh6Icon";
+import "@bitrix24/b24icons-vue/actions/Minus30Icon";
+import "@bitrix24/b24icons-vue/actions/Plus30Icon";
+import "@bitrix24/b24icons-vue/main/Search2Icon";
+import "@bitrix24/b24icons-vue/animated/LoaderWaitIcon";
+import "@bitrix24/b24icons-vue/outline/ChevronDownLIcon";
+import "@bitrix24/b24icons-vue/outline/ScreenIcon";
+import "@bitrix24/b24icons-vue/outline/SunIcon";
+import "@bitrix24/b24icons-vue/outline/MoonIcon";
+import "@bitrix24/b24icons-vue/outline/TagIcon";
+import "@bitrix24/b24icons-vue/outline/InfoCircleIcon";
+import "@bitrix24/b24icons-vue/outline/IdeaLampIcon";
+import "@bitrix24/b24icons-vue/main/WarningIcon";
+import "@bitrix24/b24icons-vue/outline/AlertIcon";
+import "@bitrix24/b24icons-vue/outline/CopyIcon";
+import "@bitrix24/b24icons-vue/outline/CircleCheckIcon";
+import "@bitrix24/b24icons-vue/outline/FileIcon";
+import "@bitrix24/b24icons-vue/outline/UploadFileIcon";
+import "@bitrix24/b24icons-vue/outline/ArrowDownLIcon";
+import "@bitrix24/b24icons-vue/outline/ArrowTopLIcon";
+import "@bitrix24/b24icons-vue/outline/StopLIcon";
+import "@bitrix24/b24icons-vue/outline/RefreshIcon";
+import "@bitrix24/b24icons-vue/main/SendIcon";
+import "@bitrix24/b24icons-vue/outline/DragLIcon";
+import "@bitrix24/b24icons-vue/outline/GoToLIcon";
+import "@bitrix24/b24icons-vue/outline/HamburgerMenuIcon";
+import "@bitrix24/b24icons-vue/outline/CloseChatIcon";
+import "@bitrix24/b24icons-vue/outline/OpenChatIcon";
+import "@bitrix24/b24icons-vue/social/GitHubIcon";
+import "@bitrix24/b24icons-vue/social/MdnwebdocsIcon";
+import "@bitrix24/b24icons-vue/common-service/Bitrix24Icon";
+import "@bitrix24/b24icons-vue/outline/DemonstrationOnIcon";
+import "@bitrix24/b24icons-vue/outline/DesignIcon";
+import "@bitrix24/b24icons-vue/outline/FavoriteIcon";
+import "@bitrix24/b24icons-vue/outline/MoreMIcon";
+import "@bitrix24/b24icons-vue/file-type/NuxtIcon";
+import "@bitrix24/b24icons-vue/outline/AiStarsIcon";
+import "@bitrix24/b24icons-vue/editor/EncloseTextInCodeTagIcon";
+import "@bitrix24/b24icons-vue/outline/PlayLIcon";
+import "tailwind-variants";
+import "ohash/utils";
+import "@bitrix24/b24icons-vue/outline/ChevronDownSIcon";
+import "@bitrix24/b24icons-vue/animated/LoaderClockIcon";
+import "@bitrix24/b24icons-vue/specialized/SpinnerIcon";
+import "@bitrix24/b24icons-vue/actions/Cross20Icon";
+const theme = {
+  "slots": {
+    "base": "px-1.5 py-0.5 font-[family-name:var(--ui-font-family-system-mono)] font-(--ui-font-weight-medium) text-(length:--ui-font-size-sm)/[normal] rounded-(--ui-border-radius-md) inline-block ring ring-inset text-(--b24ui-color) bg-(--b24ui-background) ring-(--b24ui-border-color)"
+  },
+  "variants": {
+    "color": {
+      "air-primary": {
+        "base": "style-tinted"
+      },
+      "air-primary-success": {
+        "base": "style-tinted-success"
+      },
+      "air-primary-alert": {
+        "base": "style-tinted-alert"
+      },
+      "air-primary-copilot": {
+        "base": "style-tinted-copilot"
+      },
+      "air-primary-warning": {
+        "base": "style-tinted-warning"
+      },
+      "air-secondary": {
+        "base": "style-tinted-no-accent-1"
+      },
+      "air-tertiary": {
+        "base": "style-filled-black"
+      },
+      "default": {
+        "base": "style-old-default"
+      },
+      "danger": {
+        "base": "style-old-danger"
+      },
+      "success": {
+        "base": "style-old-success"
+      },
+      "warning": {
+        "base": "style-old-warning"
+      },
+      "primary": {
+        "base": "style-old-primary"
+      },
+      "secondary": {
+        "base": "style-old-secondary"
+      },
+      "collab": {
+        "base": "style-old-collab"
+      },
+      "ai": {
+        "base": "style-old-ai"
+      }
+    }
+  },
+  "defaultVariants": {
+    "color": "air-secondary"
+  }
+};
+const _sfc_main = {
+  __name: "ProseCode",
+  __ssrInlineRender: true,
+  props: {
+    color: { type: null, required: false },
+    class: { type: null, required: false },
+    b24ui: { type: Object, required: false }
+  },
+  setup(__props) {
+    const _props = __props;
+    const props = useComponentProps("prose.code", _props);
+    const appConfig = useAppConfig();
+    const b24ui = computed(() => tv({ extend: tv(theme), ...appConfig.b24ui?.prose?.code || {} })({
+      color: props.color
+    }));
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<code${ssrRenderAttrs(mergeProps({
+        "data-slot": "base",
+        class: b24ui.value.base({ class: [unref(props).b24ui?.base, unref(props).class] })
+      }, _attrs))}>`);
+      ssrRenderSlot(_ctx.$slots, "default", {}, null, _push, _parent);
+      _push(`</code>`);
+    };
+  }
+};
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/prose/Code.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+export {
+  _sfc_main as default
+};
+//# sourceMappingURL=Code-GStxyF8_.js.map

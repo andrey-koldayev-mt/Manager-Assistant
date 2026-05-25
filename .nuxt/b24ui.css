@@ -1,0 +1,32 @@
+@source "C:/Users/andrey.koldayev/PortableGit/Manager-Assistant/**/*";
+@source inline("isolate");
+@source "./b24ui/prose";
+@source "./b24ui/toaster.ts";
+@source "./b24ui/toast.ts";
+@source "./b24ui/avatar.ts";
+@source "./b24ui/chip.ts";
+@source "./b24ui/button.ts";
+@source "./b24ui/link.ts";
+@source "./b24ui/progress.ts";
+@source "./b24ui/badge.ts";
+@source "./b24ui/form-field.ts";
+@source "./b24ui/input.ts";
+@source "./b24ui/textarea.ts";
+
+@layer base {
+  body {
+    scrollbar-gutter: stable;
+    background: var(--air-theme-background);
+    @apply antialiased font-(family-name:--ui-font-family-system) scheme-light dark:scheme-dark edge-light:scheme-light edge-dark:scheme-light;
+  }
+
+  /* @deprecate This rule is deprecated and will be removed in version 3.0.0 */
+  .sidebar-layout.--inner,
+  .air-custom-bg {
+    background: var(--air-theme-background);
+  }
+}
+
+@theme static {}
+
+@theme default inline {}

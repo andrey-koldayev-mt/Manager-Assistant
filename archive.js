@@ -9,6 +9,7 @@ const EXCLUDE_DIRS = new Set([
   '.git',
   '.angular',
   '.cache',
+  '.nuxt',
   'dist'
 ]);
 
