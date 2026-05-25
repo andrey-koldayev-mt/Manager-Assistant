@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
   ].join('\n');
 
   const activityBody = {
-    typeId: 2,
+    typeId: 6,
     ownerTypeId: 2,
     ownerId: Number(body.dealId),
     subject: 'Следующий контакт по реактивации',
@@ -52,6 +52,13 @@ export default defineEventHandler(async (event) => {
     startTime: deadline,
     endTime: deadline
   };
+
+  console.log('Creating CRM follow-up activity from widget:', JSON.stringify({
+    dealId: activityBody.ownerId,
+    responsibleId: activityBody.responsibleId,
+    deadline: activityBody.deadline,
+    hasNotes: Boolean(notes)
+  }));
 
   const response = await fetch('https://vibecode.bitrix24.tech/v1/activities', {
     method: 'POST',
@@ -65,12 +72,18 @@ export default defineEventHandler(async (event) => {
   const result = await response.json();
 
   if (!response.ok || !result.success) {
+    console.error('CRM follow-up activity creation failed:', JSON.stringify(result).slice(0, 2000));
     throw createError({
       statusCode: response.status || 500,
       statusMessage: result.error?.message || result.error || 'Unable to create CRM activity',
       data: result
     });
   }
+
+  console.log('CRM follow-up activity created:', JSON.stringify({
+    dealId: activityBody.ownerId,
+    activityId: result?.data?.id || result?.data?.ID || result?.id || result?.ID || null
+  }));
 
   return result;
 });

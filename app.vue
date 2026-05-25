@@ -29,6 +29,7 @@ const nextContactDate = ref('');
 const createdActivityId = ref<number | string | null>(null);
 const timerSeconds = ref(0);
 const bx24Instance = ref<any>(null);
+const bx24Ready = ref(false);
 let timerId: ReturnType<typeof setInterval> | null = null;
 
 const formattedTimer = computed(() => {
@@ -176,7 +177,12 @@ function reportClientContext(stage: string, extra: Record<string, unknown> = {})
 function bx24Call<T = any>(method: string, params: Record<string, unknown>): Promise<T> {
   return new Promise((resolve, reject) => {
     const BX24 = bx24Instance.value || (window as any).BX24;
+    const timeout = setTimeout(() => {
+      reject(new Error(`Bitrix24 SDK method ${method} timed out`));
+    }, 6000);
+
     BX24.callMethod(method, params, (result: any) => {
+      clearTimeout(timeout);
       if (result.error && result.error()) {
         reject(new Error(result.error_description?.() || result.error()));
         return;
@@ -268,6 +274,7 @@ async function initB24Integration() {
     const BX24 = await loadBitrixSdk();
     BX24.init(async () => {
       bx24Instance.value = BX24;
+      bx24Ready.value = true;
       const auth = BX24.getAuth ? BX24.getAuth() : {};
       const token = auth?.access_token || auth?.AUTH_ID || auth?.auth_id;
       if (token) {
@@ -297,7 +304,7 @@ function buildDeadlineForB24(dateValue: string) {
 }
 
 async function createTodoViaBitrixSdk() {
-  if (!bx24Instance.value?.callMethod || !b24DealId.value) {
+  if (!bx24Ready.value || !bx24Instance.value?.callMethod || !b24DealId.value) {
     return false;
   }
 

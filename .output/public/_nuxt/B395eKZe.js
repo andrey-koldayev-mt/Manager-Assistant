@@ -1,1 +1,0 @@
-import{k as r,aC as s,ag as o,A as e,W as t,a7 as c}from"./COg9WS1-.js";import n from"./w5BoZ_EG.js";const f={__name:"ProseTip",setup(i){return(a,p)=>(t(),r(n,{color:"air-primary-success",icon:o(e).tip},{default:s(()=>[c(a.$slots,"default",{mdcUnwrap:"p"})]),_:3},8,["icon"]))}};export{f as default};
