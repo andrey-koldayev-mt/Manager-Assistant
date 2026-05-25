@@ -36,6 +36,7 @@ export class App implements OnInit, OnDestroy {
   private clipboard = inject(Clipboard);
   private snackBar = inject(MatSnackBar);
   private readonly bx24SdkUrl = 'https://api.bitrix24.com/api/v1/';
+  private bx24Instance: any = null;
 
   // Identity variables
   agentName = signal<string>('Елена');
@@ -68,6 +69,7 @@ export class App implements OnInit, OnDestroy {
   assignedById = signal<number | null>(null);
   b24Loading = signal<boolean>(false);
   b24Saving = signal<boolean>(false);
+  createdActivityId = signal<number | string | null>(null);
   b24Error = signal<string>('');
   b24Debug = signal<string>('');
 
@@ -382,6 +384,41 @@ export class App implements OnInit, OnDestroy {
     });
   }
 
+  private buildDeadlineForB24(dateValue: string): string {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+      return `${dateValue}T10:00:00+03:00`;
+    }
+
+    const parsed = new Date(dateValue);
+    return Number.isNaN(parsed.getTime()) ? dateValue : parsed.toISOString();
+  }
+
+  private async createTodoViaBitrixSdk(
+    dealId: number,
+    notes: string,
+    nextContactDate: string,
+    assignedById: number | null
+  ): Promise<boolean> {
+    const BX24 = this.bx24Instance || (typeof window !== 'undefined' ? (window as any).BX24 : null);
+    if (!BX24?.callMethod) {
+      return false;
+    }
+
+    const result = await this.bx24Call<any>(BX24, 'crm.activity.todo.add', {
+      ownerTypeId: 2,
+      ownerId: dealId,
+      deadline: this.buildDeadlineForB24(nextContactDate),
+      title: 'Следующий контакт по реактивации',
+      description: notes,
+      responsibleId: assignedById || undefined,
+      pingOffsets: [0, 15],
+      colorId: 'red'
+    });
+    const activityId = result?.id || result?.ID || result;
+    this.createdActivityId.set(activityId || null);
+    return true;
+  }
+
   private loadDealContextFromBitrixSdk(BX24: any, dealId: number) {
     this.b24Loading.set(true);
     this.b24Error.set('');
@@ -487,6 +524,7 @@ export class App implements OnInit, OnDestroy {
         if (!BX24) {
           throw new Error('BX24 SDK is unavailable');
         }
+        this.bx24Instance = BX24;
 
         BX24.init(() => {
           const auth = BX24.getAuth ? BX24.getAuth() : {};
@@ -525,6 +563,7 @@ export class App implements OnInit, OnDestroy {
         if (!BX24) {
           throw new Error('BX24 SDK is unavailable');
         }
+        this.bx24Instance = BX24;
 
         this.reportClientContext('bx24-before-init', {
           preInitPlacementInfo: BX24.placement?.info ? BX24.placement.info() : null,
@@ -709,16 +748,27 @@ export class App implements OnInit, OnDestroy {
     });
   }
 
-  // Create call activity in CRM
-  saveActivityToB24() {
+  // Create follow-up CRM activity for the current deal.
+  async saveActivityToB24(): Promise<boolean> {
     const dealId = this.b24DealId();
     const token = this.accessToken();
     if (!dealId) {
-      console.log('Bitrix24 integration not active in this session.');
-      return;
+      this.showToast('Сделка не определена, дело в CRM не создано.');
+      return false;
+    }
+
+    if (!this.nextContactDate()) {
+      this.showToast('Укажите дату следующего контакта перед завершением звонка.');
+      return false;
+    }
+
+    if (!this.crmNotes().trim()) {
+      this.showToast('Заполните заметку для CRM: она станет описанием дела.');
+      return false;
     }
 
     this.b24Saving.set(true);
+    this.createdActivityId.set(null);
 
     const body = {
       dealId: dealId,
@@ -734,7 +784,23 @@ export class App implements OnInit, OnDestroy {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    fetch('/api/b24/create-call-activity', {
+    try {
+      const createdWithSdk = await this.createTodoViaBitrixSdk(
+        dealId,
+        this.crmNotes().trim(),
+        this.nextContactDate(),
+        this.assignedById()
+      );
+      if (createdWithSdk) {
+        this.b24Saving.set(false);
+        this.showToast('Дело создано в Битрикс24.');
+        return true;
+      }
+    } catch (err) {
+      console.warn('Unable to create Bitrix24 todo via SDK, falling back to server:', err);
+    }
+
+    return fetch('/api/b24/create-call-activity', {
       method: 'POST',
       headers,
       body: JSON.stringify(body)
@@ -743,16 +809,21 @@ export class App implements OnInit, OnDestroy {
     .then(res => {
       this.b24Saving.set(false);
       if (res.success) {
+        const activityId = res?.data?.id || res?.data?.ID || res?.id || res?.ID || null;
+        this.createdActivityId.set(activityId);
         this.showToast('Запись о звонке сохранена в Битрикс24!');
+        return true;
       } else {
         this.showToast('Ошибка при фиксировании звонка в СРМ.');
         console.error(res.error);
+        return false;
       }
     })
     .catch(err => {
       this.b24Saving.set(false);
       this.showToast('Сетевая ошибка при сохранении звонка.');
       console.error(err);
+      return false;
     });
   }
 
@@ -806,11 +877,15 @@ export class App implements OnInit, OnDestroy {
   }
 
   // Call termination operations
-  finishCall() {
+  async finishCall() {
+    const saved = await this.saveActivityToB24();
+    if (!saved) {
+      return;
+    }
+
     this.clearTimer();
     this.isCallFinished.set(true);
-    this.showToast('Звонок успешно завершен!');
-    this.saveActivityToB24();
+    this.showToast('Звонок завершен, дело создано в CRM.');
     
     setTimeout(() => {
       const el = document.getElementById('summary-panel');
@@ -829,6 +904,7 @@ export class App implements OnInit, OnDestroy {
     this.destinationLead.set('');
     this.crmNotes.set('');
     this.nextContactDate.set('');
+    this.createdActivityId.set(null);
     this.interest.set(null);
     this.isCallFinished.set(false);
     this.activeStep.set(1);

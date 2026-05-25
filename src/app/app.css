@@ -1,0 +1,127 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  color: #172033;
+  background:
+    linear-gradient(180deg, #f7f9fc 0%, #eef3f8 100%);
+}
+
+:host ::ng-deep header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  min-height: 64px;
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-color: #dfe5ee !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08) !important;
+  backdrop-filter: blur(10px);
+}
+
+:host ::ng-deep main {
+  max-width: none !important;
+  padding: 16px !important;
+  gap: 16px !important;
+}
+
+:host ::ng-deep .mat-mdc-card,
+:host ::ng-deep .rounded-2xl,
+:host ::ng-deep .rounded-xl {
+  border-radius: 8px !important;
+}
+
+:host ::ng-deep .mat-mdc-card {
+  border: 1px solid #dfe5ee !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+}
+
+:host ::ng-deep #sidebar-panel {
+  position: sticky;
+  top: 80px;
+  max-height: calc(100vh - 96px);
+  overflow: auto;
+}
+
+:host ::ng-deep section.lg\:col-span-8 {
+  max-height: calc(100vh - 96px) !important;
+  padding-right: 4px;
+}
+
+:host ::ng-deep .mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: 6px;
+  --mdc-outlined-text-field-outline-color: #cfd8e3;
+  --mdc-outlined-text-field-hover-outline-color: #9aa7b8;
+  --mdc-outlined-text-field-focus-outline-color: #d63f3f;
+}
+
+:host ::ng-deep .mat-mdc-text-field-wrapper {
+  background: #ffffff;
+}
+
+:host ::ng-deep .mat-mdc-form-field-icon-prefix,
+:host ::ng-deep .mat-mdc-form-field-icon-suffix {
+  color: #6b7a90;
+}
+
+:host ::ng-deep .mat-mdc-button,
+:host ::ng-deep .mat-mdc-outlined-button,
+:host ::ng-deep .mat-mdc-unelevated-button {
+  border-radius: 6px !important;
+  min-height: 36px;
+  letter-spacing: 0;
+}
+
+:host ::ng-deep .mat-mdc-outlined-button {
+  border-color: #cfd8e3 !important;
+  color: #172033 !important;
+  background: #ffffff !important;
+}
+
+:host ::ng-deep .mat-mdc-unelevated-button.mat-primary {
+  background: #d63f3f !important;
+}
+
+:host ::ng-deep #b24-deal-badge,
+:host ::ng-deep #call-timer,
+:host ::ng-deep #b24-debug-badge {
+  border-radius: 999px !important;
+  box-shadow: none !important;
+}
+
+:host ::ng-deep #steps-tab-group button {
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+:host ::ng-deep #step-1,
+:host ::ng-deep #step-2,
+:host ::ng-deep #step-3 {
+  scroll-margin-top: 88px;
+}
+
+:host ::ng-deep .highlight-variable {
+  background: #fff1f1;
+  color: #9e2323;
+  border: 1px solid #f4c7c7;
+  border-radius: 4px;
+}
+
+:host ::ng-deep .mat-mdc-chip {
+  border-radius: 999px !important;
+}
+
+:host ::ng-deep #summary-panel {
+  background: #d63f3f !important;
+  border: 1px solid #be3232 !important;
+  box-shadow: 0 8px 24px rgba(214, 63, 63, 0.2) !important;
+}
+
+@media (max-width: 1023px) {
+  :host ::ng-deep #sidebar-panel {
+    position: static;
+    max-height: none;
+  }
+
+  :host ::ng-deep section.lg\:col-span-8 {
+    max-height: none !important;
+  }
+}

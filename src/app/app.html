@@ -15,7 +15,7 @@
         <p class="text-[11px] text-slate-500 font-medium mt-1">Интерактивный скрипт «Реактивация клиентов»</p>
       </div>
       <div class="px-2 py-1 bg-slate-100 rounded-md text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-none">
-        Material v21
+        B24 UI
       </div>
     </div>
   </div>
@@ -271,7 +271,7 @@
             Копировать
           </button>
 
-          @if (accessToken()) {
+          @if (b24DealId()) {
             <button 
               mat-flat-button 
               color="primary"
@@ -281,7 +281,7 @@
               id="btn-save-crm-activities"
             >
               <mat-icon>{{ b24Saving() ? 'sync' : 'cloud_upload' }}</mat-icon>
-              <span>{{ b24Saving() ? 'Сохранение...' : 'В CRM' }}</span>
+              <span>{{ b24Saving() ? 'Создаем...' : 'Создать дело' }}</span>
             </button>
           }
         </div>
@@ -647,11 +647,12 @@
             mat-flat-button 
             color="primary"
             (click)="finishCall()"
+            [disabled]="b24Saving()"
             id="finish-call-btn"
             class="cursor-pointer font-bold px-5"
           >
-            <mat-icon>call_end</mat-icon>
-            Завершить звонок
+            <mat-icon>{{ b24Saving() ? 'sync' : 'call_end' }}</mat-icon>
+            {{ b24Saving() ? 'Создаем дело...' : 'Завершить звонок' }}
           </button>
         </mat-card-actions>
       </mat-card>
@@ -693,6 +694,9 @@
             <p><strong>Итоги CRM:</strong> <span class="italic text-brand-100 ml-1">"{{ crmNotes() || 'Заметка не введена' }}"</span></p>
             @if (nextContactDate()) {
               <p><strong>Дата следующего контакта:</strong> <span class="font-bold text-white ml-1">{{ nextContactDate() }}</span></p>
+            }
+            @if (createdActivityId()) {
+              <p><strong>Дело в CRM:</strong> <span class="font-bold text-white ml-1">#{{ createdActivityId() }}</span></p>
             }
           </div>
           

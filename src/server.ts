@@ -205,6 +205,24 @@ function formatTripDatePhrase(startDateValue: string, endDateValue: string): str
   return `с ${primaryMonth} ${primaryYearPhrase} по ${endMonth} ${endYearPhrase}`;
 }
 
+function buildActivityDeadline(dateValue: string): string {
+  const trimmed = dateValue.trim();
+  if (!trimmed) {
+    throw new Error('Missing nextContactDate parameter');
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    return `${trimmed}T10:00:00+03:00`;
+  }
+
+  const parsed = new Date(trimmed);
+  if (Number.isNaN(parsed.getTime())) {
+    throw new Error('Invalid nextContactDate parameter');
+  }
+
+  return parsed.toISOString();
+}
+
 function buildBitrixLaunchUrl(body: Record<string, unknown> | null | undefined): string {
   const source = body || {};
   const auth = typeof source['auth'] === 'object' && source['auth'] !== null
@@ -560,12 +578,24 @@ app.post('/api/b24/create-call-activity', async (req, res) => {
       return;
     }
 
-    let descriptionText = `Результаты звонка реактивации:\n`;
-    descriptionText += crmNotes ? `${crmNotes.trim()}\n` : `[Черновик для CRM пуст]\n`;
-    
-    if (nextContactDate) {
-      descriptionText += `\nПланируемая дата последующего контакта: ${nextContactDate}`;
+    const notes = typeof crmNotes === 'string' ? crmNotes.trim() : '';
+    if (!nextContactDate) {
+      res.status(400).json({ success: false, error: 'Missing nextContactDate parameter' });
+      return;
     }
+    if (!notes) {
+      res.status(400).json({ success: false, error: 'Missing crmNotes parameter' });
+      return;
+    }
+
+    const deadline = buildActivityDeadline(String(nextContactDate));
+    const descriptionText = [
+      'Заметки менеджера:',
+      notes,
+      '',
+      `Дата выполнения: ${nextContactDate}`,
+      'Создано автоматически из виджета реактивации после завершения звонка.'
+    ].join('\n');
 
     const headers = {
       'X-Api-Key': B24_API_KEY,
@@ -574,16 +604,17 @@ app.post('/api/b24/create-call-activity', async (req, res) => {
     };
 
     const activityBody = {
-      typeId: 1, // Звонок (Call)
+      typeId: 2, // Open CRM activity / deal follow-up
       ownerTypeId: 2, // Сделка (Deal)
       ownerId: Number(dealId),
-      subject: 'Завершение звонка реактивации',
+      subject: 'Следующий контакт по реактивации',
       description: descriptionText,
       responsibleId: assignedById ? Number(assignedById) : 1,
-      completed: true,
+      completed: false,
+      deadline,
       direction: 2, // Исходящий (Outgoing)
-      startTime: new Date().toISOString(),
-      endTime: new Date().toISOString()
+      startTime: deadline,
+      endTime: deadline
     };
 
     const response = await fetch('https://vibecode.bitrix24.tech/v1/activities', {
