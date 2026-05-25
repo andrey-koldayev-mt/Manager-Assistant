@@ -626,6 +626,7 @@ export class App implements OnInit, OnDestroy {
 
       if (dealId) {
         this.b24DealId.set(dealId);
+        this.loadDealContextFromServer();
         this.initB24FromSdkWithDiagnostics(dealId);
       } else {
         this.initB24FromSdkWithDiagnostics();
