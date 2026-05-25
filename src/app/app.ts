@@ -519,7 +519,7 @@ export class App implements OnInit, OnDestroy {
       });
   }
 
-  private initB24FromSdkWithDiagnostics() {
+  private initB24FromSdkWithDiagnostics(fallbackDealId: number | null = null) {
     this.loadBitrixSdk()
       .then((BX24) => {
         if (!BX24) {
@@ -531,6 +531,7 @@ export class App implements OnInit, OnDestroy {
           preInitAuth: this.sanitizeAuthForDebug(BX24.getAuth ? BX24.getAuth() : null)
         });
 
+        let initStarted = false;
         let initCompleted = false;
         const initTimeout = setTimeout(() => {
           if (!initCompleted) {
@@ -557,10 +558,7 @@ export class App implements OnInit, OnDestroy {
             placementInfo?.options,
             placementInfo?.OPTIONS,
             placementInfo,
-            document.referrer,
-            window.location.href,
-            window.name,
-            Array.from(window.location.ancestorOrigins || []).join(' ')
+            fallbackDealId
           );
 
           if (token) {
@@ -576,10 +574,21 @@ export class App implements OnInit, OnDestroy {
           }
         };
 
-        if (BX24.ready) {
-          BX24.ready(() => BX24.init(handleInit));
-        } else {
+        const startInit = () => {
+          if (initStarted) {
+            return;
+          }
+
+          initStarted = true;
+          this.reportClientContext('bx24-init-start');
           BX24.init(handleInit);
+        };
+
+        if (BX24.ready) {
+          BX24.ready(startInit);
+        }
+        if (!BX24.ready || document.readyState !== 'loading') {
+          setTimeout(startInit, 0);
         }
       })
       .catch((err) => {
@@ -617,9 +626,8 @@ export class App implements OnInit, OnDestroy {
 
       if (dealId) {
         this.b24DealId.set(dealId);
-        this.loadDealContextFromServer();
+        this.initB24FromSdkWithDiagnostics(dealId);
       } else {
-        this.loadDealIdFromSession();
         this.initB24FromSdkWithDiagnostics();
       }
     }
