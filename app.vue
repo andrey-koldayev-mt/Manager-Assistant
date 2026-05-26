@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { DateValue } from '@internationalized/date';
+import { parseDate } from '@internationalized/date';
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 type HistoryType = 'buyer' | 'lead';
@@ -25,6 +27,7 @@ const b24Loading = ref(false);
 const b24Saving = ref(false);
 const b24Error = ref('');
 const b24Debug = ref('');
+const placementCode = ref('');
 const nextContactDate = ref('');
 const createdActivityId = ref<number | string | null>(null);
 const timerSeconds = ref(0);
@@ -36,6 +39,47 @@ const formattedTimer = computed(() => {
   const mins = String(Math.floor(timerSeconds.value / 60)).padStart(2, '0');
   const secs = String(timerSeconds.value % 60).padStart(2, '0');
   return `${mins}:${secs}`;
+});
+
+const isCallCardPlacement = computed(() => placementCode.value === 'CALL_CARD');
+const finishActionLabel = computed(() => {
+  if (b24Saving.value) {
+    return 'Создаем дело...';
+  }
+
+  return isCallCardPlacement.value ? 'Завершить звонок' : 'Завершить';
+});
+const completionTitle = computed(() => (
+  isCallCardPlacement.value ? 'Звонок завершен, дело создано' : 'Работа завершена, дело создано'
+));
+const resetActionLabel = computed(() => (
+  isCallCardPlacement.value ? 'Новый звонок' : 'Новый запуск'
+));
+
+const contactDateValue = computed<DateValue | undefined>({
+  get() {
+    if (!nextContactDate.value) {
+      return undefined;
+    }
+
+    try {
+      return parseDate(nextContactDate.value.slice(0, 10));
+    } catch {
+      return undefined;
+    }
+  },
+  set(value) {
+    nextContactDate.value = value?.toString() || '';
+  }
+});
+
+const contactDateLabel = computed(() => {
+  if (!nextContactDate.value) {
+    return 'Выберите дату';
+  }
+
+  const [year, month, day] = nextContactDate.value.slice(0, 10).split('-');
+  return year && month && day ? `${day}.${month}.${year}` : nextContactDate.value;
 });
 
 const step1Text = computed(() => {
@@ -71,7 +115,7 @@ const crmNotesReport = computed(() => [
   `Клиент: ${clientName.value}`,
   `Интерес: ${interest.value === true ? 'Есть интерес' : interest.value === false ? 'Отказ / спросить позже' : 'Не определено'}`,
   crmNotes.value.trim() ? `Заметки: ${crmNotes.value.trim()}` : '',
-  `Длительность разговора: ${formattedTimer.value}`
+  isCallCardPlacement.value ? `Длительность разговора: ${formattedTimer.value}` : ''
 ].filter(Boolean).join('\n'));
 
 function showToast(title: string, description = '') {
@@ -260,11 +304,12 @@ async function initB24Integration() {
   reportClientContext('init-start');
 
   const params = new URLSearchParams(window.location.search);
+  placementCode.value = params.get('placement') || '';
   accessToken.value = params.get('access_token') || params.get('AUTH_ID') || params.get('auth_id') || '';
   const placementOptions = params.get('placement_options') || params.get('PLACEMENT_OPTIONS');
   const dealId = extractDealIdFromPlacementOptions(placementOptions || window.location.href || window.name);
 
-  b24Debug.value = `placement=${params.get('placement') || 'none'}`;
+  b24Debug.value = `placement=${placementCode.value || 'none'}`;
   if (dealId) {
     b24DealId.value = dealId;
     await loadDealContextFromServer();
@@ -447,9 +492,7 @@ onUnmounted(clearTimer);
       <header class="sticky top-0 z-40 border-b border-default bg-default/95 px-4 py-3 backdrop-blur">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-3">
-            <div class="flex size-9 items-center justify-center rounded-md bg-[var(--brand-red)] text-sm font-black text-white">
-              РЭ
-            </div>
+            <img class="brand-logo" src="/favicon.png" alt="Русский Экспресс" />
             <div>
               <h1 class="text-base font-bold leading-tight text-label">Русский Экспресс</h1>
               <p class="text-xs text-description">Интерактивный скрипт «Реактивация клиентов»</p>
@@ -469,6 +512,7 @@ onUnmounted(clearTimer);
               class="border border-amber-200 bg-amber-50 text-amber-900"
             />
             <B24Badge
+              v-if="isCallCardPlacement"
               :label="`Длительность разговора: ${formattedTimer}`"
               class="border border-default bg-muted text-label"
             />
@@ -477,7 +521,7 @@ onUnmounted(clearTimer);
         </div>
       </header>
 
-      <main class="grid gap-4 p-4 lg:grid-cols-[390px_minmax(0,1fr)]">
+      <main class="grid gap-4 p-4 lg:grid-cols-[460px_minmax(0,1fr)]">
         <aside class="sidebar-sticky work-panel p-4 workspace-scroll">
           <div class="mb-4 border-b border-default pb-3">
             <div class="flex items-center justify-between gap-3">
@@ -489,11 +533,11 @@ onUnmounted(clearTimer);
 
           <div class="field-stack">
             <B24FormField label="Ваше имя">
-              <B24Input v-model="agentName" />
+              <B24Input v-model="agentName" class="field-control" />
             </B24FormField>
 
             <B24FormField label="Имя клиента">
-              <B24Input v-model="clientName" />
+              <B24Input v-model="clientName" class="field-control" />
             </B24FormField>
 
             <div class="grid grid-cols-2 gap-2">
@@ -511,24 +555,24 @@ onUnmounted(clearTimer);
 
             <div v-if="historyType === 'buyer'" class="brand-soft rounded-lg border p-3 field-stack">
               <B24FormField label="Направление поездки">
-                <B24Input v-model="destination" />
+                <B24Input v-model="destination" class="field-control" />
               </B24FormField>
               <B24FormField label="Когда состоялась поездка">
-                <B24Input v-model="tripDate" />
+                <B24Input v-model="tripDate" class="field-control" />
               </B24FormField>
             </div>
 
             <div v-else class="rounded-lg border border-default bg-muted p-3 field-stack">
               <B24FormField label="Когда подбирали тур">
-                <B24Input v-model="season" />
+                <B24Input v-model="season" class="field-control" />
               </B24FormField>
               <B24FormField label="Направление подбора">
-                <B24Input v-model="destinationLead" />
+                <B24Input v-model="destinationLead" class="field-control" />
               </B24FormField>
             </div>
 
             <B24FormField label="Контекст предстоящего путешествия">
-              <B24Input v-model="travelContext" />
+              <B24Input v-model="travelContext" class="field-control" />
             </B24FormField>
 
             <div class="flex flex-wrap gap-2">
@@ -539,13 +583,38 @@ onUnmounted(clearTimer);
 
             <div class="border-t border-default pt-3 field-stack">
               <B24FormField label="Дата следующего контакта">
-                <B24Input v-model="nextContactDate" type="date" />
+                <B24Popover :content="{ side: 'bottom', align: 'start', sideOffset: 8 }">
+                  <B24Button
+                    :label="contactDateLabel"
+                    block
+                    use-dropdown
+                    class="date-trigger"
+                  />
+                  <template #content="{ close }">
+                    <div class="calendar-surface">
+                      <B24Calendar
+                        v-model="contactDateValue"
+                        locale="ru-RU"
+                        color="air-primary"
+                        size="sm"
+                        :year-controls="true"
+                        :week-starts-on="1"
+                        :b24ui="{
+                          root: 'reactivation-calendar',
+                          cellTrigger: 'reactivation-calendar-day'
+                        }"
+                        @update:model-value="close"
+                      />
+                    </div>
+                  </template>
+                </B24Popover>
               </B24FormField>
 
               <B24FormField label="Заметка для CRM">
                 <B24Textarea
                   v-model="crmNotes"
                   :rows="4"
+                  class="field-control"
                   placeholder="Итоги созвона, пожелания, бюджет, даты, следующий шаг..."
                 />
               </B24FormField>
@@ -566,9 +635,9 @@ onUnmounted(clearTimer);
         <section class="script-scroll workspace-scroll">
           <div class="work-panel mb-4 p-3">
             <div class="grid gap-2 sm:grid-cols-3">
-              <button class="step-tab" :class="{ active: activeStep === 1 }" @click="scrollToStep(1)">1 Присоединение</button>
-              <button class="step-tab" :class="{ active: activeStep === 2 }" @click="scrollToStep(2)">2 Крючок</button>
-              <button class="step-tab" :class="{ active: activeStep === 3 }" @click="scrollToStep(3)">3 Сделка</button>
+              <B24Button label="1 Присоединение" block class="step-tab" :class="{ active: activeStep === 1 }" @click="scrollToStep(1)" />
+              <B24Button label="2 Крючок" block class="step-tab" :class="{ active: activeStep === 2 }" @click="scrollToStep(2)" />
+              <B24Button label="3 Сделка" block class="step-tab" :class="{ active: activeStep === 3 }" @click="scrollToStep(3)" />
             </div>
           </div>
 
@@ -649,7 +718,7 @@ onUnmounted(clearTimer);
               <div class="mt-4 flex justify-between border-t border-default pt-4">
                 <B24Button label="Копировать модуль" class="border border-default bg-default text-label" :disabled="interest === null" @click="copyText(step3Text)" />
                 <B24Button
-                  :label="b24Saving ? 'Создаем дело...' : 'Завершить звонок'"
+                  :label="finishActionLabel"
                   :loading="b24Saving"
                   class="brand-action"
                   @click="finishCall"
@@ -658,7 +727,7 @@ onUnmounted(clearTimer);
             </article>
 
             <article v-if="isCallFinished" id="summary-panel" class="rounded-lg border border-red-200 bg-[var(--brand-red)] p-5 text-white">
-              <h2 class="text-xl font-bold">Звонок завершен, дело создано</h2>
+              <h2 class="text-xl font-bold">{{ completionTitle }}</h2>
               <div class="mt-4 grid gap-2 rounded-lg bg-white/12 p-4 text-sm">
                 <p><strong>Менеджер:</strong> {{ agentName }}</p>
                 <p><strong>Клиент:</strong> {{ clientName }}</p>
@@ -668,7 +737,7 @@ onUnmounted(clearTimer);
               </div>
               <div class="mt-4 flex gap-2">
                 <B24Button label="Копировать отчет" class="bg-white text-[var(--brand-red-hover)]" @click="copyText(crmNotesReport)" />
-                <B24Button label="Новый звонок" class="border border-white/50 bg-transparent text-white" @click="resetCall" />
+                <B24Button :label="resetActionLabel" class="border border-white/50 bg-transparent text-white" @click="resetCall" />
               </div>
             </article>
           </div>

@@ -6,6 +6,7 @@
   --brand-red-hover: #be3232;
   --brand-red-soft: #fff1f1;
   --brand-red-border: #f0c3c3;
+  --brand-focus: rgba(214, 63, 63, 0.32);
   --app-surface: #ffffff;
   --app-muted: #f4f7fa;
   --app-border: #dce3ec;
@@ -32,6 +33,18 @@ textarea {
   letter-spacing: 0;
 }
 
+button:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--brand-focus) !important;
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+textarea:focus-visible {
+  outline: none !important;
+}
+
 .app-shell {
   min-height: 100vh;
   background:
@@ -55,6 +68,13 @@ textarea {
   color: #962323;
 }
 
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
 .work-panel {
   background: var(--app-surface);
   border: 1px solid var(--app-border);
@@ -65,6 +85,99 @@ textarea {
 .field-stack {
   display: grid;
   gap: 12px;
+}
+
+.field-control,
+.field-control > *,
+.field-stack [data-slot="root"],
+.field-stack input,
+.field-stack textarea {
+  width: 100%;
+}
+
+.date-trigger:focus-visible,
+.date-trigger:focus-within {
+  box-shadow: 0 0 0 3px var(--brand-focus) !important;
+}
+
+.field-control,
+.field-control [data-slot="base"] {
+  --b24ui-border-color: var(--brand-red) !important;
+}
+
+.field-control [data-slot="base"] {
+  outline: none !important;
+}
+
+.field-control [data-slot="base"]:hover,
+.field-control [data-slot="base"]:focus,
+.field-control [data-slot="base"]:focus-visible {
+  --b24ui-border-color: var(--brand-red) !important;
+  box-shadow: inset 0 0 0 1px var(--brand-red) !important;
+}
+
+.date-trigger {
+  --b24ui-border-color: var(--brand-red) !important;
+  justify-content: space-between !important;
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--app-border) !important;
+  background: #fff !important;
+  color: var(--app-text) !important;
+}
+
+.date-trigger:hover,
+.date-trigger:focus-visible,
+.date-trigger:focus-within {
+  border-color: var(--brand-red) !important;
+}
+
+.date-trigger:focus-visible {
+  outline: none !important;
+}
+
+.calendar-surface {
+  border-radius: 8px;
+  border: 1px solid var(--brand-red-border);
+  background: #fff;
+  padding: 10px;
+  box-shadow: 0 18px 44px rgba(23, 32, 51, 0.16);
+}
+
+.reactivation-calendar {
+  --ui-primary: var(--brand-red);
+  --b24ui-background: var(--brand-red);
+  --b24ui-background-hover: var(--brand-focus);
+  --b24ui-border-color: var(--brand-red);
+  --b24ui-color: #fff;
+  width: 100%;
+}
+
+.reactivation-calendar-day {
+  border-radius: 6px !important;
+}
+
+.reactivation-calendar-day[data-selected],
+.reactivation-calendar-day[data-highlighted] {
+  background: var(--brand-red) !important;
+  color: #fff !important;
+}
+
+.reactivation-calendar-day[data-today]:not([data-selected]) {
+  background: transparent !important;
+  color: var(--brand-red) !important;
+}
+
+.reactivation-calendar-day:hover:not([data-disabled]):not([data-selected]),
+.reactivation-calendar-day[data-highlighted] {
+  background: var(--brand-red) !important;
+  color: #fff !important;
+}
+
+.reactivation-calendar-day:focus-visible {
+  outline: 2px solid var(--brand-focus) !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--brand-focus) !important;
 }
 
 .script-card {
@@ -98,14 +211,20 @@ textarea {
 .step-tab {
   min-height: 38px;
   border-radius: 6px;
-  background: #eef3f8;
-  color: #4b5f78;
-  transition: background 160ms ease, color 160ms ease;
+  border-color: transparent !important;
+  background: #eef3f8 !important;
+  color: #4b5f78 !important;
+  transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease;
 }
 
 .step-tab.active {
-  background: var(--brand-red);
-  color: #fff;
+  background: var(--brand-red) !important;
+  color: #fff !important;
+}
+
+.step-tab:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 3px var(--brand-focus) !important;
 }
 
 .workspace-scroll {

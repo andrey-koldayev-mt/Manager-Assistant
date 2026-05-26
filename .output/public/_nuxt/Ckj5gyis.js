@@ -1,1 +1,0 @@
-import{k as r,aC as n,ag as o,A as e,W as s,a7 as t}from"./HJNFZw7d.js";import c from"./h1-iQ_ZF.js";const f={__name:"ProseWarning",setup(i){return(a,p)=>(s(),r(c,{color:"air-primary-warning",icon:o(e).warning},{default:n(()=>[t(a.$slots,"default",{mdcUnwrap:"p"})]),_:3},8,["icon"]))}};export{f as default};
