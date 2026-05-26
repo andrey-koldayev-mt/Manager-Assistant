@@ -304,9 +304,17 @@ function buildDeadlineForB24(dateValue: string) {
 }
 
 async function createTodoViaBitrixSdk() {
-  if (!bx24Ready.value || !bx24Instance.value?.callMethod || !b24DealId.value) {
+  const BX24 = bx24Instance.value || (import.meta.client ? (window as any).BX24 : null);
+  if (!BX24?.callMethod || !b24DealId.value) {
     return false;
   }
+
+  bx24Instance.value = BX24;
+  reportClientContext('todo-sdk-attempt', {
+    dealId: b24DealId.value,
+    bx24Ready: bx24Ready.value,
+    hasCallMethod: Boolean(BX24.callMethod)
+  });
 
   const result = await bx24Call('crm.activity.todo.add', {
     ownerTypeId: 2,
@@ -320,6 +328,10 @@ async function createTodoViaBitrixSdk() {
   });
 
   createdActivityId.value = (result as any)?.id || (result as any)?.ID || String(result || '');
+  reportClientContext('todo-sdk-success', {
+    dealId: b24DealId.value,
+    activityId: createdActivityId.value
+  });
   return true;
 }
 
@@ -346,6 +358,10 @@ async function saveActivityToB24() {
       return true;
     }
   } catch (error) {
+    reportClientContext('todo-sdk-error', {
+      dealId: b24DealId.value,
+      message: error instanceof Error ? error.message : String(error)
+    });
     console.warn('SDK todo creation failed, using server fallback:', error);
   }
 
