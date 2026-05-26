@@ -1,0 +1,1 @@
+import{k as r,aD as s,af as o,A as e,V as t,a6 as c}from"./Df3zEk-e.js";import n from"./DSreqNE9.js";const m={__name:"ProseTip",setup(i){return(a,p)=>(t(),r(n,{color:"air-primary-success",icon:o(e).tip},{default:s(()=>[c(a.$slots,"default",{mdcUnwrap:"p"})]),_:3},8,["icon"]))}};export{m as default};

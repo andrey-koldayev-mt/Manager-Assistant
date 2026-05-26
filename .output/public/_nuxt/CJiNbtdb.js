@@ -1,1 +1,0 @@
-import{k as r,aD as n,af as o,A as e,V as s,a6 as t}from"./DRXS8UQK.js";import c from"./DPvaxnvO.js";const m={__name:"ProseWarning",setup(i){return(a,p)=>(s(),r(c,{color:"air-primary-warning",icon:o(e).warning},{default:n(()=>[t(a.$slots,"default",{mdcUnwrap:"p"})]),_:3},8,["icon"]))}};export{m as default};

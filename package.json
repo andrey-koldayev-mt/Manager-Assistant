@@ -1,6 +1,9 @@
 {
   "name": "manager-assistant-b24-nuxt",
   "version": "0.0.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "start": "node .output/server/index.mjs",
     "dev": "nuxt dev --host=0.0.0.0 --port=3000",

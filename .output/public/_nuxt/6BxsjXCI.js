@@ -1,0 +1,1 @@
+import{k as o,aD as r,af as e,A as t,V as s,a6 as n}from"./Df3zEk-e.js";import c from"./DSreqNE9.js";const p={__name:"ProseCaution",setup(i){return(a,_)=>(s(),o(c,{color:"air-secondary-alert",icon:e(t).caution},{default:r(()=>[n(a.$slots,"default",{mdcUnwrap:"p"})]),_:3},8,["icon"]))}};export{p as default};
