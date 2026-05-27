@@ -90,6 +90,49 @@ textarea:focus-visible {
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
+.deal-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(23, 32, 51, 0.48);
+  backdrop-filter: blur(3px);
+}
+
+.deal-loading-panel {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  width: min(420px, 100%);
+  padding: 18px;
+  border: 1px solid var(--brand-red-border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(23, 32, 51, 0.24);
+}
+
+.deal-loading-spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--brand-red-border);
+  border-top-color: var(--brand-red);
+  border-radius: 50%;
+  animation: deal-loading-spin 800ms linear infinite;
+}
+
+.deal-loading-progress {
+  grid-column: 1 / -1;
+  --b24ui-background: var(--brand-red);
+}
+
+@keyframes deal-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .field-stack {
   display: grid;
   gap: 12px;

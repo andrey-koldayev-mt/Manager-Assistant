@@ -23,6 +23,7 @@ const accessToken = ref('');
 const b24DealId = ref<number | null>(null);
 const dealCategoryId = ref<number | null>(null);
 const assignedById = ref<number | null>(null);
+const b24Initializing = ref(true);
 const b24Loading = ref(false);
 const b24Saving = ref(false);
 const b24Error = ref('');
@@ -42,6 +43,12 @@ const formattedTimer = computed(() => {
 });
 
 const isCallCardPlacement = computed(() => placementCode.value === 'CALL_CARD');
+const dealContextOverlayVisible = computed(() => b24Initializing.value || b24Loading.value);
+const dealContextLoadingText = computed(() => (
+  b24DealId.value
+    ? `Загружаем данные сделки #${b24DealId.value}`
+    : 'Определяем контекст сделки'
+));
 const finishActionLabel = computed(() => {
   if (b24Saving.value) {
     return 'Создаем дело...';
@@ -298,47 +305,53 @@ async function loadDealContextFromServer() {
 
 async function initB24Integration() {
   if (!import.meta.client) {
+    b24Initializing.value = false;
     return;
   }
 
+  b24Initializing.value = true;
   reportClientContext('init-start');
 
-  const params = new URLSearchParams(window.location.search);
-  placementCode.value = params.get('placement') || '';
-  accessToken.value = params.get('access_token') || params.get('AUTH_ID') || params.get('auth_id') || '';
-  const placementOptions = params.get('placement_options') || params.get('PLACEMENT_OPTIONS');
-  const dealId = extractDealIdFromPlacementOptions(placementOptions || window.location.href || window.name);
-
-  b24Debug.value = `placement=${placementCode.value || 'none'}`;
-  if (dealId) {
-    b24DealId.value = dealId;
-    await loadDealContextFromServer();
-  }
-
   try {
-    const BX24 = await loadBitrixSdk();
-    BX24.init(async () => {
-      bx24Instance.value = BX24;
-      bx24Ready.value = true;
-      const auth = BX24.getAuth ? BX24.getAuth() : {};
-      const token = auth?.access_token || auth?.AUTH_ID || auth?.auth_id;
-      if (token) {
-        accessToken.value = token;
-      }
+    const params = new URLSearchParams(window.location.search);
+    placementCode.value = params.get('placement') || '';
+    accessToken.value = params.get('access_token') || params.get('AUTH_ID') || params.get('auth_id') || '';
+    const placementOptions = params.get('placement_options') || params.get('PLACEMENT_OPTIONS');
+    const dealId = extractDealIdFromPlacementOptions(placementOptions || window.location.href || window.name);
 
-      const placementInfo = BX24.placement?.info ? BX24.placement.info() : null;
-      const sdkDealId = extractDealIdFromPlacementOptions(placementInfo?.options || placementInfo?.OPTIONS || placementInfo);
-      if (sdkDealId && sdkDealId !== b24DealId.value) {
-        b24DealId.value = sdkDealId;
-        await loadDealContextFromServer();
-      }
+    b24Debug.value = `placement=${placementCode.value || 'none'}`;
+    if (dealId) {
+      b24DealId.value = dealId;
+      await loadDealContextFromServer();
+    }
 
-      reportClientContext('bx24-init-callback', { placementInfo });
-    });
-  } catch (error) {
-    reportClientContext('bx24-init-error', {
-      message: error instanceof Error ? error.message : String(error)
-    });
+    try {
+      const BX24 = await loadBitrixSdk();
+      BX24.init(async () => {
+        bx24Instance.value = BX24;
+        bx24Ready.value = true;
+        const auth = BX24.getAuth ? BX24.getAuth() : {};
+        const token = auth?.access_token || auth?.AUTH_ID || auth?.auth_id;
+        if (token) {
+          accessToken.value = token;
+        }
+
+        const placementInfo = BX24.placement?.info ? BX24.placement.info() : null;
+        const sdkDealId = extractDealIdFromPlacementOptions(placementInfo?.options || placementInfo?.OPTIONS || placementInfo);
+        if (sdkDealId && sdkDealId !== b24DealId.value) {
+          b24DealId.value = sdkDealId;
+          await loadDealContextFromServer();
+        }
+
+        reportClientContext('bx24-init-callback', { placementInfo });
+      });
+    } catch (error) {
+      reportClientContext('bx24-init-error', {
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+  } finally {
+    b24Initializing.value = false;
   }
 }
 
@@ -487,6 +500,22 @@ onUnmounted(clearTimer);
     <div class="app-shell">
       <div v-if="b24Loading" class="fixed left-0 right-0 top-0 z-50 h-1 bg-red-100">
         <div class="h-full w-1/2 animate-pulse brand-action" />
+      </div>
+
+      <div v-if="dealContextOverlayVisible" class="deal-loading-overlay">
+        <div class="deal-loading-panel">
+          <div class="deal-loading-spinner" aria-hidden="true" />
+          <div>
+            <p class="text-sm font-bold text-label">{{ dealContextLoadingText }}</p>
+            <p class="mt-1 text-xs text-description">Поля будут доступны после подстановки данных из CRM.</p>
+          </div>
+          <B24Progress
+            :model-value="null"
+            color="air-primary"
+            animation="loading"
+            class="deal-loading-progress"
+          />
+        </div>
       </div>
 
       <header class="sticky top-0 z-40 border-b border-default bg-default/95 px-4 py-3 backdrop-blur">

@@ -41,31 +41,31 @@ export default defineEventHandler(async (event) => {
   const contactId = firstString(deal.contactId, deal.CONTACT_ID, Array.isArray(deal.contactIds) ? deal.contactIds[0] : '');
   const categoryId = firstString(deal.categoryId, deal.CATEGORY_ID);
 
-  let agentName = 'Елена';
-  if (assignedById) {
-    try {
-      const userResponse = await fetch(`https://vibecode.bitrix24.tech/v1/users/${assignedById}`, { headers });
-      const userData = await userResponse.json();
-      if (userData.success && userData.data) {
-        agentName = getDisplayName(toRecord(userData.data), agentName);
-      }
-    } catch (error) {
-      console.error('Error fetching responsible user:', error);
-    }
-  }
+  const [userData, contactData] = await Promise.all([
+    assignedById
+      ? fetch(`https://vibecode.bitrix24.tech/v1/users/${assignedById}`, { headers })
+        .then((response) => response.json())
+        .catch((error) => {
+          console.error('Error fetching responsible user:', error);
+          return null;
+        })
+      : Promise.resolve(null),
+    contactId
+      ? fetch(`https://vibecode.bitrix24.tech/v1/contacts/${contactId}`, { headers })
+        .then((response) => response.json())
+        .catch((error) => {
+          console.error('Error fetching contact:', error);
+          return null;
+        })
+      : Promise.resolve(null)
+  ]);
 
-  let clientName = 'Александр';
-  if (contactId) {
-    try {
-      const contactResponse = await fetch(`https://vibecode.bitrix24.tech/v1/contacts/${contactId}`, { headers });
-      const contactData = await contactResponse.json();
-      if (contactData.success && contactData.data) {
-        clientName = getDisplayName(toRecord(contactData.data), clientName);
-      }
-    } catch (error) {
-      console.error('Error fetching contact:', error);
-    }
-  }
+  const agentName = userData?.success && userData.data
+    ? getDisplayName(toRecord(userData.data), 'Елена')
+    : 'Елена';
+  const clientName = contactData?.success && contactData.data
+    ? getDisplayName(toRecord(contactData.data), 'Александр')
+    : 'Александр';
 
   const destination = getDealField(deal, '1604438175');
   const startDate = getDealField(deal, '1604438397');
