@@ -68,6 +68,14 @@ textarea:focus-visible {
   color: #962323;
 }
 
+.scenario-disabled {
+  border-color: var(--app-border) !important;
+  background: #f5f7fa !important;
+  color: #7b8798 !important;
+  cursor: not-allowed !important;
+  opacity: 0.72 !important;
+}
+
 .brand-logo {
   width: 38px;
   height: 38px;

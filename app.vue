@@ -548,8 +548,8 @@ onUnmounted(clearTimer);
               />
               <B24Button
                 label="Не покупал"
-                :class="historyType === 'lead' ? 'brand-action' : 'border border-default bg-default text-label'"
-                @click="historyType = 'lead'"
+                disabled
+                class="scenario-disabled"
               />
             </div>
 
