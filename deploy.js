@@ -37,6 +37,10 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function shellQuote(value) {
+  return `'${String(value).replace(/'/g, `'\\''`)}'`;
+}
+
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, options);
   const text = await response.text();
@@ -89,6 +93,11 @@ function isDeployConnectionTerminated(result) {
 async function finishPartialDeploy(apiKey, serverId, timeoutMs = PARTIAL_DEPLOY_TIMEOUT_MS) {
   const startedAt = Date.now();
   let lastError = 'partial deploy recovery did not run';
+  const envDropInCommand = [
+    'mkdir -p /etc/systemd/system/app.service.d',
+    `printf '%s\\n' '[Service]' 'Environment=NODE_ENV=production' ${shellQuote(`Environment=VIBE_API_KEY=${apiKey}`)} > /etc/systemd/system/app.service.d/10-vibecode-env.conf`,
+    'systemctl daemon-reload'
+  ].join(' && ');
 
   while (Date.now() - startedAt < timeoutMs) {
     try {
@@ -97,7 +106,8 @@ async function finishPartialDeploy(apiKey, serverId, timeoutMs = PARTIAL_DEPLOY_
           'test -f /opt/app/.output/server/index.mjs',
           'cd /opt/app/.output/server',
           'npm install --omit=dev',
-          'systemctl start app',
+          envDropInCommand,
+          'systemctl restart app',
           'systemctl is-active app'
         ].join(' && '),
         timeout: 600
