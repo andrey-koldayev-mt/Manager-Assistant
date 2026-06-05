@@ -5,6 +5,7 @@ const BASE_URL = process.env.VIBE_BASE_URL || 'https://vibecode.bitrix24.tech/v1
 const INSTALL_NODE_22 = 'apt-get update && apt-get install -y ca-certificates curl && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs';
 const VERIFY_TIMEOUT_MS = Number(process.env.VIBE_DEPLOY_VERIFY_TIMEOUT_MS || 300000);
 const VERIFY_INTERVAL_MS = Number(process.env.VIBE_DEPLOY_VERIFY_INTERVAL_MS || 10000);
+const PARTIAL_DEPLOY_TIMEOUT_MS = Number(process.env.VIBE_PARTIAL_DEPLOY_TIMEOUT_MS || 600000);
 
 function requiredEnv(name) {
   const value = process.env[name];
@@ -62,6 +63,67 @@ async function refreshServerState(apiKey, serverId) {
   } catch {
     // Best effort only. The next poll will surface the real state.
   }
+}
+
+async function execOnServer(apiKey, serverId, body) {
+  const { response, data, text } = await fetchJson(`${BASE_URL}/infra/servers/${serverId}/exec`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Api-Key': apiKey
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!response.ok) {
+    throw new Error(`exec request failed: ${response.status} ${response.statusText} ${text.slice(0, 500)}`);
+  }
+
+  return data;
+}
+
+function isDeployConnectionTerminated(result) {
+  return result?.success === false && result?.error?.code === 'DEPLOY_CONNECTION_TERMINATED';
+}
+
+async function finishPartialDeploy(apiKey, serverId, timeoutMs = PARTIAL_DEPLOY_TIMEOUT_MS) {
+  const startedAt = Date.now();
+  let lastError = 'partial deploy recovery did not run';
+
+  while (Date.now() - startedAt < timeoutMs) {
+    try {
+      const result = await execOnServer(apiKey, serverId, {
+        command: [
+          'test -f /opt/app/.output/server/index.mjs',
+          'cd /opt/app/.output/server',
+          'npm install --omit=dev',
+          'systemctl start app',
+          'systemctl is-active app'
+        ].join(' && '),
+        timeout: 600
+      });
+
+      if (result?.success === false && result?.error?.code === 'EXEC_BUSY') {
+        lastError = 'server is still running deploy install command';
+        await sleep(VERIFY_INTERVAL_MS);
+        continue;
+      }
+
+      const execData = result?.data ?? result;
+      if (execData?.exitCode === 0) {
+        console.log('Partial deploy recovery completed: app service is active.');
+        return true;
+      }
+
+      lastError = execData?.stderr || execData?.stdout || result?.error?.message || 'partial deploy recovery command failed';
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : String(error);
+    }
+
+    await sleep(VERIFY_INTERVAL_MS);
+  }
+
+  throw new Error(`Partial deploy recovery failed after ${timeoutMs}ms: ${lastError}`);
 }
 
 async function verifyDeployedApp(apiKey, serverId, timeoutMs = VERIFY_TIMEOUT_MS) {
@@ -180,6 +242,7 @@ async function deploy() {
   } catch (error) {
     console.warn('Deploy response could not be read as complete JSON; verifying deployed app state instead.');
     console.warn(error instanceof Error ? error.message : String(error));
+    await finishPartialDeploy(apiKey, serverId);
     await verifyDeployedApp(apiKey, serverId);
     return;
   }
@@ -193,6 +256,13 @@ async function deploy() {
   }
 
   if (!result.success) {
+    if (isDeployConnectionTerminated(result)) {
+      console.warn('Deploy connection terminated mid-install; waiting for partial deploy to finish and recovering service start.');
+      await finishPartialDeploy(apiKey, serverId);
+      await verifyDeployedApp(apiKey, serverId);
+      return;
+    }
+
     process.exit(1);
   }
 
