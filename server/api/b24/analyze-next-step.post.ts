@@ -5,6 +5,7 @@ import {
   buildTimelineLogPayload,
   buildTodoPayload,
   detectNativeAiTodo,
+  ensureFutureRecommendationDeadline,
   validateAiRecommendation,
   type AiRecommendation
 } from '../../domain/deal-analysis';
@@ -51,12 +52,13 @@ export default defineEventHandler(async (event) => {
     const bundle = await loadDealBundle({ dealId, headers });
     const context = buildDealContext(bundle);
     const nativeAiTodo = detectNativeAiTodo(bundle.activities);
-    const recommendation = body.recommendation
-      ? validateAiRecommendation(body.recommendation)
+    const rawRecommendation = body.recommendation
+      ? body.recommendation
       : nativeAiTodo
         ? copyNativeAiTodo(nativeAiTodo, context.deal.assignedById)
         : await getAiRecommendation({ context, headers });
 
+    const recommendation = ensureFutureRecommendationDeadline(rawRecommendation);
     const validated = validateAiRecommendation(recommendation);
     const todoPayload = buildTodoPayload({ dealId, recommendation: validated });
     const timelineLogPayload = buildTimelineLogPayload({ dealId, recommendation: validated });
@@ -153,7 +155,13 @@ async function getAiRecommendation({ context, headers }: { context: unknown; hea
     headers,
     body: JSON.stringify({
       model: process.env.VIBE_AI_MODEL || DEFAULT_AI_MODEL,
-      messages: buildPromptMessages({ context, systemPrompt: NEXT_STEP_SYSTEM_PROMPT }),
+      messages: buildPromptMessages({
+        context: {
+          currentTime: new Date().toISOString(),
+          context
+        },
+        systemPrompt: NEXT_STEP_SYSTEM_PROMPT
+      }),
       temperature: 0.2,
       response_format: { type: 'json_object' }
     })

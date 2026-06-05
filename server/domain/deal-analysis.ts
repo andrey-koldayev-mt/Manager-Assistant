@@ -113,6 +113,22 @@ export function validateAiRecommendation(value: any, now = new Date()): AiRecomm
   };
 }
 
+export function ensureFutureRecommendationDeadline(value: any, now = new Date()) {
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+
+  const deadline = new Date(value.deadline);
+  if (!Number.isNaN(deadline.getTime()) && deadline.getTime() > now.getTime()) {
+    return value;
+  }
+
+  return {
+    ...value,
+    deadline: buildFallbackDeadline(now)
+  };
+}
+
 export function buildTodoPayload({ dealId, recommendation }: { dealId: number | string; recommendation: AiRecommendation }) {
   const numericDealId = Number(dealId);
   if (!Number.isFinite(numericDealId) || numericDealId <= 0) {
@@ -215,4 +231,11 @@ function toStringArray(value: unknown) {
   return value
     .filter((item) => typeof item === 'string' && item.trim())
     .map((item) => item.trim());
+}
+
+function buildFallbackDeadline(now: Date) {
+  const fallback = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+  fallback.setMinutes(0, 0, 0);
+
+  return fallback.toISOString();
 }

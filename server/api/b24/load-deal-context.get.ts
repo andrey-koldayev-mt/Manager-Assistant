@@ -40,8 +40,17 @@ export default defineEventHandler(async (event) => {
   const assignedById = firstString(deal.assignedById, deal.ASSIGNED_BY_ID);
   const contactId = firstString(deal.contactId, deal.CONTACT_ID, Array.isArray(deal.contactIds) ? deal.contactIds[0] : '');
   const categoryId = firstString(deal.categoryId, deal.CATEGORY_ID);
+  const dealCategory = toRecord(deal.category) || toRecord(deal.CATEGORY);
+  const categoryNameFromDeal = firstString(
+    deal.categoryName,
+    deal.CATEGORY_NAME,
+    dealCategory?.name,
+    dealCategory?.title,
+    dealCategory?.NAME,
+    dealCategory?.TITLE
+  );
 
-  const [userData, contactData] = await Promise.all([
+  const [userData, contactData, categoryData] = await Promise.all([
     assignedById
       ? fetch(`https://vibecode.bitrix24.tech/v1/users/${assignedById}`, { headers })
         .then((response) => response.json())
@@ -55,6 +64,14 @@ export default defineEventHandler(async (event) => {
         .then((response) => response.json())
         .catch((error) => {
           console.error('Error fetching contact:', error);
+          return null;
+        })
+      : Promise.resolve(null),
+    categoryId
+      ? fetch(`https://vibecode.bitrix24.tech/v1/deal-categories/${categoryId}`, { headers })
+        .then((response) => response.json())
+        .catch((error) => {
+          console.error('Error fetching deal category:', error);
           return null;
         })
       : Promise.resolve(null)
@@ -74,12 +91,20 @@ export default defineEventHandler(async (event) => {
   const previousTrip = destination || startDate || endDate
     ? { destination, startDate, endDate, tripDateText }
     : null;
+  const category = categoryData?.success && categoryData.data ? toRecord(categoryData.data) : null;
+  const categoryName = categoryNameFromDeal || firstString(
+    category?.name,
+    category?.NAME,
+    category?.title,
+    category?.TITLE
+  );
 
   return {
     success: true,
     data: {
       dealId: Number(dealId),
       categoryId: categoryId ? Number(categoryId) : null,
+      categoryName,
       assignedById: assignedById ? Number(assignedById) : null,
       contactId: contactId ? Number(contactId) : null,
       agentName,

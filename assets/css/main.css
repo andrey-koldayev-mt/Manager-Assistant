@@ -104,6 +104,11 @@ textarea:focus-visible {
   color: var(--brand-red-hover) !important;
 }
 
+.mode-switch button:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.48 !important;
+}
+
 .work-panel {
   background: var(--app-surface);
   border: 1px solid var(--app-border);

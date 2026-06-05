@@ -24,6 +24,7 @@ const isCallFinished = ref(false);
 const accessToken = ref('');
 const b24DealId = ref<number | null>(null);
 const dealCategoryId = ref<number | null>(null);
+const dealCategoryName = ref('');
 const assignedById = ref<number | null>(null);
 const b24Initializing = ref(true);
 const b24Loading = ref(false);
@@ -64,6 +65,9 @@ const completionTitle = computed(() => (
 const resetActionLabel = computed(() => (
   isCallCardPlacement.value ? 'Новый звонок' : 'Новый запуск'
 ));
+const normalizedDealCategoryName = computed(() => dealCategoryName.value.trim().toLowerCase());
+const isReactivationFunnel = computed(() => normalizedDealCategoryName.value.includes('реактивац'));
+const isQualityLeadFunnel = computed(() => normalizedDealCategoryName.value.includes('качественный лид'));
 
 const contactDateValue = computed<DateValue | undefined>({
   get() {
@@ -149,6 +153,29 @@ function clearTimer() {
     clearInterval(timerId);
     timerId = null;
   }
+}
+
+function setWorkspaceModeForCurrentFunnel() {
+  if (isReactivationFunnel.value) {
+    workspaceMode.value = 'reactivation';
+    return;
+  }
+
+  if (isQualityLeadFunnel.value) {
+    workspaceMode.value = 'ai-next-step';
+  }
+}
+
+function switchWorkspaceMode(mode: WorkspaceMode) {
+  if (mode === 'reactivation' && !isReactivationFunnel.value) {
+    return;
+  }
+
+  if (mode === 'ai-next-step' && !isQualityLeadFunnel.value) {
+    return;
+  }
+
+  workspaceMode.value = mode;
 }
 
 function extractDealIdFromPlacementOptions(rawOptions: unknown): number | null {
@@ -286,9 +313,11 @@ async function loadDealContextFromServer() {
 
     const data = response.data;
     dealCategoryId.value = data.categoryId;
+    dealCategoryName.value = data.categoryName || '';
     assignedById.value = data.assignedById;
     agentName.value = data.agentName || agentName.value;
     clientName.value = data.clientName || clientName.value;
+    setWorkspaceModeForCurrentFunnel();
 
     if (data.previousTrip) {
       historyType.value = 'buyer';
@@ -534,16 +563,18 @@ onUnmounted(clearTimer);
           <div class="flex flex-wrap items-center gap-2">
             <div class="mode-switch" role="tablist" aria-label="Режим работы">
               <B24Button
-                label="Скрипт"
+                label="Скрипт по реактивации"
                 size="sm"
+                :disabled="!isReactivationFunnel"
                 :class="workspaceMode === 'reactivation' ? 'brand-action' : 'mode-switch-button'"
-                @click="workspaceMode = 'reactivation'"
+                @click="switchWorkspaceMode('reactivation')"
               />
               <B24Button
                 label="AI следующий шаг"
                 size="sm"
+                :disabled="!isQualityLeadFunnel"
                 :class="workspaceMode === 'ai-next-step' ? 'brand-action' : 'mode-switch-button'"
-                @click="workspaceMode = 'ai-next-step'"
+                @click="switchWorkspaceMode('ai-next-step')"
               />
             </div>
             <B24Badge
