@@ -20,7 +20,7 @@ function createDeployPayload(fileBuffer, apiKey) {
       content: fileBuffer.toString('base64'),
       format: 'zip'
     },
-    install: `${INSTALL_NODE_22} && cd /opt/app/.output/server && node --version && npm install --omit=dev`,
+    install: `${INSTALL_NODE_22} && cd /opt/app && node --version && npm ci && npm run build && cd /opt/app/.output/server && npm install --omit=dev`,
     preStart: 'cd /opt/app && node --version && test -f .output/server/index.mjs',
     start: 'cd /opt/app && PORT=3000 node .output/server/index.mjs',
     port: 3000,

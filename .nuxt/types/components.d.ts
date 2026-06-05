@@ -14,6 +14,7 @@ type HydrationStrategies = {
 type LazyComponent<T> = DefineComponent<HydrationStrategies, {}, {}, {}, {}, {}, {}, { hydrated: () => void }> & T
 
 interface _GlobalComponents {
+  AiNextStepPanel: typeof import("../../components/AiNextStepPanel.vue")['default']
   ProseA: typeof import("../../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/prose/A.vue")['default']
   ProseAccordion: typeof import("../../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/prose/Accordion.vue")['default']
   ProseAccordionItem: typeof import("../../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/prose/AccordionItem.vue")['default']
@@ -207,6 +208,7 @@ interface _GlobalComponents {
   Html: typeof import("../../node_modules/nuxt/dist/head/runtime/components")['Html']
   Body: typeof import("../../node_modules/nuxt/dist/head/runtime/components")['Body']
   NuxtIsland: typeof import("../../node_modules/nuxt/dist/app/components/nuxt-island")['default']
+  LazyAiNextStepPanel: LazyComponent<typeof import("../../components/AiNextStepPanel.vue")['default']>
   LazyProseA: LazyComponent<typeof import("../../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/prose/A.vue")['default']>
   LazyProseAccordion: LazyComponent<typeof import("../../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/prose/Accordion.vue")['default']>
   LazyProseAccordionItem: LazyComponent<typeof import("../../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/prose/AccordionItem.vue")['default']>

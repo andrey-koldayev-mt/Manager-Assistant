@@ -4,9 +4,11 @@ import { parseDate } from '@internationalized/date';
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 type HistoryType = 'buyer' | 'lead';
+type WorkspaceMode = 'reactivation' | 'ai-next-step';
 
 const toast = useToast();
 
+const workspaceMode = ref<WorkspaceMode>('reactivation');
 const agentName = ref('Елена');
 const clientName = ref('Александр');
 const historyType = ref<HistoryType>('buyer');
@@ -274,9 +276,9 @@ async function loadDealContextFromServer() {
   b24Error.value = '';
 
   try {
-    const response = await $fetch<any>(`/api/b24/load-deal-context?dealId=${b24DealId.value}`, {
+    const response = await $fetch(`/api/b24/load-deal-context?dealId=${b24DealId.value}`, {
       headers: accessToken.value ? { Authorization: `Bearer ${accessToken.value}` } : {}
-    });
+    }) as any;
 
     if (!response.success || !response.data) {
       throw new Error(response.error || 'Не удалось загрузить данные сделки');
@@ -424,7 +426,7 @@ async function saveActivityToB24() {
   }
 
   try {
-    const response = await $fetch<any>('/api/b24/create-call-activity', {
+    const response = await $fetch('/api/b24/create-call-activity', {
       method: 'POST',
       headers: accessToken.value ? { Authorization: `Bearer ${accessToken.value}` } : {},
       body: {
@@ -433,7 +435,7 @@ async function saveActivityToB24() {
         nextContactDate: nextContactDate.value,
         assignedById: assignedById.value
       }
-    });
+    }) as any;
 
     createdActivityId.value = response?.data?.id || response?.data?.ID || response?.id || response?.ID || null;
     showToast('Дело создано в Битрикс24');
@@ -524,12 +526,26 @@ onUnmounted(clearTimer);
             <img class="brand-logo" src="/favicon.png" alt="Русский Экспресс" />
             <div>
               <h1 class="text-base font-bold leading-tight text-label">Русский Экспресс</h1>
-              <p class="text-xs text-description">Интерактивный скрипт «Реактивация клиентов»</p>
+              <p class="text-xs text-description">Ассистент менеджера в карточке Bitrix24</p>
             </div>
             <B24Badge label="B24 UI" class="brand-soft" />
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
+            <div class="mode-switch" role="tablist" aria-label="Режим работы">
+              <B24Button
+                label="Скрипт"
+                size="sm"
+                :class="workspaceMode === 'reactivation' ? 'brand-action' : 'mode-switch-button'"
+                @click="workspaceMode = 'reactivation'"
+              />
+              <B24Button
+                label="AI следующий шаг"
+                size="sm"
+                :class="workspaceMode === 'ai-next-step' ? 'brand-action' : 'mode-switch-button'"
+                @click="workspaceMode = 'ai-next-step'"
+              />
+            </div>
             <B24Badge
               v-if="b24DealId"
               :label="`Сделка #${b24DealId}`"
@@ -550,7 +566,7 @@ onUnmounted(clearTimer);
         </div>
       </header>
 
-      <main class="grid gap-4 p-4 lg:grid-cols-[460px_minmax(0,1fr)]">
+      <main v-if="workspaceMode === 'reactivation'" class="grid gap-4 p-4 lg:grid-cols-[460px_minmax(0,1fr)]">
         <aside class="sidebar-sticky work-panel p-4 workspace-scroll">
           <div class="mb-4 border-b border-default pb-3">
             <div class="flex items-center justify-between gap-3">
@@ -654,7 +670,7 @@ onUnmounted(clearTimer);
                   :label="b24Saving ? 'Создаем...' : 'Создать дело'"
                   :loading="b24Saving"
                   class="brand-action"
-                  @click="saveActivityToB24"
+                  @click="() => void saveActivityToB24()"
                 />
               </div>
             </div>
@@ -772,6 +788,15 @@ onUnmounted(clearTimer);
           </div>
         </section>
       </main>
+
+      <AiNextStepPanel
+        v-else
+        :deal-id="b24DealId"
+        :agent-name="agentName"
+        :client-name="clientName"
+        :access-token="accessToken"
+        :loading-context="dealContextOverlayVisible"
+      />
     </div>
   </B24App>
 </template>

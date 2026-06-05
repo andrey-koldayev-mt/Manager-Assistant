@@ -83,6 +83,27 @@ textarea:focus-visible {
   flex: 0 0 auto;
 }
 
+.mode-switch {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: #f4f7fa;
+}
+
+.mode-switch-button {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: #4b5f78 !important;
+}
+
+.mode-switch-button:hover,
+.mode-switch-button:focus-visible {
+  background: #fff !important;
+  color: var(--brand-red-hover) !important;
+}
+
 .work-panel {
   background: var(--app-surface);
   border: 1px solid var(--app-border);

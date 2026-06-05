@@ -10,7 +10,9 @@ const EXCLUDE_DIRS = new Set([
   '.angular',
   '.cache',
   '.nuxt',
-  'dist'
+  '.output',
+  'dist',
+  'bitrix24'
 ]);
 
 const EXCLUDE_FILES = new Set([

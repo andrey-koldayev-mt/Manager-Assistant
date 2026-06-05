@@ -20,7 +20,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'Русский Экспресс | Реактивация клиентов',
+      title: 'Русский Экспресс | Ассистент менеджера',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' }
       ]
