@@ -1,5 +1,12 @@
 export default defineNuxtConfig({
   compatibilityDate: '2026-05-25',
+  ignore: [
+    'sla-app/**',
+    'src/**',
+    'dist/**',
+    '.angular/**',
+    '.cache/**'
+  ],
   modules: ['@bitrix24/b24ui-nuxt'],
   css: ['~/assets/css/main.css'],
   ssr: true,
@@ -10,6 +17,13 @@ export default defineNuxtConfig({
     }
   },
   nitro: {
+    ignore: [
+      'sla-app/**',
+      'src/**',
+      'dist/**',
+      '.angular/**',
+      '.cache/**'
+    ],
     routeRules: {
       '/api/**': {
         headers: {

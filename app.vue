@@ -5,9 +5,27 @@ import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 type HistoryType = 'buyer' | 'lead';
 type WorkspaceMode = 'reactivation' | 'ai-next-step';
+type AdminReportMode = 'sla-first-contact' | 'data-quality' | 'reactivation-report' | 'next-step-control';
+type AdminPanelMode = 'sla-first-contact' | 'data-quality' | 'reactivation' | 'next-step-control';
+type ShellSection = 'manager-assistant' | AdminReportMode;
+
+interface DashboardAccess {
+  isAuthenticated: boolean;
+  isAdmin: boolean;
+  portal: string | null;
+  user: {
+    id: number | null;
+    name: string;
+  };
+  allowedModules: string[];
+}
 
 const toast = useToast();
 
+const activeShellSection = ref<ShellSection>('manager-assistant');
+const dashboardAccess = ref<DashboardAccess | null>(null);
+const accessLoading = ref(false);
+const accessError = ref('');
 const workspaceMode = ref<WorkspaceMode>('reactivation');
 const agentName = ref('Елена');
 const clientName = ref('Александр');
@@ -26,7 +44,7 @@ const b24DealId = ref<number | null>(null);
 const dealCategoryId = ref<number | null>(null);
 const dealCategoryName = ref('');
 const assignedById = ref<number | null>(null);
-const b24Initializing = ref(true);
+const b24Initializing = ref(false);
 const b24Loading = ref(false);
 const b24Saving = ref(false);
 const b24Error = ref('');
@@ -68,6 +86,28 @@ const resetActionLabel = computed(() => (
 const normalizedDealCategoryName = computed(() => dealCategoryName.value.trim().toLowerCase());
 const isReactivationFunnel = computed(() => normalizedDealCategoryName.value.includes('реактивац'));
 const isQualityLeadFunnel = computed(() => normalizedDealCategoryName.value.includes('качественный лид'));
+const isDashboardAdmin = computed(() => dashboardAccess.value?.isAdmin === true);
+const shellNavItems = computed<Array<{ id: ShellSection; label: string; description: string }>>(() => {
+  const items: Array<{ id: ShellSection; label: string; description: string }> = [
+    { id: 'manager-assistant', label: 'Manager-Assistant', description: 'Скрипты и планирование дел' }
+  ];
+
+  if (isDashboardAdmin.value) {
+    items.push(
+      { id: 'sla-first-contact', label: 'Первичный контакт', description: 'SLA по лидам' },
+      { id: 'data-quality', label: 'Качество данных', description: 'Контакты CRM' },
+      { id: 'reactivation-report', label: 'Реактивация', description: 'План и рейтинг' },
+      { id: 'next-step-control', label: 'Контроль шагов', description: 'Качество дел' }
+    );
+  }
+
+  return items;
+});
+const adminReportMode = computed<AdminPanelMode>(() => {
+  if (activeShellSection.value === 'reactivation-report') return 'reactivation';
+  if (activeShellSection.value === 'manager-assistant') return 'sla-first-contact';
+  return activeShellSection.value;
+});
 
 const contactDateValue = computed<DateValue | undefined>({
   get() {
@@ -138,6 +178,43 @@ function showToast(title: string, description = '') {
     color: 'air-primary',
     duration: 3000
   });
+}
+
+async function loadCurrentAccess() {
+  accessLoading.value = true;
+  accessError.value = '';
+
+  try {
+    const response = await $fetch('/api/access/current', {
+      headers: accessToken.value ? { Authorization: `Bearer ${accessToken.value}` } : {}
+    }) as { success: boolean; data: DashboardAccess };
+    dashboardAccess.value = response.data;
+    if (!response.data.isAdmin && activeShellSection.value !== 'manager-assistant') {
+      activeShellSection.value = 'manager-assistant';
+    }
+  } catch (error) {
+    accessError.value = error instanceof Error ? error.message : 'Не удалось определить права доступа';
+    dashboardAccess.value = {
+      isAuthenticated: false,
+      isAdmin: false,
+      portal: null,
+      user: { id: null, name: '' },
+      allowedModules: ['manager-assistant']
+    };
+    activeShellSection.value = 'manager-assistant';
+  } finally {
+    accessLoading.value = false;
+  }
+}
+
+function switchShellSection(section: ShellSection) {
+  const allowed = shellNavItems.value.some((item) => item.id === section);
+  if (!allowed) {
+    activeShellSection.value = 'manager-assistant';
+    return;
+  }
+
+  activeShellSection.value = section;
 }
 
 function startTimer() {
@@ -282,16 +359,50 @@ function loadBitrixSdk(): Promise<any> {
 
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
+    let settled = false;
+    const timeout = setTimeout(() => {
+      settled = true;
+      script.remove();
+      reject(new Error('Bitrix24 SDK loading timed out'));
+    }, 6000);
     script.src = 'https://api.bitrix24.com/api/v1/';
     script.async = true;
     script.onload = () => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      clearTimeout(timeout);
       bx24Instance.value = (window as any).BX24;
       reportClientContext('bx24-script-loaded');
       resolve(bx24Instance.value);
     };
-    script.onerror = reject;
+    script.onerror = (error) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      clearTimeout(timeout);
+      reject(error);
+    };
     document.head.appendChild(script);
   });
+}
+
+function shouldAttemptBitrixSdk(params: URLSearchParams, placementOptions: string | null, dealId: number | null) {
+  if ((window as any).BX24 || accessToken.value || placementCode.value || placementOptions || dealId) {
+    return true;
+  }
+
+  const hasBitrixReferrer = /bitrix24\./i.test(document.referrer);
+  let isEmbedded = false;
+  try {
+    isEmbedded = window.self !== window.top;
+  } catch {
+    isEmbedded = true;
+  }
+
+  return hasBitrixReferrer || isEmbedded || params.has('DOMAIN') || params.has('member_id');
 }
 
 async function loadDealContextFromServer() {
@@ -340,13 +451,15 @@ async function initB24Integration() {
     return;
   }
 
-  b24Initializing.value = true;
   reportClientContext('init-start');
 
   try {
     const params = new URLSearchParams(window.location.search);
     placementCode.value = params.get('placement') || '';
     accessToken.value = params.get('access_token') || params.get('AUTH_ID') || params.get('auth_id') || '';
+    if (accessToken.value) {
+      void loadCurrentAccess();
+    }
     const placementOptions = params.get('placement_options') || params.get('PLACEMENT_OPTIONS');
     const dealId = extractDealIdFromPlacementOptions(placementOptions || window.location.href || window.name);
 
@@ -356,6 +469,12 @@ async function initB24Integration() {
       await loadDealContextFromServer();
     }
 
+    if (!shouldAttemptBitrixSdk(params, placementOptions, dealId)) {
+      reportClientContext('bx24-sdk-skipped-standalone');
+      return;
+    }
+
+    b24Initializing.value = true;
     try {
       const BX24 = await loadBitrixSdk();
       BX24.init(async () => {
@@ -365,6 +484,7 @@ async function initB24Integration() {
         const token = auth?.access_token || auth?.AUTH_ID || auth?.auth_id;
         if (token) {
           accessToken.value = token;
+          void loadCurrentAccess();
         }
 
         const placementInfo = BX24.placement?.info ? BX24.placement.info() : null;
@@ -520,6 +640,7 @@ async function copyText(text: string) {
 
 onMounted(() => {
   startTimer();
+  void loadCurrentAccess();
   initB24Integration();
 });
 
@@ -528,12 +649,46 @@ onUnmounted(clearTimer);
 
 <template>
   <B24App>
-    <div class="app-shell">
-      <div v-if="b24Loading" class="fixed left-0 right-0 top-0 z-50 h-1 bg-red-100">
-        <div class="h-full w-1/2 animate-pulse brand-action" />
-      </div>
+    <div class="unified-shell">
+      <aside class="unified-sidebar">
+        <div class="unified-brand">
+          <img class="brand-logo" src="/favicon.png" alt="Русский Экспресс" />
+          <div>
+            <strong>Русский Экспресс</strong>
+            <span>Bitrix24 dashboard</span>
+          </div>
+        </div>
 
-      <div v-if="dealContextOverlayVisible" class="deal-loading-overlay">
+        <nav class="unified-nav" aria-label="Разделы дашборда">
+          <button
+            v-for="item in shellNavItems"
+            :key="item.id"
+            type="button"
+            :class="{ active: activeShellSection === item.id }"
+            @click="switchShellSection(item.id)"
+          >
+            <strong>{{ item.label }}</strong>
+            <span>{{ item.description }}</span>
+          </button>
+        </nav>
+
+        <div class="unified-access">
+          <B24Badge
+            :label="accessLoading ? 'Проверяем права' : isDashboardAdmin ? 'Администратор' : 'Сотрудник'"
+            :class="isDashboardAdmin ? 'brand-soft' : 'border border-default bg-muted text-description'"
+          />
+          <span v-if="dashboardAccess?.user.name">{{ dashboardAccess.user.name }}</span>
+          <span v-else-if="accessError">{{ accessError }}</span>
+          <span v-else>Доступ к отчетам скрыт для рядовых пользователей</span>
+        </div>
+      </aside>
+
+      <div class="app-shell unified-content">
+        <div v-if="activeShellSection === 'manager-assistant' && b24Loading" class="fixed left-0 right-0 top-0 z-50 h-1 bg-red-100">
+          <div class="h-full w-1/2 animate-pulse brand-action" />
+        </div>
+
+      <div v-if="activeShellSection === 'manager-assistant' && dealContextOverlayVisible" class="deal-loading-overlay">
         <div class="deal-loading-panel">
           <div class="deal-loading-spinner" aria-hidden="true" />
           <div>
@@ -549,7 +704,7 @@ onUnmounted(clearTimer);
         </div>
       </div>
 
-      <header class="sticky top-0 z-40 border-b border-default bg-default/95 px-4 py-3 backdrop-blur">
+      <header v-if="activeShellSection === 'manager-assistant'" class="sticky top-0 z-40 border-b border-default bg-default/95 px-4 py-3 backdrop-blur">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <img class="brand-logo" src="/favicon.png" alt="Русский Экспресс" />
@@ -597,7 +752,7 @@ onUnmounted(clearTimer);
         </div>
       </header>
 
-      <main v-if="workspaceMode === 'reactivation'" class="grid gap-4 p-4 lg:grid-cols-[460px_minmax(0,1fr)]">
+      <main v-if="activeShellSection === 'manager-assistant' && workspaceMode === 'reactivation'" class="grid gap-4 p-4 lg:grid-cols-[460px_minmax(0,1fr)]">
         <aside class="sidebar-sticky work-panel p-4 workspace-scroll">
           <div class="mb-4 border-b border-default pb-3">
             <div class="flex items-center justify-between gap-3">
@@ -821,13 +976,20 @@ onUnmounted(clearTimer);
       </main>
 
       <AiNextStepPanel
-        v-else
+        v-else-if="activeShellSection === 'manager-assistant'"
         :deal-id="b24DealId"
         :agent-name="agentName"
         :client-name="clientName"
         :access-token="accessToken"
         :loading-context="dealContextOverlayVisible"
       />
+
+      <AdminReportsPanel
+        v-else
+        :mode="adminReportMode"
+        :access-token="accessToken"
+      />
+      </div>
     </div>
   </B24App>
 </template>

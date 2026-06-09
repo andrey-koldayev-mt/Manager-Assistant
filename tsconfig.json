@@ -3,6 +3,8 @@
   "exclude": [
     "bitrix24",
     "src",
+    "sla-app",
+    "tests",
     "eslint.config.js"
   ]
 }

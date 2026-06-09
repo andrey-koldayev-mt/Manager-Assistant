@@ -8,6 +8,7 @@
     "start": "node .output/server/index.mjs",
     "dev": "nuxt dev --host=0.0.0.0 --port=3000",
     "build": "nuxt build",
+    "test": "vitest run tests",
     "archive": "node archive.js",
     "deploy:vibecode": "node deploy.js",
     "preview": "node .output/server/index.mjs",
