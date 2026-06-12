@@ -1,4 +1,4 @@
-@source "C:/Users/andrey.koldayev/PortableGit/Manager-Assistant/**/*";
+@source "C:/Users/kolda/Documents/GitHub/Manager-Assistant/**/*";
 @source inline("isolate");
 @source "./b24ui/prose";
 @source "./b24ui/toaster.ts";
@@ -14,33 +14,7 @@
 @source "./b24ui/popover.ts";
 @source "./b24ui/calendar.ts";
 @source "./b24ui/textarea.ts";
-@source "./b24ui/tabs.ts";
-@source "./b24ui/accordion.ts";
-@source "./b24ui/checkbox.ts";
 @source "./b24ui/alert.ts";
-@source "./b24ui/card.ts";
-@source "./b24ui/table-wrapper.ts";
-@source "./b24ui/kbd.ts";
-@source "./b24ui/collapsible.ts";
-@source "./b24ui/container.ts";
-@source "./b24ui/tooltip.ts";
-@source "./b24ui/chat-message.ts";
-@source "./b24ui/chat-shimmer.ts";
-@source "./b24ui/select-menu.ts";
-@source "./b24ui/switch.ts";
-@source "./b24ui/modal.ts";
-@source "./b24ui/command-palette.ts";
-@source "./b24ui/dashboard-sidebar-toggle.ts";
-@source "./b24ui/dashboard-resize-handle.ts";
-@source "./b24ui/slideover.ts";
-@source "./b24ui/drawer.ts";
-@source "./b24ui/dropdown-menu.ts";
-@source "./b24ui/page-card.ts";
-@source "./b24ui/page-feature.ts";
-@source "./b24ui/sidebar.ts";
-@source "./b24ui/navbar.ts";
-@source "./b24ui/avatar-group.ts";
-@source "./b24ui/field-group.ts";
 
 @layer base {
   body {

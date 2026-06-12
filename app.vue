@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { DateValue } from '@internationalized/date';
 import { parseDate } from '@internationalized/date';
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
@@ -109,7 +108,7 @@ const adminReportMode = computed<AdminPanelMode>(() => {
   return activeShellSection.value;
 });
 
-const contactDateValue = computed<DateValue | undefined>({
+const contactDateValue = computed<any>({
   get() {
     if (!nextContactDate.value) {
       return undefined;

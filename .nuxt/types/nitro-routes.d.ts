@@ -3,6 +3,9 @@ import type { Serialize, Simplify } from "nitropack/types";
 declare module "nitropack/types" {
   type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T
   interface InternalApi {
+    '/api/access/current': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/access/current.get').default>>>>
+    }
     '/api/b24/analyze-next-step': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/b24/analyze-next-step.post').default>>>>
     }
@@ -12,14 +15,54 @@ declare module "nitropack/types" {
     '/api/b24/load-deal-context': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/b24/load-deal-context.get').default>>>>
     }
+    '/api/check-data-quality': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/check-data-quality.post').default>>>>
+    }
+    '/api/check-data-quality/status': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/check-data-quality/status.get').default>>>>
+    }
+    '/api/check-next-step': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/check-next-step.post').default>>>>
+    }
+    '/api/check-next-step/status': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/check-next-step/status.get').default>>>>
+    }
+    '/api/check-reactivation': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/check-reactivation.post').default>>>>
+    }
+    '/api/check-reactivation/status': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/check-reactivation/status.get').default>>>>
+    }
+    '/api/check-sla': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/check-sla.post').default>>>>
+    }
+    '/api/check-sla/status': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/check-sla/status.get').default>>>>
+    }
+    '/api/data-quality-log': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/data-quality-log.get').default>>>>
+    }
     '/api/debug/client-context': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/debug/client-context.post').default>>>>
     }
     '/api/debug/runtime': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/debug/runtime.get').default>>>>
     }
+    '/api/next-step-log': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/next-step-log.get').default>>>>
+    }
+    '/api/reactivation-log': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/reactivation-log.get').default>>>>
+    }
+    '/api/sla-auto-control': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/sla-auto-control.get').default>>>>
+      'patch': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/sla-auto-control.patch').default>>>>
+    }
+    '/api/sla-log': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/sla-log.get').default>>>>
+    }
     '/__nuxt_error': {
-      'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../node_modules/@nuxt/nitro-server/dist/runtime/handlers/renderer').default>>>>
+      'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../node_modules/.pnpm/@nuxt+nitro-server@4.4.8_@b_ea76a600186e3809d67c9f9ad9d2c8b0/node_modules/@nuxt/nitro-server/dist/runtime/handlers/renderer').default>>>>
     }
     '/__nuxt_island/**': {
       'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/#internal/nuxt/island-renderer').default>>>>

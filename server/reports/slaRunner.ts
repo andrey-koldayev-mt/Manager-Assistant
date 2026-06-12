@@ -1,5 +1,5 @@
 import { writeSlaLog } from './logStore';
-import { getSlaCrmUpdateFields } from './slaCrmFields';
+import { buildSlaRowFromCrmFields, getMissingSlaCrmUpdateFields } from './slaCrmFields';
 import {
   buildSlaRow,
   getLeadContactIds,
@@ -13,7 +13,7 @@ import {
   shouldExcludeRejectedLeadByReason,
   shouldAnalyzeLead
 } from './sla';
-import type { SlaLogPayload, VibeActivity, VibeUser } from './types';
+import type { SlaLogPayload, SlaLogRow, VibeActivity, VibeLead, VibeUser } from './types';
 import { VibeCodeClient } from './vibecode';
 
 export type SlaProgressStage =
@@ -104,8 +104,25 @@ export async function runSlaCheckJob(
       !shouldExcludeRejectedLeadByReason(lead, rejectionReasonNames) &&
       isLeadAssignedToActiveUser(lead, usersMap)
   );
+  const leadById = new Map<number, VibeLead>(filteredLeads.map((lead) => [lead.id, lead]));
+  const crmCompleteRows: SlaLogRow[] = [];
+  const leadsNeedingCalculation: VibeLead[] = [];
+  for (const lead of filteredLeads) {
+    const crmRow = buildSlaRowFromCrmFields({
+      lead,
+      users: usersMap,
+      checkedAt,
+      leadStatusNames,
+      rejectionReasonNames
+    });
+    if (crmRow) {
+      crmCompleteRows.push(crmRow);
+    } else {
+      leadsNeedingCalculation.push(lead);
+    }
+  }
   const earlyShiftUsers = users.filter(isEarlyWorkdayUser);
-  const leadIds = filteredLeads.map((lead) => lead.id);
+  const leadIds = leadsNeedingCalculation.map((lead) => lead.id);
   let loadedActivityItems = 0;
   const reportLoadedActivities = (processed: number) => {
     loadedActivityItems += processed;
@@ -121,7 +138,7 @@ export async function runSlaCheckJob(
   const leadActivitiesByLead = await client.listActivitiesForLeads(leadIds, reportLoadedActivities);
   const contactIdsByLead = new Map<number, number[]>();
   const contactIds = new Set<number>();
-  for (const lead of filteredLeads) {
+  for (const lead of leadsNeedingCalculation) {
     const ids = isReturnOrRepeatLead(lead) ? getLeadContactIds(lead) : [];
     contactIdsByLead.set(lead.id, ids);
     for (const id of ids) contactIds.add(id);
@@ -140,7 +157,7 @@ export async function runSlaCheckJob(
   const contactActivitiesByContact =
     contactIds.size > 0 ? await client.listActivitiesForContacts([...contactIds], reportLoadedContactActivities) : new Map();
   const activitiesByLead = new Map<number, VibeActivity[]>();
-  for (const lead of filteredLeads) {
+  for (const lead of leadsNeedingCalculation) {
     const activities = [...(leadActivitiesByLead.get(lead.id) ?? [])];
     for (const contactId of contactIdsByLead.get(lead.id) ?? []) {
       activities.push(...(contactActivitiesByContact.get(contactId) ?? []));
@@ -150,7 +167,7 @@ export async function runSlaCheckJob(
 
   const stageHistoryLeadIds = [
     ...new Set(
-      filteredLeads
+      leadsNeedingCalculation
         .filter((lead) => isTransferredToMptLead(lead))
         .map((lead) => lead.id)
     )
@@ -185,7 +202,7 @@ export async function runSlaCheckJob(
   ]);
 
   const provisionalRows = new Map(
-    filteredLeads.map((lead) => [
+    leadsNeedingCalculation.map((lead) => [
       lead.id,
       buildSlaRow({
         lead,
@@ -201,7 +218,7 @@ export async function runSlaCheckJob(
       })
     ])
   );
-  const timelineLeadIds = filteredLeads
+  const timelineLeadIds = leadsNeedingCalculation
     .filter((lead) => {
       const status = provisionalRows.get(lead.id)?.status;
       return status !== 'Входящий звонок' && status !== 'Требуется ручная проверка';
@@ -209,7 +226,7 @@ export async function runSlaCheckJob(
     .map((lead) => lead.id);
   const timelineLeadIdSet = new Set(timelineLeadIds);
   const timelineContactIds = new Set<number>();
-  for (const lead of filteredLeads) {
+  for (const lead of leadsNeedingCalculation) {
     if (!timelineLeadIdSet.has(lead.id)) continue;
     for (const contactId of contactIdsByLead.get(lead.id) ?? []) timelineContactIds.add(contactId);
   }
@@ -252,7 +269,7 @@ export async function runSlaCheckJob(
     timelineContactIds.size > 0 ? await client.listTimelineCommentsForContacts([...timelineContactIds], reportLoadedContactTimeline) : new Map();
 
   reportProgress({ stage: 'calculating', message: 'Считаем SLA', current: 0, total: filteredLeads.length });
-  const rows = filteredLeads
+  const calculatedRows = leadsNeedingCalculation
     .map((lead) =>
       buildSlaRow({
         lead,
@@ -270,22 +287,27 @@ export async function runSlaCheckJob(
         leadStatusNames,
         rejectionReasonNames
       })
-    )
-    .sort((a, b) => new Date(b.leadCreatedAt).getTime() - new Date(a.leadCreatedAt).getTime());
+    );
+  const rows = [...crmCompleteRows, ...calculatedRows].sort(
+    (a, b) => new Date(b.leadCreatedAt).getTime() - new Date(a.leadCreatedAt).getTime()
+  );
 
   if (options.updateCrm) {
+    const updates = rows
+      .map((row) => getMissingSlaCrmUpdateFields(row, leadById.get(row.leadId)))
+      .filter((update) => Object.keys(update.fields).length > 0);
     reportProgress({
       stage: 'updating_crm',
       message: 'Заполняем поля SLA в CRM',
       current: 0,
-      total: Math.max(1, rows.length)
+      total: Math.max(1, updates.length)
     });
-    await client.updateLeadsSlaFields(rows.map(getSlaCrmUpdateFields));
+    await client.updateLeadsSlaFields(updates);
     reportProgress({
       stage: 'updating_crm',
       message: 'Поля SLA в CRM заполнены',
-      current: rows.length,
-      total: Math.max(1, rows.length)
+      current: updates.length,
+      total: Math.max(1, updates.length)
     });
   }
 

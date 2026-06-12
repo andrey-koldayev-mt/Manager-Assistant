@@ -2,8 +2,8 @@ declare global {
   const B24_API_KEY: typeof import('../../server/utils/b24').B24_API_KEY
   const H3Error: typeof import('../../node_modules/h3').H3Error
   const H3Event: typeof import('../../node_modules/h3').H3Event
-  const __buildAssetsURL: typeof import('../../node_modules/@nuxt/nitro-server/dist/runtime/utils/paths').buildAssetsURL
-  const __publicAssetsURL: typeof import('../../node_modules/@nuxt/nitro-server/dist/runtime/utils/paths').publicAssetsURL
+  const __buildAssetsURL: typeof import('../../node_modules/.pnpm/@nuxt+nitro-server@4.4.8_@b_ea76a600186e3809d67c9f9ad9d2c8b0/node_modules/@nuxt/nitro-server/dist/runtime/utils/paths').buildAssetsURL
+  const __publicAssetsURL: typeof import('../../node_modules/.pnpm/@nuxt+nitro-server@4.4.8_@b_ea76a600186e3809d67c9f9ad9d2c8b0/node_modules/@nuxt/nitro-server/dist/runtime/utils/paths').publicAssetsURL
   const appendCorsHeaders: typeof import('../../node_modules/h3').appendCorsHeaders
   const appendCorsPreflightHeaders: typeof import('../../node_modules/h3').appendCorsPreflightHeaders
   const appendHeader: typeof import('../../node_modules/h3').appendHeader
@@ -24,7 +24,7 @@ declare global {
   const createEventStream: typeof import('../../node_modules/h3').createEventStream
   const createRouter: typeof import('../../node_modules/h3').createRouter
   const defaultContentType: typeof import('../../node_modules/h3').defaultContentType
-  const defineAppConfig: typeof import('../../node_modules/@nuxt/nitro-server/dist/runtime/utils/config').defineAppConfig
+  const defineAppConfig: typeof import('../../node_modules/.pnpm/@nuxt+nitro-server@4.4.8_@b_ea76a600186e3809d67c9f9ad9d2c8b0/node_modules/@nuxt/nitro-server/dist/runtime/utils/config').defineAppConfig
   const defineCachedEventHandler: typeof import('../../node_modules/nitropack/dist/runtime/internal/cache').defineCachedEventHandler
   const defineCachedFunction: typeof import('../../node_modules/nitropack/dist/runtime/internal/cache').defineCachedFunction
   const defineEventHandler: typeof import('../../node_modules/h3').defineEventHandler
@@ -41,6 +41,7 @@ declare global {
   const defineWebSocket: typeof import('../../node_modules/h3').defineWebSocket
   const defineWebSocketHandler: typeof import('../../node_modules/h3').defineWebSocketHandler
   const deleteCookie: typeof import('../../node_modules/h3').deleteCookie
+  const deriveAccessFromVibeMe: typeof import('../../server/utils/access').deriveAccessFromVibeMe
   const dynamicEventHandler: typeof import('../../node_modules/h3').dynamicEventHandler
   const ensureVibeApiKey: typeof import('../../server/utils/b24').ensureVibeApiKey
   const eventHandler: typeof import('../../node_modules/h3').eventHandler
@@ -51,6 +52,7 @@ declare global {
   const fromPlainHandler: typeof import('../../node_modules/h3').fromPlainHandler
   const fromWebHandler: typeof import('../../node_modules/h3').fromWebHandler
   const getCookie: typeof import('../../node_modules/h3').getCookie
+  const getCurrentAccess: typeof import('../../server/utils/access').getCurrentAccess
   const getDealField: typeof import('../../server/utils/b24').getDealField
   const getDisplayName: typeof import('../../server/utils/b24').getDisplayName
   const getHeader: typeof import('../../node_modules/h3').getHeader
@@ -100,6 +102,7 @@ declare global {
   const readRawBody: typeof import('../../node_modules/h3').readRawBody
   const readValidatedBody: typeof import('../../node_modules/h3').readValidatedBody
   const removeResponseHeader: typeof import('../../node_modules/h3').removeResponseHeader
+  const requireAdmin: typeof import('../../server/utils/access').requireAdmin
   const runTask: typeof import('../../node_modules/nitropack/dist/runtime/internal/task').runTask
   const sanitizeStatusCode: typeof import('../../node_modules/h3').sanitizeStatusCode
   const sanitizeStatusMessage: typeof import('../../node_modules/h3').sanitizeStatusMessage
@@ -142,6 +145,9 @@ declare global {
   // @ts-ignore
   export type { EventHandler, EventHandlerRequest, EventHandlerResponse, EventHandlerObject, H3EventContext } from '../../node_modules/h3'
   import('../../node_modules/h3')
+  // @ts-ignore
+  export type { DashboardModule, DashboardAccess } from '../../server/utils/access'
+  import('../../server/utils/access')
 }
 export { H3Event, H3Error, appendCorsHeaders, appendCorsPreflightHeaders, appendHeader, appendHeaders, appendResponseHeader, appendResponseHeaders, assertMethod, callNodeListener, clearResponseHeaders, clearSession, createApp, createAppEventHandler, createError, createEvent, createEventStream, createRouter, defaultContentType, defineEventHandler, defineLazyEventHandler, defineNodeListener, defineNodeMiddleware, defineRequestMiddleware, defineResponseMiddleware, defineWebSocket, defineWebSocketHandler, deleteCookie, dynamicEventHandler, eventHandler, fetchWithEvent, fromNodeMiddleware, fromPlainHandler, fromWebHandler, getCookie, getHeader, getHeaders, getMethod, getProxyRequestHeaders, getQuery, getRequestFingerprint, getRequestHeader, getRequestHeaders, getRequestHost, getRequestIP, getRequestPath, getRequestProtocol, getRequestURL, getRequestWebStream, getResponseHeader, getResponseHeaders, getResponseStatus, getResponseStatusText, getRouterParam, getRouterParams, getSession, getValidatedQuery, getValidatedRouterParams, handleCacheHeaders, handleCors, isCorsOriginAllowed, isError, isEvent, isEventHandler, isMethod, isPreflightRequest, isStream, isWebResponse, lazyEventHandler, parseCookies, promisifyNodeListener, proxyRequest, readBody, readFormData, readMultipartFormData, readRawBody, readValidatedBody, removeResponseHeader, sanitizeStatusCode, sanitizeStatusMessage, sealSession, send, sendError, sendIterable, sendNoContent, sendProxy, sendRedirect, sendStream, sendWebResponse, serveStatic, setCookie, setHeader, setHeaders, setResponseHeader, setResponseHeaders, setResponseStatus, splitCookiesString, toEventHandler, toNodeListener, toPlainHandler, toWebHandler, toWebRequest, unsealSession, updateSession, useBase, useSession, writeEarlyHints } from 'h3';
 export { useNitroApp } from 'nitropack/runtime/internal/app';
@@ -155,6 +161,7 @@ export { getRouteRules } from 'nitropack/runtime/internal/route-rules';
 export { useEvent } from 'nitropack/runtime/internal/context';
 export { defineTask, runTask } from 'nitropack/runtime/internal/task';
 export { defineNitroErrorHandler } from 'nitropack/runtime/internal/error/utils';
-export { buildAssetsURL as __buildAssetsURL, publicAssetsURL as __publicAssetsURL } from 'C:/Users/andrey.koldayev/PortableGit/Manager-Assistant/node_modules/@nuxt/nitro-server/dist/runtime/utils/paths';
-export { defineAppConfig } from 'C:/Users/andrey.koldayev/PortableGit/Manager-Assistant/node_modules/@nuxt/nitro-server/dist/runtime/utils/config';
-export { B24_API_KEY, ensureVibeApiKey, firstString, getVibeAuthorizationHeader, buildActivityDeadline, getDisplayName, toRecord, getDealField, parseBitrixDate, formatTripDatePhrase } from 'C:/Users/andrey.koldayev/PortableGit/Manager-Assistant/server/utils/b24';
+export { buildAssetsURL as __buildAssetsURL, publicAssetsURL as __publicAssetsURL } from 'C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/@nuxt+nitro-server@4.4.8_@b_ea76a600186e3809d67c9f9ad9d2c8b0/node_modules/@nuxt/nitro-server/dist/runtime/utils/paths';
+export { defineAppConfig } from 'C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/@nuxt+nitro-server@4.4.8_@b_ea76a600186e3809d67c9f9ad9d2c8b0/node_modules/@nuxt/nitro-server/dist/runtime/utils/config';
+export { deriveAccessFromVibeMe, getCurrentAccess, requireAdmin } from 'C:/Users/kolda/Documents/GitHub/Manager-Assistant/server/utils/access';
+export { B24_API_KEY, ensureVibeApiKey, firstString, getVibeAuthorizationHeader, buildActivityDeadline, getDisplayName, toRecord, getDealField, parseBitrixDate, formatTripDatePhrase } from 'C:/Users/kolda/Documents/GitHub/Manager-Assistant/server/utils/b24';

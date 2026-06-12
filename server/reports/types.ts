@@ -34,6 +34,10 @@ export interface VibeLead {
   ufCrm_1638180783?: unknown;
   UF_CRM_1638180783?: unknown;
   ufCrm_1715933850?: string | null;
+  ufCrm_1716566007?: number | string | null;
+  ufCrm_1716369534832?: number | string | null;
+  ufCrm_1777686837399?: unknown;
+  ufCrm_1777370132452?: number | string | null;
   ufCrm_1716370242690?: string | null;
   ufCrm_1724510334936?: unknown;
   ufCrm_1717431064812?: unknown;
