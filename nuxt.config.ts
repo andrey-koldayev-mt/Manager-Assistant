@@ -1,3 +1,8 @@
+import { defineNuxtConfig } from 'nuxt/config';
+import { fileURLToPath } from 'node:url';
+
+const b24IconsVueDist = fileURLToPath(new URL('./node_modules/@bitrix24/b24icons-vue/dist', import.meta.url)).replace(/\\/g, '/');
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-05-25',
   ignore: [
@@ -16,20 +21,21 @@ export default defineNuxtConfig({
       componentDetection: true
     }
   },
-  nitro: {
-    ignore: [
-      'sla-app/**',
-      'src/**',
-      'dist/**',
-      '.angular/**',
-      '.cache/**'
-    ],
-    routeRules: {
-      '/api/**': {
-        headers: {
-          'cache-control': 'no-store'
-        }
+  routeRules: {
+    '/api/**': {
+      headers: {
+        'cache-control': 'no-store'
       }
+    }
+  },
+  vite: {
+    resolve: {
+      alias: [
+        {
+          find: /^@bitrix24\/b24icons-vue\/([^/]+)\/(.+)$/,
+          replacement: `${b24IconsVueDist}/$1/esm/$2.js`
+        }
+      ]
     }
   },
   app: {
@@ -40,4 +46,4 @@ export default defineNuxtConfig({
       ]
     }
   }
-});
+} as any);
