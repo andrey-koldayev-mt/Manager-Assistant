@@ -3,7 +3,7 @@ name: Deploy to VibeCode
 on:
   push:
     branches:
-      - main
+      - codex/unified-bitrix-dashboard
   workflow_dispatch:
 
 permissions:
