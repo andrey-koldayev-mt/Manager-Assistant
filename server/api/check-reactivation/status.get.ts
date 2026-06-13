@@ -1,7 +1,7 @@
 import { reportJobs } from '../../reports/jobs';
-import { requireAdmin } from '../../utils/access';
+import { requireAuthenticated } from '../../utils/access';
 
 export default defineEventHandler(async (event) => {
-  await requireAdmin(event);
+  await requireAuthenticated(event);
   return reportJobs.reactivation;
 });

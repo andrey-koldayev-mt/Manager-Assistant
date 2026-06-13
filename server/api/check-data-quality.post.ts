@@ -1,8 +1,8 @@
 import { parseMoscowDateRange, startDataQualityJob, type ReportDateRangeRequest } from '../reports/jobs';
-import { requireAdmin } from '../utils/access';
+import { requireAuthenticated } from '../utils/access';
 
 export default defineEventHandler(async (event) => {
-  await requireAdmin(event);
+  await requireAuthenticated(event);
   const body = (await readBody(event).catch(() => ({}))) as ReportDateRangeRequest;
   const dateRange = parseMoscowDateRange(body);
 

@@ -86,21 +86,26 @@ const normalizedDealCategoryName = computed(() => dealCategoryName.value.trim().
 const isReactivationFunnel = computed(() => normalizedDealCategoryName.value.includes('реактивац'));
 const isQualityLeadFunnel = computed(() => normalizedDealCategoryName.value.includes('качественный лид'));
 const isDashboardAdmin = computed(() => dashboardAccess.value?.isAdmin === true);
+const shellSectionModules: Record<ShellSection, string> = {
+  'manager-assistant': 'manager-assistant',
+  'sla-first-contact': 'sla-first-contact',
+  'data-quality': 'data-quality',
+  'reactivation-report': 'reactivation',
+  'next-step-control': 'next-step-control'
+};
+const allShellNavItems: Array<{ id: ShellSection; label: string; description: string }> = [
+  { id: 'manager-assistant', label: 'Manager-Assistant', description: 'Скрипты и планирование дел' },
+  { id: 'sla-first-contact', label: 'Первичный контакт', description: 'SLA по лидам' },
+  { id: 'data-quality', label: 'Качество данных', description: 'Контакты CRM' },
+  { id: 'reactivation-report', label: 'Реактивация', description: 'План и рейтинг' },
+  { id: 'next-step-control', label: 'Контроль шагов', description: 'Качество дел' }
+];
+function canAccessShellSection(section: ShellSection, access = dashboardAccess.value): boolean {
+  if (!access) return section === 'manager-assistant';
+  return access.allowedModules.includes(shellSectionModules[section]);
+}
 const shellNavItems = computed<Array<{ id: ShellSection; label: string; description: string }>>(() => {
-  const items: Array<{ id: ShellSection; label: string; description: string }> = [
-    { id: 'manager-assistant', label: 'Manager-Assistant', description: 'Скрипты и планирование дел' }
-  ];
-
-  if (isDashboardAdmin.value) {
-    items.push(
-      { id: 'sla-first-contact', label: 'Первичный контакт', description: 'SLA по лидам' },
-      { id: 'data-quality', label: 'Качество данных', description: 'Контакты CRM' },
-      { id: 'reactivation-report', label: 'Реактивация', description: 'План и рейтинг' },
-      { id: 'next-step-control', label: 'Контроль шагов', description: 'Качество дел' }
-    );
-  }
-
-  return items;
+  return allShellNavItems.filter((item) => canAccessShellSection(item.id));
 });
 const adminReportMode = computed<AdminPanelMode>(() => {
   if (activeShellSection.value === 'reactivation-report') return 'reactivation';
@@ -188,7 +193,7 @@ async function loadCurrentAccess() {
       headers: accessToken.value ? { Authorization: `Bearer ${accessToken.value}` } : {}
     }) as { success: boolean; data: DashboardAccess };
     dashboardAccess.value = response.data;
-    if (!response.data.isAdmin && activeShellSection.value !== 'manager-assistant') {
+    if (!canAccessShellSection(activeShellSection.value, response.data)) {
       activeShellSection.value = 'manager-assistant';
     }
   } catch (error) {

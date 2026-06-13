@@ -20,7 +20,12 @@ export interface DashboardAccess {
   allowedModules: DashboardModule[];
 }
 
-const EMPLOYEE_MODULES: DashboardModule[] = ['manager-assistant'];
+const EMPLOYEE_MODULES: DashboardModule[] = [
+  'manager-assistant',
+  'data-quality',
+  'reactivation',
+  'next-step-control'
+];
 const ADMIN_MODULES: DashboardModule[] = [
   'manager-assistant',
   'sla-first-contact',
@@ -74,17 +79,39 @@ function firstString(...values: unknown[]): string {
 
 export function deriveAccessFromVibeMe(raw: unknown): DashboardAccess {
   const root = toRecord(raw);
+  const snakeCurrentUser = toRecord(root?.current_user);
   const currentUser = toRecord(root?.currentUser);
-  const user = toRecord(root?.user) ?? currentUser;
-  const isAuthenticated = Boolean(root && (user || currentUser || root.userId || root.bitrixUserId));
+  const user = toRecord(root?.user) ?? currentUser ?? snakeCurrentUser;
+  const permissions = toRecord(root?.permissions);
+  const rights = toRecord(root?.rights);
+  const isAuthenticated = Boolean(root && (user || currentUser || snakeCurrentUser || root.userId || root.bitrixUserId));
   const isAdmin = firstBoolean(
     root?.isAdmin,
+    root?.is_admin,
     root?.admin,
     root?.ADMIN,
+    root?.isAdministrator,
+    root?.IS_ADMIN,
+    permissions?.isAdmin,
+    permissions?.is_admin,
+    permissions?.admin,
+    rights?.isAdmin,
+    rights?.is_admin,
+    rights?.admin,
     currentUser?.isAdmin,
+    currentUser?.is_admin,
     currentUser?.admin,
     currentUser?.ADMIN,
+    currentUser?.isAdministrator,
+    currentUser?.IS_ADMIN,
+    snakeCurrentUser?.isAdmin,
+    snakeCurrentUser?.is_admin,
+    snakeCurrentUser?.admin,
+    snakeCurrentUser?.ADMIN,
+    snakeCurrentUser?.isAdministrator,
+    snakeCurrentUser?.IS_ADMIN,
     user?.isAdmin,
+    user?.is_admin,
     user?.admin,
     user?.ADMIN,
     user?.isAdministrator,
@@ -96,10 +123,41 @@ export function deriveAccessFromVibeMe(raw: unknown): DashboardAccess {
     isAdmin,
     portal: firstString(root?.portal, root?.portalDomain, root?.domain) || null,
     user: {
-      id: firstNumber(root?.userId, root?.bitrixUserId, currentUser?.bitrixUserId, currentUser?.id, user?.id, user?.ID),
-      name: firstString(currentUser?.name, currentUser?.fullName, user?.name, user?.FULL_NAME, user?.NAME)
+      id: firstNumber(
+        root?.userId,
+        root?.user_id,
+        root?.bitrixUserId,
+        root?.bitrix_user_id,
+        currentUser?.bitrixUserId,
+        currentUser?.bitrix_user_id,
+        currentUser?.id,
+        currentUser?.ID,
+        snakeCurrentUser?.bitrixUserId,
+        snakeCurrentUser?.bitrix_user_id,
+        snakeCurrentUser?.id,
+        snakeCurrentUser?.ID,
+        user?.id,
+        user?.ID
+      ),
+      name: firstString(
+        currentUser?.name,
+        currentUser?.fullName,
+        currentUser?.full_name,
+        currentUser?.FULL_NAME,
+        currentUser?.NAME,
+        snakeCurrentUser?.name,
+        snakeCurrentUser?.fullName,
+        snakeCurrentUser?.full_name,
+        snakeCurrentUser?.FULL_NAME,
+        snakeCurrentUser?.NAME,
+        user?.name,
+        user?.fullName,
+        user?.full_name,
+        user?.FULL_NAME,
+        user?.NAME
+      )
     },
-    allowedModules: isAdmin ? ADMIN_MODULES : EMPLOYEE_MODULES
+    allowedModules: !isAuthenticated ? ['manager-assistant'] : isAdmin ? ADMIN_MODULES : EMPLOYEE_MODULES
   };
 }
 
@@ -130,6 +188,15 @@ export async function requireAdmin(event: H3Event): Promise<DashboardAccess> {
   }
   if (!access.isAdmin) {
     throw createError({ statusCode: 403, statusMessage: 'Bitrix24 administrator access is required' });
+  }
+
+  return access;
+}
+
+export async function requireAuthenticated(event: H3Event): Promise<DashboardAccess> {
+  const access = await getCurrentAccess(event);
+  if (!access.isAuthenticated) {
+    throw createError({ statusCode: 401, statusMessage: 'Bitrix24 authorization is required' });
   }
 
   return access;

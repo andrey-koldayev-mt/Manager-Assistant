@@ -23,7 +23,7 @@ describe('dashboard access derivation', () => {
     ]);
   });
 
-  it('limits ordinary users to Manager Assistant only', () => {
+  it('allows ordinary users to every module except SLA reports', () => {
     const access = deriveAccessFromVibeMe({
       portalDomain: 'crm-re.bitrix24.ru',
       user: {
@@ -35,7 +35,31 @@ describe('dashboard access derivation', () => {
 
     expect(access.isAuthenticated).toBe(true);
     expect(access.isAdmin).toBe(false);
-    expect(access.allowedModules).toEqual(['manager-assistant']);
+    expect(access.allowedModules).toEqual([
+      'manager-assistant',
+      'data-quality',
+      'reactivation',
+      'next-step-control'
+    ]);
+  });
+
+  it('recognizes snake_case CRM admin flags from current Bitrix user', () => {
+    const access = deriveAccessFromVibeMe({
+      current_user: {
+        ID: '19',
+        NAME: 'CRM Admin',
+        IS_ADMIN: 'Y'
+      },
+      responsible: {
+        id: 11,
+        isAdmin: false
+      }
+    });
+
+    expect(access.isAuthenticated).toBe(true);
+    expect(access.isAdmin).toBe(true);
+    expect(access.user.id).toBe(19);
+    expect(access.allowedModules).toContain('sla-first-contact');
   });
 
   it('keeps missing identity employee-safe', () => {
