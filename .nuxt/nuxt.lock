@@ -1,9 +1,9 @@
 {
-  "pid": 10392,
-  "startedAt": 1781270258528,
+  "pid": 23236,
+  "startedAt": 1781398739303,
   "command": "dev",
   "cwd": "C:/Users/kolda/Documents/GitHub/Manager-Assistant",
-  "port": 3100,
-  "hostname": "0.0.0.0",
-  "url": "http://0.0.0.0:3100"
+  "port": 3000,
+  "hostname": "127.0.0.1",
+  "url": "http://127.0.0.1:3000"
 }

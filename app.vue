@@ -25,6 +25,7 @@ const activeShellSection = ref<ShellSection>('manager-assistant');
 const dashboardAccess = ref<DashboardAccess | null>(null);
 const accessLoading = ref(false);
 const accessError = ref('');
+const colorTheme = ref<'light' | 'dark'>('light');
 const workspaceMode = ref<WorkspaceMode>('reactivation');
 const agentName = ref('Елена');
 const clientName = ref('Александр');
@@ -86,6 +87,8 @@ const normalizedDealCategoryName = computed(() => dealCategoryName.value.trim().
 const isReactivationFunnel = computed(() => normalizedDealCategoryName.value.includes('реактивац'));
 const isQualityLeadFunnel = computed(() => normalizedDealCategoryName.value.includes('качественный лид'));
 const isDashboardAdmin = computed(() => dashboardAccess.value?.isAdmin === true);
+const nextColorTheme = computed(() => (colorTheme.value === 'dark' ? 'light' : 'dark'));
+const colorThemeLabel = computed(() => (colorTheme.value === 'dark' ? 'Светлая тема' : 'Темная тема'));
 const shellSectionModules: Record<ShellSection, string> = {
   'manager-assistant': 'manager-assistant',
   'sla-first-contact': 'sla-first-contact',
@@ -102,6 +105,7 @@ const allShellNavItems: Array<{ id: ShellSection; label: string; description: st
 ];
 function canAccessShellSection(section: ShellSection, access = dashboardAccess.value): boolean {
   if (!access) return section === 'manager-assistant';
+  if (section === 'sla-first-contact' && access.isAdmin) return true;
   return access.allowedModules.includes(shellSectionModules[section]);
 }
 const shellNavItems = computed<Array<{ id: ShellSection; label: string; description: string }>>(() => {
@@ -219,6 +223,23 @@ function switchShellSection(section: ShellSection) {
   }
 
   activeShellSection.value = section;
+}
+
+function setColorTheme(theme: 'light' | 'dark') {
+  colorTheme.value = theme;
+  window.localStorage.setItem('dashboard-theme', theme);
+}
+
+function restoreColorTheme() {
+  const storedTheme = window.localStorage.getItem('dashboard-theme');
+  if (storedTheme === 'light' || storedTheme === 'dark') {
+    colorTheme.value = storedTheme;
+    return;
+  }
+
+  if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
+    colorTheme.value = 'dark';
+  }
 }
 
 function startTimer() {
@@ -643,6 +664,7 @@ async function copyText(text: string) {
 }
 
 onMounted(() => {
+  restoreColorTheme();
   startTimer();
   void loadCurrentAccess();
   initB24Integration();
@@ -653,7 +675,7 @@ onUnmounted(clearTimer);
 
 <template>
   <B24App>
-    <div class="unified-shell">
+    <div class="unified-shell" :data-theme="colorTheme">
       <aside class="unified-sidebar">
         <div class="unified-brand">
           <img class="brand-logo" src="/favicon.png" alt="Русский Экспресс" />
@@ -684,6 +706,12 @@ onUnmounted(clearTimer);
           <span v-if="dashboardAccess?.user.name">{{ dashboardAccess.user.name }}</span>
           <span v-else-if="accessError">{{ accessError }}</span>
           <span v-else>Доступ к отчетам скрыт для рядовых пользователей</span>
+          <B24Button
+            size="xs"
+            :label="colorThemeLabel"
+            class="theme-toggle"
+            @click="setColorTheme(nextColorTheme)"
+          />
         </div>
       </aside>
 

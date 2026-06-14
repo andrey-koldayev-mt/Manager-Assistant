@@ -504,7 +504,7 @@ onUnmounted(stopPolling);
           :icon="RefreshIcon"
           :label="isRunning ? 'Проверяем' : 'Обновить'"
           :loading="isRunning"
-          class="brand-action"
+          class="brand-action refresh-action"
           @click="() => void runCheck(false)"
         />
       </div>

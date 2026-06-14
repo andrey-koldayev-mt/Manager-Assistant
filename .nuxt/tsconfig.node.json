@@ -4,8 +4,11 @@
       "vue-router": [
         "../node_modules/vue-router"
       ],
+      "vue-router/auto-routes": [
+        "../node_modules/vue-router/vue-router-auto-routes"
+      ],
       "nuxt": [
-        "../node_modules/.pnpm/nuxt@4.4.8_@babel+plugin-sy_c41effc8ccd5f6d81968e8f76ff71897/node_modules/nuxt"
+        "../node_modules/nuxt"
       ],
       "@unhead/vue": [
         "../node_modules/@unhead/vue"
@@ -40,9 +43,6 @@
       "crossws": [
         "../node_modules/crossws"
       ],
-      "nitropack": [
-        "../node_modules/nitropack"
-      ],
       "vite/client": [
         "../node_modules/vite/client"
       ],
@@ -52,8 +52,8 @@
       "nitropack/runtime": [
         "../node_modules/nitropack/runtime"
       ],
-      "vue-router/auto-routes": [
-        "../node_modules/vue-router/vue-router-auto-routes.d.mts"
+      "nitropack": [
+        "../node_modules/nitropack"
       ]
     },
     "esModuleInterop": true,
@@ -90,8 +90,8 @@
   ],
   "exclude": [
     "../node_modules",
-    "../node_modules/.pnpm/nuxt@4.4.8_@babel+plugin-sy_c41effc8ccd5f6d81968e8f76ff71897/node_modules/nuxt/node_modules",
-    "../node_modules/.pnpm/@bitrix24+b24ui-nuxt@2.8.0__9e3ac06740da877113338b9bc355a571/node_modules/@bitrix24/b24ui-nuxt/node_modules",
+    "../node_modules/nuxt/node_modules",
+    "../node_modules/@bitrix24/b24ui-nuxt/node_modules",
     "../node_modules/@nuxt/devtools/node_modules",
     "../node_modules/@nuxt/telemetry/node_modules",
     "../node_modules/@bitrix24/b24icons-nuxt/node_modules",
@@ -105,8 +105,6 @@
     "../modules/*/runtime/server/**/*",
     "../layers/*/server/**/*",
     "../layers/*/modules/*/runtime/server/**/*",
-    "../node_modules/.pnpm/@bitrix24+b24ui-nuxt@2.8.0__9e3ac06740da877113338b9bc355a571/node_modules/runtime",
-    "../node_modules/.pnpm/@bitrix24+b24ui-nuxt@2.8.0__9e3ac06740da877113338b9bc355a571/node_modules/dist/runtime",
     "../node_modules/runtime",
     "../node_modules/dist/runtime"
   ]

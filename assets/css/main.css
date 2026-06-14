@@ -133,6 +133,18 @@ textarea:focus-visible {
   background: #f8fafc;
 }
 
+.theme-toggle {
+  justify-content: center !important;
+  border-color: var(--app-border) !important;
+  background: var(--app-muted) !important;
+  color: var(--app-text) !important;
+}
+
+.theme-toggle:hover {
+  border-color: var(--brand-red-border) !important;
+  color: var(--brand-red-hover) !important;
+}
+
 .unified-content {
   min-width: 0;
 }
@@ -167,6 +179,20 @@ textarea:focus-visible {
   background: var(--brand-red) !important;
   border-color: var(--brand-red) !important;
   color: #fff !important;
+}
+
+.brand-action *,
+.brand-action [data-slot],
+.refresh-action,
+.refresh-action *,
+.refresh-action [data-slot] {
+  color: #fff !important;
+}
+
+.brand-action svg,
+.refresh-action svg {
+  color: #fff !important;
+  stroke: currentColor !important;
 }
 
 .brand-action:hover {
@@ -756,4 +782,84 @@ textarea:focus-visible {
     max-height: calc(100vh - 90px);
     overflow: auto;
   }
+}
+
+.unified-shell[data-theme="dark"] {
+  --brand-red-soft: rgba(214, 63, 63, 0.18);
+  --brand-red-border: rgba(244, 120, 120, 0.42);
+  --brand-focus: rgba(244, 120, 120, 0.38);
+  --app-surface: #1f2937;
+  --app-muted: #111827;
+  --app-border: #374151;
+  --app-text: #f3f4f6;
+  background: #0f172a;
+  color: var(--app-text);
+}
+
+.unified-shell[data-theme="dark"] .app-shell {
+  background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+}
+
+.unified-shell[data-theme="dark"] .unified-sidebar,
+.unified-shell[data-theme="dark"] .unified-access,
+.unified-shell[data-theme="dark"] .work-panel,
+.unified-shell[data-theme="dark"] .script-card,
+.unified-shell[data-theme="dark"] .admin-report-header,
+.unified-shell[data-theme="dark"] .report-toolbar,
+.unified-shell[data-theme="dark"] .automation-panel,
+.unified-shell[data-theme="dark"] .progress-banner,
+.unified-shell[data-theme="dark"] .report-panel,
+.unified-shell[data-theme="dark"] .report-kpi,
+.unified-shell[data-theme="dark"] .calendar-surface {
+  background: var(--app-surface);
+  color: var(--app-text);
+}
+
+.unified-shell[data-theme="dark"] .script-line,
+.unified-shell[data-theme="dark"] .mode-switch,
+.unified-shell[data-theme="dark"] .report-table th,
+.unified-shell[data-theme="dark"] .native-select,
+.unified-shell[data-theme="dark"] .date-trigger {
+  background: var(--app-muted) !important;
+  color: var(--app-text) !important;
+}
+
+.unified-shell[data-theme="dark"] .unified-brand strong,
+.unified-shell[data-theme="dark"] .unified-nav button,
+.unified-shell[data-theme="dark"] .report-table td,
+.unified-shell[data-theme="dark"] .report-kpi strong,
+.unified-shell[data-theme="dark"] .script-card h2,
+.unified-shell[data-theme="dark"] .work-panel h1,
+.unified-shell[data-theme="dark"] .admin-report-header h1 {
+  color: var(--app-text);
+}
+
+.unified-shell[data-theme="dark"] .unified-brand span,
+.unified-shell[data-theme="dark"] .unified-nav button span,
+.unified-shell[data-theme="dark"] .unified-access span,
+.unified-shell[data-theme="dark"] .report-actions span,
+.unified-shell[data-theme="dark"] .report-kpi span,
+.unified-shell[data-theme="dark"] .progress-banner p,
+.unified-shell[data-theme="dark"] .script-card p,
+.unified-shell[data-theme="dark"] .admin-report-header p {
+  color: #b6c2d2;
+}
+
+.unified-shell[data-theme="dark"] .mode-switch-button {
+  color: #c7d2e2 !important;
+}
+
+.unified-shell[data-theme="dark"] .mode-switch-button:hover,
+.unified-shell[data-theme="dark"] .mode-switch-button:focus-visible,
+.unified-shell[data-theme="dark"] .theme-toggle:hover {
+  background: rgba(214, 63, 63, 0.18) !important;
+  color: #fff !important;
+}
+
+.unified-shell[data-theme="dark"] .brand-soft {
+  color: #ffc9c9;
+}
+
+.unified-shell[data-theme="dark"] .report-table tr {
+  border-color: var(--app-border);
 }

@@ -3,44 +3,41 @@ import { Server } from 'node:http';
 import path, { resolve, dirname, join } from 'node:path';
 import nodeCrypto from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
-import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, createError, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, getResponseStatusText } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/h3@1.15.11/node_modules/h3/dist/index.mjs';
-import { escapeHtml } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/@vue+shared@3.5.35/node_modules/@vue/shared/dist/shared.cjs.js';
-import viteNodeEntry_mjs from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/@nuxt+vite-builder@4.4.8_@b_a2dbc83e288b1c3973b966f66a131719/node_modules/@nuxt/vite-builder/dist/vite-node-entry.mjs';
-import { viteNodeFetch } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/@nuxt+vite-builder@4.4.8_@b_a2dbc83e288b1c3973b966f66a131719/node_modules/@nuxt/vite-builder/dist/vite-node.mjs';
-import { getHeader, createError as createError$1, defineEventHandler as defineEventHandler$1, readBody as readBody$1, getQuery as getQuery$2, setResponseStatus as setResponseStatus$1 } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/h3/dist/index.mjs';
-import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/vue-bundle-renderer@2.2.0/node_modules/vue-bundle-renderer/dist/runtime.mjs';
-import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, encodePath, joinRelativeURL } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/ufo@1.6.4/node_modules/ufo/dist/index.mjs';
-import destr, { destr as destr$1 } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/destr@2.0.5/node_modules/destr/dist/index.mjs';
-import { renderToString } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/vue@3.5.35_typescript@5.9.3/node_modules/vue/server-renderer/index.mjs';
-import { klona } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/klona@2.0.6/node_modules/klona/dist/index.mjs';
-import { defuFn } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/defu/dist/defu.mjs';
-import { snakeCase } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/scule@1.3.0/node_modules/scule/dist/index.mjs';
-import { createHead as createHead$1, propsToString, renderSSRHead } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/unhead@2.1.15/node_modules/unhead/dist/server.mjs';
-import { stringify, uneval } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/devalue@5.8.1/node_modules/devalue/index.js';
-import { isVNode, isRef, toValue } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/vue@3.5.35_typescript@5.9.3/node_modules/vue/index.mjs';
-import { createHooks } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/hookable@5.5.3/node_modules/hookable/dist/index.mjs';
-import { createFetch, Headers as Headers$1 } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/ofetch@1.5.1/node_modules/ofetch/dist/node.mjs';
-import { fetchNodeRequestHandler, callNodeRequestHandler } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/node-mock-http@1.0.4/node_modules/node-mock-http/dist/index.mjs';
-import { prefixStorage } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/unstorage@1.17.5_db0@0.3.4_ioredis@5.11.1/node_modules/unstorage/dist/index.mjs';
-import { createStorage } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/unstorage/dist/index.mjs';
+import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, createError, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, getHeader, getResponseStatusText } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/h3/dist/index.mjs';
+import { escapeHtml } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/@vue/shared/dist/shared.cjs.js';
+import viteNodeEntry_mjs from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/@nuxt/vite-builder/dist/vite-node-entry.mjs';
+import { viteNodeFetch } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/@nuxt/vite-builder/dist/vite-node.mjs';
+import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/vue-bundle-renderer/dist/runtime.mjs';
+import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, encodePath, joinRelativeURL } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/ufo/dist/index.mjs';
+import destr, { destr as destr$1 } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/destr/dist/index.mjs';
+import { renderToString } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/vue/server-renderer/index.mjs';
+import { klona } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/klona/dist/index.mjs';
+import defu, { defuFn } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/defu/dist/defu.mjs';
+import { snakeCase } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/scule/dist/index.mjs';
+import { createHead as createHead$1, propsToString, renderSSRHead } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/unhead/dist/server.mjs';
+import { stringify, uneval } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/devalue/index.js';
+import { isVNode, isRef, toValue } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/vue/index.mjs';
+import { createHooks } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/nitropack/node_modules/hookable/dist/index.mjs';
+import { createFetch, Headers as Headers$1 } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/ofetch/dist/node.mjs';
+import { fetchNodeRequestHandler, callNodeRequestHandler } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/node-mock-http/dist/index.mjs';
+import { createStorage, prefixStorage } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/unstorage/dist/index.mjs';
 import unstorage_47drivers_47fs from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/unstorage/drivers/fs.mjs';
-import file_58_47_47_47C_58_47Users_47kolda_47Documents_47GitHub_47Manager_45Assistant_47node_modules_47_46pnpm_47_64nuxt_43nitro_45server_644_464_468__64b_ea76a600186e3809d67c9f9ad9d2c8b0_47node_modules_47_64nuxt_47nitro_45server_47dist_47runtime_47utils_47cache_45driver_46js from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/@nuxt+nitro-server@4.4.8_@b_ea76a600186e3809d67c9f9ad9d2c8b0/node_modules/@nuxt/nitro-server/dist/runtime/utils/cache-driver.js';
-import { digest, hash as hash$1 } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/ohash@2.0.11/node_modules/ohash/dist/index.mjs';
-import defu from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/defu@6.1.7/node_modules/defu/dist/defu.mjs';
-import { toRouteMatcher, createRouter } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/radix3@1.1.2/node_modules/radix3/dist/index.mjs';
+import file_58_47_47_47C_58_47Users_47kolda_47Documents_47GitHub_47Manager_45Assistant_47node_modules_47_64nuxt_47nitro_45server_47dist_47runtime_47utils_47cache_45driver_46js from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/@nuxt/nitro-server/dist/runtime/utils/cache-driver.js';
+import { digest, hash as hash$1 } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/ohash/dist/index.mjs';
+import { toRouteMatcher, createRouter } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/radix3/dist/index.mjs';
 import fs, { readFile, mkdir, writeFile } from 'node:fs/promises';
-import consola, { consola as consola$1 } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/consola@3.4.2/node_modules/consola/dist/index.mjs';
-import { ErrorParser } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/youch-core@0.3.3/node_modules/youch-core/build/index.js';
-import { Youch } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/youch@4.1.1/node_modules/youch/build/index.js';
-import { SourceMapConsumer } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/source-map@0.7.6/node_modules/source-map/source-map.js';
+import consola, { consola as consola$1 } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/consola/dist/index.mjs';
+import { ErrorParser } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/youch-core/build/index.js';
+import { Youch } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/youch/build/index.js';
+import { SourceMapConsumer } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/source-map/source-map.js';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { getContext } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/unctx@2.5.0/node_modules/unctx/dist/index.mjs';
-import { captureRawStackTrace, parseRawStackTrace } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/errx@0.1.0/node_modules/errx/dist/index.js';
-import _wH6JrtIxmaSoA8lCPWFnE9z4lQeXW6H5z3l5aymEQw from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/@nuxt+vite-builder@4.4.8_@b_a2dbc83e288b1c3973b966f66a131719/node_modules/@nuxt/vite-builder/dist/fix-stacktrace.mjs';
+import { getContext } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/unctx/dist/index.mjs';
+import { captureRawStackTrace, parseRawStackTrace } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/errx/dist/index.js';
+import _wH6JrtIxmaSoA8lCPWFnE9z4lQeXW6H5z3l5aymEQw from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/@nuxt/vite-builder/dist/fix-stacktrace.mjs';
 import { promises } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname as dirname$1, resolve as resolve$1 } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/pathe/dist/index.mjs';
-import { walkResolver } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/unhead@2.1.15/node_modules/unhead/dist/utils.mjs';
+import { walkResolver } from 'file://C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/unhead/dist/utils.mjs';
 
 const serverAssets = [{"baseName":"server","dir":"C:/Users/kolda/Documents/GitHub/Manager-Assistant/server/assets"}];
 
@@ -56,7 +53,7 @@ storage.mount('/assets', assets$1);
 
 storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"C:/Users/kolda/Documents/GitHub/Manager-Assistant","watchOptions":{"ignored":[null]}}));
 storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"C:/Users/kolda/Documents/GitHub/Manager-Assistant/server","watchOptions":{"ignored":[null]}}));
-storage.mount('cache:nuxt:payload', file_58_47_47_47C_58_47Users_47kolda_47Documents_47GitHub_47Manager_45Assistant_47node_modules_47_46pnpm_47_64nuxt_43nitro_45server_644_464_468__64b_ea76a600186e3809d67c9f9ad9d2c8b0_47node_modules_47_64nuxt_47nitro_45server_47dist_47runtime_47utils_47cache_45driver_46js({"driver":"file:///C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/.pnpm/@nuxt+nitro-server@4.4.8_@b_ea76a600186e3809d67c9f9ad9d2c8b0/node_modules/@nuxt/nitro-server/dist/runtime/utils/cache-driver.js","base":"C:/Users/kolda/Documents/GitHub/Manager-Assistant/.nuxt/cache/nuxt/payload"}));
+storage.mount('cache:nuxt:payload', file_58_47_47_47C_58_47Users_47kolda_47Documents_47GitHub_47Manager_45Assistant_47node_modules_47_64nuxt_47nitro_45server_47dist_47runtime_47utils_47cache_45driver_46js({"driver":"file:///C:/Users/kolda/Documents/GitHub/Manager-Assistant/node_modules/@nuxt/nitro-server/dist/runtime/utils/cache-driver.js","base":"C:/Users/kolda/Documents/GitHub/Manager-Assistant/.nuxt/cache/nuxt/payload"}));
 storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"C:/Users/kolda/Documents/GitHub/Manager-Assistant/.nuxt"}));
 storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"C:/Users/kolda/Documents/GitHub/Manager-Assistant/.nuxt/cache"}));
 storage.mount('data', unstorage_47drivers_47fs({"driver":"fs","base":"C:/Users/kolda/Documents/GitHub/Manager-Assistant/.data/kv"}));
@@ -935,7 +932,7 @@ const parentStorageBridge = (nonce) => `
 
   // Handle clipboard copy from iframe
   window.addEventListener('message', function(e) {
-    if (isValid(e.data) && e.data.type === 'clipboard-copy') {
+    if (isValid(e) && e.data.type === 'clipboard-copy') {
       navigator.clipboard.writeText(e.data.text).catch(function() {});
     }
   });
@@ -2092,7 +2089,7 @@ const asyncContext = getContext("nuxt-dev", {
 	asyncContext: true,
 	AsyncLocalStorage
 });
-const _vQ194JOwyq6DfGwmkG3l8vDJotYzC7WaDlC_118hXvc = (nitroApp) => {
+const _fs1Lyyzrtm3OvezD2KMtpMY07exqCXf3AsWGrPDbQu0 = (nitroApp) => {
 	const handler = nitroApp.h3App.handler;
 	nitroApp.h3App.handler = (event) => {
 		return asyncContext.callAsync({
@@ -4842,7 +4839,7 @@ const _NJnqE4SIq4JkvGoCz2po2EE3gvYLK0mlI_ZItqHpw = defineNitroPlugin(() => {
 
 const plugins = [
   _kr2s80wv6y1ICwJ1H33AkabiiTOBI5fBeyFwVtDyrtw,
-_vQ194JOwyq6DfGwmkG3l8vDJotYzC7WaDlC_118hXvc,
+_fs1Lyyzrtm3OvezD2KMtpMY07exqCXf3AsWGrPDbQu0,
 _NJnqE4SIq4JkvGoCz2po2EE3gvYLK0mlI_ZItqHpw,
 _wH6JrtIxmaSoA8lCPWFnE9z4lQeXW6H5z3l5aymEQw
 ];
@@ -4872,7 +4869,7 @@ function getAsset (id) {
 
 const METHODS = /* @__PURE__ */ new Set(["HEAD", "GET"]);
 const EncodingMap = { gzip: ".gz", br: ".br" };
-const _ms5xmU = eventHandler((event) => {
+const _HzBlY6 = eventHandler((event) => {
   if (event.method && !METHODS.has(event.method)) {
     return;
   }
@@ -4974,6 +4971,7 @@ function computeIslandHash(name, filteredProps, context, source) {
   return hash$1([name, filteredProps, context, source]).replace(/[-_]/g, "");
 }
 
+const NUXT_PAYLOAD_INLINE = false;
 const NUXT_RUNTIME_PAYLOAD_EXTRACTION = false;
 
 // @__NO_SIDE_EFFECTS__
@@ -5397,10 +5395,10 @@ const _lazy_I3NiX2 = () => Promise.resolve().then(function () { return reactivat
 const _lazy_oiMBSH = () => Promise.resolve().then(function () { return slaAutoControl_get$1; });
 const _lazy_CLxXdQ = () => Promise.resolve().then(function () { return slaAutoControl_patch$1; });
 const _lazy_0w51fi = () => Promise.resolve().then(function () { return slaLog_get$1; });
-const _lazy_flXSu7 = () => Promise.resolve().then(function () { return renderer; });
+const _lazy_8Lk4WO = () => Promise.resolve().then(function () { return renderer; });
 
 const handlers = [
-  { route: '', handler: _ms5xmU, lazy: false, middleware: true, method: undefined },
+  { route: '', handler: _HzBlY6, lazy: false, middleware: true, method: undefined },
   { route: '/api/access/current', handler: _lazy_MpqCGy, lazy: true, middleware: false, method: "get" },
   { route: '/api/b24/analyze-next-step', handler: _lazy_xp4oRH, lazy: true, middleware: false, method: "post" },
   { route: '/api/b24/create-call-activity', handler: _lazy_YVe0xx, lazy: true, middleware: false, method: "post" },
@@ -5421,9 +5419,9 @@ const handlers = [
   { route: '/api/sla-auto-control', handler: _lazy_oiMBSH, lazy: true, middleware: false, method: "get" },
   { route: '/api/sla-auto-control', handler: _lazy_CLxXdQ, lazy: true, middleware: false, method: "patch" },
   { route: '/api/sla-log', handler: _lazy_0w51fi, lazy: true, middleware: false, method: "get" },
-  { route: '/__nuxt_error', handler: _lazy_flXSu7, lazy: true, middleware: false, method: undefined },
+  { route: '/__nuxt_error', handler: _lazy_8Lk4WO, lazy: true, middleware: false, method: undefined },
   { route: '/__nuxt_island/**', handler: handler$1, lazy: false, middleware: false, method: undefined },
-  { route: '/**', handler: _lazy_flXSu7, lazy: true, middleware: false, method: undefined }
+  { route: '/**', handler: _lazy_8Lk4WO, lazy: true, middleware: false, method: undefined }
 ];
 
 function createNitroApp() {
@@ -5779,7 +5777,7 @@ var _a;
 const B24_API_KEY = (_a = process.env.VIBE_API_KEY) != null ? _a : "";
 function ensureVibeApiKey() {
   if (!B24_API_KEY) {
-    throw createError$1({
+    throw createError({
       statusCode: 500,
       statusMessage: "VIBE_API_KEY is not configured"
     });
@@ -5805,14 +5803,14 @@ function getVibeAuthorizationHeader(event) {
 function buildActivityDeadline(dateValue) {
   const trimmed = dateValue.trim();
   if (!trimmed) {
-    throw createError$1({ statusCode: 400, statusMessage: "Missing nextContactDate parameter" });
+    throw createError({ statusCode: 400, statusMessage: "Missing nextContactDate parameter" });
   }
   if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
     return `${trimmed}T10:00:00+03:00`;
   }
   const parsed = new Date(trimmed);
   if (Number.isNaN(parsed.getTime())) {
-    throw createError$1({ statusCode: 400, statusMessage: "Invalid nextContactDate parameter" });
+    throw createError({ statusCode: 400, statusMessage: "Invalid nextContactDate parameter" });
   }
   return parsed.toISOString();
 }
@@ -5911,7 +5909,12 @@ function formatTripDatePhrase(startDateValue, endDateValue) {
   return `\u0441 ${primaryMonth} ${primaryYearPhrase} \u043F\u043E ${endMonth} ${endYearPhrase}`;
 }
 
-const EMPLOYEE_MODULES = ["manager-assistant"];
+const EMPLOYEE_MODULES = [
+  "manager-assistant",
+  "data-quality",
+  "reactivation",
+  "next-step-control"
+];
 const ADMIN_MODULES = [
   "manager-assistant",
   "sla-first-contact",
@@ -5957,19 +5960,41 @@ function firstString(...values) {
   return "";
 }
 function deriveAccessFromVibeMe(raw) {
-  var _a;
+  var _a, _b;
   const root = toRecord(raw);
+  const snakeCurrentUser = toRecord(root == null ? void 0 : root.current_user);
   const currentUser = toRecord(root == null ? void 0 : root.currentUser);
-  const user = (_a = toRecord(root == null ? void 0 : root.user)) != null ? _a : currentUser;
-  const isAuthenticated = Boolean(root && (user || currentUser || root.userId || root.bitrixUserId));
+  const user = (_b = (_a = toRecord(root == null ? void 0 : root.user)) != null ? _a : currentUser) != null ? _b : snakeCurrentUser;
+  const permissions = toRecord(root == null ? void 0 : root.permissions);
+  const rights = toRecord(root == null ? void 0 : root.rights);
+  const isAuthenticated = Boolean(root && (user || currentUser || snakeCurrentUser || root.userId || root.bitrixUserId));
   const isAdmin = firstBoolean(
     root == null ? void 0 : root.isAdmin,
+    root == null ? void 0 : root.is_admin,
     root == null ? void 0 : root.admin,
     root == null ? void 0 : root.ADMIN,
+    root == null ? void 0 : root.isAdministrator,
+    root == null ? void 0 : root.IS_ADMIN,
+    permissions == null ? void 0 : permissions.isAdmin,
+    permissions == null ? void 0 : permissions.is_admin,
+    permissions == null ? void 0 : permissions.admin,
+    rights == null ? void 0 : rights.isAdmin,
+    rights == null ? void 0 : rights.is_admin,
+    rights == null ? void 0 : rights.admin,
     currentUser == null ? void 0 : currentUser.isAdmin,
+    currentUser == null ? void 0 : currentUser.is_admin,
     currentUser == null ? void 0 : currentUser.admin,
     currentUser == null ? void 0 : currentUser.ADMIN,
+    currentUser == null ? void 0 : currentUser.isAdministrator,
+    currentUser == null ? void 0 : currentUser.IS_ADMIN,
+    snakeCurrentUser == null ? void 0 : snakeCurrentUser.isAdmin,
+    snakeCurrentUser == null ? void 0 : snakeCurrentUser.is_admin,
+    snakeCurrentUser == null ? void 0 : snakeCurrentUser.admin,
+    snakeCurrentUser == null ? void 0 : snakeCurrentUser.ADMIN,
+    snakeCurrentUser == null ? void 0 : snakeCurrentUser.isAdministrator,
+    snakeCurrentUser == null ? void 0 : snakeCurrentUser.IS_ADMIN,
     user == null ? void 0 : user.isAdmin,
+    user == null ? void 0 : user.is_admin,
     user == null ? void 0 : user.admin,
     user == null ? void 0 : user.ADMIN,
     user == null ? void 0 : user.isAdministrator,
@@ -5980,10 +6005,41 @@ function deriveAccessFromVibeMe(raw) {
     isAdmin,
     portal: firstString(root == null ? void 0 : root.portal, root == null ? void 0 : root.portalDomain, root == null ? void 0 : root.domain) || null,
     user: {
-      id: firstNumber(root == null ? void 0 : root.userId, root == null ? void 0 : root.bitrixUserId, currentUser == null ? void 0 : currentUser.bitrixUserId, currentUser == null ? void 0 : currentUser.id, user == null ? void 0 : user.id, user == null ? void 0 : user.ID),
-      name: firstString(currentUser == null ? void 0 : currentUser.name, currentUser == null ? void 0 : currentUser.fullName, user == null ? void 0 : user.name, user == null ? void 0 : user.FULL_NAME, user == null ? void 0 : user.NAME)
+      id: firstNumber(
+        root == null ? void 0 : root.userId,
+        root == null ? void 0 : root.user_id,
+        root == null ? void 0 : root.bitrixUserId,
+        root == null ? void 0 : root.bitrix_user_id,
+        currentUser == null ? void 0 : currentUser.bitrixUserId,
+        currentUser == null ? void 0 : currentUser.bitrix_user_id,
+        currentUser == null ? void 0 : currentUser.id,
+        currentUser == null ? void 0 : currentUser.ID,
+        snakeCurrentUser == null ? void 0 : snakeCurrentUser.bitrixUserId,
+        snakeCurrentUser == null ? void 0 : snakeCurrentUser.bitrix_user_id,
+        snakeCurrentUser == null ? void 0 : snakeCurrentUser.id,
+        snakeCurrentUser == null ? void 0 : snakeCurrentUser.ID,
+        user == null ? void 0 : user.id,
+        user == null ? void 0 : user.ID
+      ),
+      name: firstString(
+        currentUser == null ? void 0 : currentUser.name,
+        currentUser == null ? void 0 : currentUser.fullName,
+        currentUser == null ? void 0 : currentUser.full_name,
+        currentUser == null ? void 0 : currentUser.FULL_NAME,
+        currentUser == null ? void 0 : currentUser.NAME,
+        snakeCurrentUser == null ? void 0 : snakeCurrentUser.name,
+        snakeCurrentUser == null ? void 0 : snakeCurrentUser.fullName,
+        snakeCurrentUser == null ? void 0 : snakeCurrentUser.full_name,
+        snakeCurrentUser == null ? void 0 : snakeCurrentUser.FULL_NAME,
+        snakeCurrentUser == null ? void 0 : snakeCurrentUser.NAME,
+        user == null ? void 0 : user.name,
+        user == null ? void 0 : user.fullName,
+        user == null ? void 0 : user.full_name,
+        user == null ? void 0 : user.FULL_NAME,
+        user == null ? void 0 : user.NAME
+      )
     },
-    allowedModules: isAdmin ? ADMIN_MODULES : EMPLOYEE_MODULES
+    allowedModules: !isAuthenticated ? ["manager-assistant"] : isAdmin ? ADMIN_MODULES : EMPLOYEE_MODULES
   };
 }
 async function getCurrentAccess(event) {
@@ -6007,15 +6063,22 @@ async function getCurrentAccess(event) {
 async function requireAdmin(event) {
   const access = await getCurrentAccess(event);
   if (!access.isAuthenticated) {
-    throw createError$1({ statusCode: 401, statusMessage: "Bitrix24 authorization is required" });
+    throw createError({ statusCode: 401, statusMessage: "Bitrix24 authorization is required" });
   }
   if (!access.isAdmin) {
-    throw createError$1({ statusCode: 403, statusMessage: "Bitrix24 administrator access is required" });
+    throw createError({ statusCode: 403, statusMessage: "Bitrix24 administrator access is required" });
+  }
+  return access;
+}
+async function requireAuthenticated(event) {
+  const access = await getCurrentAccess(event);
+  if (!access.isAuthenticated) {
+    throw createError({ statusCode: 401, statusMessage: "Bitrix24 authorization is required" });
   }
   return access;
 }
 
-const current_get = defineEventHandler$1(async (event) => ({
+const current_get = defineEventHandler(async (event) => ({
   success: true,
   data: await getCurrentAccess(event)
 }));
@@ -6245,20 +6308,20 @@ const NEXT_STEP_SYSTEM_PROMPT = `\u0422\u044B AI CRM Sales Assistant \u0434\u043
 
 const VIBE_BASE_URL = "https://vibecode.bitrix24.tech/v1";
 const DEFAULT_AI_MODEL = "bitrix/bitrixgpt-5.5";
-const analyzeNextStep_post = defineEventHandler$1(async (event) => {
+const analyzeNextStep_post = defineEventHandler(async (event) => {
   var _a, _b, _c, _d, _e, _f, _g;
   const authHeader = getVibeAuthorizationHeader(event);
-  const body = await readBody$1(event);
+  const body = await readBody(event);
   if (!(body == null ? void 0 : body.dealId)) {
-    throw createError$1({ statusCode: 400, statusMessage: "Missing dealId parameter" });
+    throw createError({ statusCode: 400, statusMessage: "Missing dealId parameter" });
   }
   if (!authHeader) {
-    throw createError$1({ statusCode: 401, statusMessage: "Missing authorization header" });
+    throw createError({ statusCode: 401, statusMessage: "Missing authorization header" });
   }
   ensureVibeApiKey();
   const dealId = Number(body.dealId);
   if (!Number.isFinite(dealId) || dealId <= 0) {
-    throw createError$1({ statusCode: 400, statusMessage: "Deal ID \u0434\u043E\u043B\u0436\u0435\u043D \u0431\u044B\u0442\u044C \u043F\u043E\u043B\u043E\u0436\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u043C \u0447\u0438\u0441\u043B\u043E\u043C." });
+    throw createError({ statusCode: 400, statusMessage: "Deal ID \u0434\u043E\u043B\u0436\u0435\u043D \u0431\u044B\u0442\u044C \u043F\u043E\u043B\u043E\u0436\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u043C \u0447\u0438\u0441\u043B\u043E\u043C." });
   }
   const headers = {
     "X-Api-Key": B24_API_KEY,
@@ -6305,7 +6368,7 @@ const analyzeNextStep_post = defineEventHandler$1(async (event) => {
       }
     };
   } catch (error) {
-    throw createError$1({
+    throw createError({
       statusCode: (error == null ? void 0 : error.statusCode) || 500,
       statusMessage: (error == null ? void 0 : error.message) || "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0432\u044B\u043F\u043E\u043B\u043D\u0438\u0442\u044C AI-\u0430\u043D\u0430\u043B\u0438\u0437 \u0441\u0434\u0435\u043B\u043A\u0438."
     });
@@ -6458,23 +6521,23 @@ const analyzeNextStep_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.de
   default: analyzeNextStep_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const createCallActivity_post = defineEventHandler$1(async (event) => {
+const createCallActivity_post = defineEventHandler(async (event) => {
   var _a, _b, _c;
   const authHeader = getVibeAuthorizationHeader(event);
-  const body = await readBody$1(event);
+  const body = await readBody(event);
   if (!(body == null ? void 0 : body.dealId)) {
-    throw createError$1({ statusCode: 400, statusMessage: "Missing dealId parameter" });
+    throw createError({ statusCode: 400, statusMessage: "Missing dealId parameter" });
   }
   if (!authHeader) {
-    throw createError$1({ statusCode: 401, statusMessage: "Missing authorization header" });
+    throw createError({ statusCode: 401, statusMessage: "Missing authorization header" });
   }
   ensureVibeApiKey();
   const notes = typeof body.crmNotes === "string" ? body.crmNotes.trim() : "";
   if (!body.nextContactDate) {
-    throw createError$1({ statusCode: 400, statusMessage: "Missing nextContactDate parameter" });
+    throw createError({ statusCode: 400, statusMessage: "Missing nextContactDate parameter" });
   }
   if (!notes) {
-    throw createError$1({ statusCode: 400, statusMessage: "Missing crmNotes parameter" });
+    throw createError({ statusCode: 400, statusMessage: "Missing crmNotes parameter" });
   }
   const deadline = buildActivityDeadline(String(body.nextContactDate));
   const description = [
@@ -6511,7 +6574,7 @@ const createCallActivity_post = defineEventHandler$1(async (event) => {
   const result = await response.json();
   if (!response.ok || !result.success) {
     console.error("CRM follow-up task creation failed:", JSON.stringify(result).slice(0, 2e3));
-    throw createError$1({
+    throw createError({
       statusCode: response.status || 500,
       statusMessage: ((_a = result.error) == null ? void 0 : _a.message) || result.error || "Unable to create CRM follow-up task",
       data: result
@@ -6529,16 +6592,16 @@ const createCallActivity_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object
   default: createCallActivity_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const loadDealContext_get = defineEventHandler$1(async (event) => {
+const loadDealContext_get = defineEventHandler(async (event) => {
   var _a;
-  const query = getQuery$2(event);
+  const query = getQuery$1(event);
   const dealId = firstString$1(query.dealId);
   const authHeader = getVibeAuthorizationHeader(event);
   if (!dealId) {
-    throw createError$1({ statusCode: 400, statusMessage: "Missing dealId parameter" });
+    throw createError({ statusCode: 400, statusMessage: "Missing dealId parameter" });
   }
   if (!authHeader) {
-    throw createError$1({ statusCode: 401, statusMessage: "Missing authorization header" });
+    throw createError({ statusCode: 401, statusMessage: "Missing authorization header" });
   }
   ensureVibeApiKey();
   const headers = {
@@ -6548,7 +6611,7 @@ const loadDealContext_get = defineEventHandler$1(async (event) => {
   const dealResponse = await fetch(`https://vibecode.bitrix24.tech/v1/deals/${dealId}`, { headers });
   const dealData = await dealResponse.json();
   if (!dealResponse.ok || !dealData.success) {
-    throw createError$1({
+    throw createError({
       statusCode: dealResponse.status || 500,
       statusMessage: ((_a = dealData.error) == null ? void 0 : _a.message) || dealData.error || "VibeCode deal fetch failed"
     });
@@ -6614,11 +6677,11 @@ const loadDealContext_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.def
   default: loadDealContext_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const checkDataQuality_post = defineEventHandler$1(async (event) => {
-  await requireAdmin(event);
-  const body = await readBody$1(event).catch(() => ({}));
+const checkDataQuality_post = defineEventHandler(async (event) => {
+  await requireAuthenticated(event);
+  const body = await readBody(event).catch(() => ({}));
   const dateRange = parseMoscowDateRange(body);
-  setResponseStatus$1(event, 202);
+  setResponseStatus(event, 202);
   return startDataQualityJob(dateRange);
 });
 
@@ -6627,8 +6690,8 @@ const checkDataQuality_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.d
   default: checkDataQuality_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const status_get$6 = defineEventHandler$1(async (event) => {
-  await requireAdmin(event);
+const status_get$6 = defineEventHandler(async (event) => {
+  await requireAuthenticated(event);
   return reportJobs.dataQuality;
 });
 
@@ -6637,9 +6700,9 @@ const status_get$7 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProper
   default: status_get$6
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const checkNextStep_post = defineEventHandler$1(async (event) => {
-  await requireAdmin(event);
-  setResponseStatus$1(event, 202);
+const checkNextStep_post = defineEventHandler(async (event) => {
+  await requireAuthenticated(event);
+  setResponseStatus(event, 202);
   return startNextStepJob();
 });
 
@@ -6648,8 +6711,8 @@ const checkNextStep_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defi
   default: checkNextStep_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const status_get$4 = defineEventHandler$1(async (event) => {
-  await requireAdmin(event);
+const status_get$4 = defineEventHandler(async (event) => {
+  await requireAuthenticated(event);
   return reportJobs.nextStep;
 });
 
@@ -6658,9 +6721,9 @@ const status_get$5 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProper
   default: status_get$4
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const checkReactivation_post = defineEventHandler$1(async (event) => {
-  await requireAdmin(event);
-  setResponseStatus$1(event, 202);
+const checkReactivation_post = defineEventHandler(async (event) => {
+  await requireAuthenticated(event);
+  setResponseStatus(event, 202);
   return startReactivationJob();
 });
 
@@ -6669,8 +6732,8 @@ const checkReactivation_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.
   default: checkReactivation_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const status_get$2 = defineEventHandler$1(async (event) => {
-  await requireAdmin(event);
+const status_get$2 = defineEventHandler(async (event) => {
+  await requireAuthenticated(event);
   return reportJobs.reactivation;
 });
 
@@ -6679,11 +6742,11 @@ const status_get$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProper
   default: status_get$2
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const checkSla_post = defineEventHandler$1(async (event) => {
+const checkSla_post = defineEventHandler(async (event) => {
   await requireAdmin(event);
-  const body = await readBody$1(event).catch(() => ({}));
+  const body = await readBody(event).catch(() => ({}));
   const dateRange = parseMoscowDateRange(body);
-  setResponseStatus$1(event, 202);
+  setResponseStatus(event, 202);
   return startSlaJob({
     dateRange,
     updateCrm: Boolean(body.updateCrm),
@@ -6696,7 +6759,7 @@ const checkSla_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePro
   default: checkSla_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const status_get = defineEventHandler$1(async (event) => {
+const status_get = defineEventHandler(async (event) => {
   await requireAdmin(event);
   return reportJobs.sla;
 });
@@ -6706,8 +6769,8 @@ const status_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProper
   default: status_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const dataQualityLog_get = defineEventHandler$1(async (event) => {
-  await requireAdmin(event);
+const dataQualityLog_get = defineEventHandler(async (event) => {
+  await requireAuthenticated(event);
   return readDataQualityLog();
 });
 
@@ -6716,8 +6779,8 @@ const dataQualityLog_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defi
   default: dataQualityLog_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const clientContext_post = defineEventHandler$1(async (event) => {
-  const body = await readBody$1(event).catch(() => ({}));
+const clientContext_post = defineEventHandler(async (event) => {
+  const body = await readBody(event).catch(() => ({}));
   console.log("Bitrix client context debug:", JSON.stringify(body || {}).slice(0, 4e3));
   return { success: true };
 });
@@ -6727,7 +6790,7 @@ const clientContext_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defi
   default: clientContext_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const runtime_get = defineEventHandler$1(async (event) => {
+const runtime_get = defineEventHandler(async (event) => {
   var _a;
   const authHeader = getVibeAuthorizationHeader(event);
   let me = null;
@@ -6753,7 +6816,7 @@ const runtime_get = defineEventHandler$1(async (event) => {
     success: true,
     data: {
       path: event.path,
-      query: getQuery$2(event),
+      query: getQuery$1(event),
       hasVibeAuthorization: Boolean(authHeader),
       hasApiKey: Boolean(B24_API_KEY),
       headers: {
@@ -6773,8 +6836,8 @@ const runtime_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePrope
   default: runtime_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const nextStepLog_get = defineEventHandler$1(async (event) => {
-  await requireAdmin(event);
+const nextStepLog_get = defineEventHandler(async (event) => {
+  await requireAuthenticated(event);
   return readNextStepLog();
 });
 
@@ -6783,8 +6846,8 @@ const nextStepLog_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineP
   default: nextStepLog_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const reactivationLog_get = defineEventHandler$1(async (event) => {
-  await requireAdmin(event);
+const reactivationLog_get = defineEventHandler(async (event) => {
+  await requireAuthenticated(event);
   return readReactivationLog();
 });
 
@@ -6793,7 +6856,7 @@ const reactivationLog_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.def
   default: reactivationLog_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const slaAutoControl_get = defineEventHandler$1(async (event) => {
+const slaAutoControl_get = defineEventHandler(async (event) => {
   await requireAdmin(event);
   return readSlaAutoControlState();
 });
@@ -6803,9 +6866,9 @@ const slaAutoControl_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defi
   default: slaAutoControl_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const slaAutoControl_patch = defineEventHandler$1(async (event) => {
+const slaAutoControl_patch = defineEventHandler(async (event) => {
   await requireAdmin(event);
-  const body = await readBody$1(event).catch(() => ({}));
+  const body = await readBody(event).catch(() => ({}));
   return updateSlaAutoControlConfig(body);
 });
 
@@ -6814,7 +6877,7 @@ const slaAutoControl_patch$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.de
   default: slaAutoControl_patch
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const slaLog_get = defineEventHandler$1(async (event) => {
+const slaLog_get = defineEventHandler(async (event) => {
   await requireAdmin(event);
   return readSlaLog();
 });
@@ -6880,6 +6943,7 @@ const HAS_APP_TELEPORTS = !!(appTeleportAttrs.id);
 const APP_TELEPORT_OPEN_TAG = HAS_APP_TELEPORTS ? `<${appTeleportTag}${propsToString(appTeleportAttrs)}>` : "";
 const APP_TELEPORT_CLOSE_TAG = HAS_APP_TELEPORTS ? `</${appTeleportTag}>` : "";
 const PAYLOAD_URL_RE = /^[^?]*\/_payload.json(?:\?.*)?$/ ;
+const PAYLOAD_FILENAME = "_payload.json" ;
 const handler = defineRenderHandler((event) => {
 	
 	const ssrError = event.path.startsWith("/__nuxt_error") ? getQuery$1(event) : null;
@@ -6915,17 +6979,22 @@ async function renderRoute(event, ssrError) {
 	}
 	
 	const routeOptions = getRouteRules(event);
-	if (routeOptions.ssr === false) {
-		ssrContext.noSSR = true;
-	}
 	
-	!ssrContext.noSSR && (NUXT_RUNTIME_PAYLOAD_EXTRACTION);
-	const isRenderingPayload = (routeOptions.prerender) && PAYLOAD_URL_RE.test(ssrContext.url);
+	const _PAYLOAD_EXTRACTION = !ssrContext.noSSR && (NUXT_RUNTIME_PAYLOAD_EXTRACTION);
+	
+	
+	
+	const _PAYLOAD_INLINE = !_PAYLOAD_EXTRACTION || NUXT_PAYLOAD_INLINE;
+	const isRenderingPayload = (_PAYLOAD_EXTRACTION || routeOptions.prerender) && PAYLOAD_URL_RE.test(ssrContext.url);
 	if (isRenderingPayload) {
 		const url = ssrContext.url.substring(0, ssrContext.url.lastIndexOf("/")) || "/";
 		ssrContext.url = url;
 		event._path = event.node.req.url = url;
 	}
+	if (routeOptions.ssr === false) {
+		ssrContext.noSSR = true;
+	}
+	const payloadURL = _PAYLOAD_EXTRACTION ? joinURL(ssrContext.runtimeConfig.app.cdnURL || ssrContext.runtimeConfig.app.baseURL, ssrContext.url.replace(/\?.*$/, ""), PAYLOAD_FILENAME) + "?" + ssrContext.runtimeConfig.app.buildId : undefined;
 	
 	const renderer = await getRenderer(ssrContext);
 	const _rendered = await renderer.renderToString(ssrContext).catch(async (error) => {
@@ -6963,6 +7032,16 @@ async function renderRoute(event, ssrError) {
 	
 	const { styles, scripts } = getRequestDependencies(ssrContext, renderer.rendererContext);
 	
+	
+	if (_PAYLOAD_EXTRACTION && !_PAYLOAD_INLINE && !NO_SCRIPTS) {
+		ssrContext.head.push({ link: [{
+			rel: "preload",
+			as: "fetch",
+			crossorigin: "anonymous",
+			href: payloadURL
+		} ] }, headEntryOptions);
+	}
+	
 	if (inlinedStyles.length) {
 		ssrContext.head.push({ style: inlinedStyles });
 	}
@@ -6996,10 +7075,14 @@ async function renderRoute(event, ssrError) {
 		ssrContext.head.push({ link: getPreloadLinks(ssrContext, renderer.rendererContext) }, headEntryOptions);
 		ssrContext.head.push({ link: getPrefetchLinks(ssrContext, renderer.rendererContext) }, headEntryOptions);
 		
-		ssrContext.head.push({ script: renderPayloadJsonScript({
+		ssrContext.head.push({ script: _PAYLOAD_INLINE ? renderPayloadJsonScript({
 			ssrContext,
 			data: ssrContext.payload
-		})   }, {
+		})  : renderPayloadJsonScript({
+			ssrContext,
+			data: splitPayload(ssrContext).initial,
+			src: payloadURL
+		})  }, {
 			...headEntryOptions,
 			
 			tagPosition: "bodyClose",
