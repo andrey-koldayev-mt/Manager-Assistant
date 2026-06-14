@@ -77,6 +77,31 @@ function firstString(...values: unknown[]): string {
   return '';
 }
 
+function bearerToken(authHeader: string): string {
+  const trimmed = authHeader.trim();
+  return trimmed.replace(/^Bearer\s+/i, '').trim();
+}
+
+function normalizePortalDomain(value: string | null): string {
+  if (!value) return '';
+  return value
+    .replace(/^https?:\/\//i, '')
+    .replace(/\/.*$/, '')
+    .trim()
+    .toLowerCase();
+}
+
+function bitrixRestUrl(portal: string | null, method: string, authHeader: string): string {
+  const domain = normalizePortalDomain(portal);
+  const token = bearerToken(authHeader);
+  if (!domain || !token || !/^[a-z0-9.-]+$/i.test(domain)) {
+    return '';
+  }
+
+  const params = new URLSearchParams({ auth: token });
+  return `https://${domain}/rest/${method}.json?${params.toString()}`;
+}
+
 export function deriveAccessFromVibeMe(raw: unknown): DashboardAccess {
   const root = toRecord(raw);
   const snakeCurrentUser = toRecord(root?.current_user);
@@ -90,32 +115,54 @@ export function deriveAccessFromVibeMe(raw: unknown): DashboardAccess {
     root?.is_admin,
     root?.admin,
     root?.ADMIN,
+    root?.isBitrixAdmin,
+    root?.is_bitrix_admin,
+    root?.bitrixAdmin,
+    root?.bitrix_admin,
     root?.isAdministrator,
     root?.IS_ADMIN,
+    root?.IS_ADMINISTRATOR,
     permissions?.isAdmin,
     permissions?.is_admin,
     permissions?.admin,
+    permissions?.ADMIN,
+    permissions?.isBitrixAdmin,
+    permissions?.is_bitrix_admin,
+    permissions?.IS_ADMIN,
     rights?.isAdmin,
     rights?.is_admin,
     rights?.admin,
+    rights?.ADMIN,
+    rights?.isBitrixAdmin,
+    rights?.is_bitrix_admin,
+    rights?.IS_ADMIN,
     currentUser?.isAdmin,
     currentUser?.is_admin,
     currentUser?.admin,
     currentUser?.ADMIN,
+    currentUser?.isBitrixAdmin,
+    currentUser?.is_bitrix_admin,
     currentUser?.isAdministrator,
     currentUser?.IS_ADMIN,
+    currentUser?.IS_ADMINISTRATOR,
     snakeCurrentUser?.isAdmin,
     snakeCurrentUser?.is_admin,
     snakeCurrentUser?.admin,
     snakeCurrentUser?.ADMIN,
+    snakeCurrentUser?.isBitrixAdmin,
+    snakeCurrentUser?.is_bitrix_admin,
     snakeCurrentUser?.isAdministrator,
     snakeCurrentUser?.IS_ADMIN,
+    snakeCurrentUser?.IS_ADMINISTRATOR,
     user?.isAdmin,
     user?.is_admin,
     user?.admin,
     user?.ADMIN,
+    user?.isBitrixAdmin,
+    user?.is_bitrix_admin,
     user?.isAdministrator,
-    user?.IS_ADMIN
+    user?.IS_ADMIN,
+    user?.IS_ADMINISTRATOR
   );
 
   return {
@@ -161,6 +208,41 @@ export function deriveAccessFromVibeMe(raw: unknown): DashboardAccess {
   };
 }
 
+export function deriveAccessWithBitrixCurrentUser(raw: unknown, bitrixCurrentUser: unknown): DashboardAccess {
+  const root = toRecord(raw) ?? {};
+  const currentUser = toRecord(bitrixCurrentUser);
+  if (!currentUser) {
+    return deriveAccessFromVibeMe(raw);
+  }
+
+  return deriveAccessFromVibeMe({
+    ...root,
+    currentUser: {
+      ...(toRecord(root.currentUser) ?? {}),
+      ...currentUser
+    },
+    current_user: {
+      ...(toRecord(root.current_user) ?? {}),
+      ...currentUser
+    }
+  });
+}
+
+async function loadBitrixCurrentUser(raw: unknown, authHeader: string): Promise<unknown> {
+  const root = toRecord(raw);
+  const portal = firstString(root?.portal, root?.portalDomain, root?.domain) || null;
+  const url = bitrixRestUrl(portal, 'user.current', authHeader);
+  if (!url) return null;
+
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(5000)
+  }).catch(() => null);
+  if (!response?.ok) return null;
+
+  const payload = await response.json().catch(() => null);
+  return toRecord(payload)?.result ?? null;
+}
+
 export async function getCurrentAccess(event: H3Event): Promise<DashboardAccess> {
   const authHeader = getVibeAuthorizationHeader(event);
   if (!authHeader || !B24_API_KEY) {
@@ -178,7 +260,14 @@ export async function getCurrentAccess(event: H3Event): Promise<DashboardAccess>
     return deriveAccessFromVibeMe(null);
   }
 
-  return deriveAccessFromVibeMe(payload?.data ?? payload);
+  const raw = payload?.data ?? payload;
+  const access = deriveAccessFromVibeMe(raw);
+  if (access.isAdmin) {
+    return access;
+  }
+
+  const bitrixCurrentUser = await loadBitrixCurrentUser(raw, authHeader);
+  return deriveAccessWithBitrixCurrentUser(raw, bitrixCurrentUser);
 }
 
 export async function requireAdmin(event: H3Event): Promise<DashboardAccess> {

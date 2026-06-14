@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { deriveAccessFromVibeMe } from '../../server/utils/access';
+import { deriveAccessFromVibeMe, deriveAccessWithBitrixCurrentUser } from '../../server/utils/access';
 
 describe('dashboard access derivation', () => {
   it('allows all report modules for Bitrix admins', () => {
@@ -59,6 +59,68 @@ describe('dashboard access derivation', () => {
     expect(access.isAuthenticated).toBe(true);
     expect(access.isAdmin).toBe(true);
     expect(access.user.id).toBe(19);
+    expect(access.allowedModules).toContain('sla-first-contact');
+  });
+
+  it('recognizes uppercase and Bitrix-style admin flags from the current user payload', () => {
+    const access = deriveAccessFromVibeMe({
+      portal: 'crm-re.bitrix24.ru',
+      currentUser: {
+        ID: '21',
+        NAME: 'Bitrix Admin',
+        ADMIN: 'Y'
+      }
+    });
+
+    expect(access.isAuthenticated).toBe(true);
+    expect(access.isAdmin).toBe(true);
+    expect(access.allowedModules).toContain('sla-first-contact');
+  });
+
+  it('recognizes VibeCode permission admin flags without using CRM responsible data', () => {
+    const access = deriveAccessFromVibeMe({
+      user: {
+        id: 23,
+        name: 'Dashboard User'
+      },
+      permissions: {
+        is_bitrix_admin: 'true'
+      },
+      responsible: {
+        id: 1,
+        ADMIN: 'N'
+      }
+    });
+
+    expect(access.isAuthenticated).toBe(true);
+    expect(access.isAdmin).toBe(true);
+    expect(access.user.id).toBe(23);
+    expect(access.allowedModules).toContain('sla-first-contact');
+  });
+
+  it('uses Bitrix user.current fallback for the current dashboard user admin flag', () => {
+    const access = deriveAccessWithBitrixCurrentUser(
+      {
+        portal: 'crm-re.bitrix24.ru',
+        user: {
+          id: 23,
+          name: 'Dashboard User'
+        },
+        responsible: {
+          id: 1,
+          ADMIN: 'N'
+        }
+      },
+      {
+        ID: '23',
+        NAME: 'Dashboard Admin',
+        IS_ADMIN: 'Y'
+      }
+    );
+
+    expect(access.isAuthenticated).toBe(true);
+    expect(access.isAdmin).toBe(true);
+    expect(access.user.id).toBe(23);
     expect(access.allowedModules).toContain('sla-first-contact');
   });
 

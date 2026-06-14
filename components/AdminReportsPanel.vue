@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import AlertIcon from '@bitrix24/b24icons-vue/main/WarningIcon';
 import CheckIcon from '@bitrix24/b24icons-vue/main/CircleCheckIcon';
+import MoonIcon from '@bitrix24/b24icons-vue/main/MoonIcon';
 import RefreshIcon from '@bitrix24/b24icons-vue/main/RefreshIcon';
+import SunIcon from '@bitrix24/b24icons-vue/main/SunIcon';
 
 type ReportMode = 'sla-first-contact' | 'data-quality' | 'reactivation' | 'next-step-control';
 type ViolationFlag = 'Да' | 'Нет';
@@ -98,10 +100,19 @@ interface SlaAutoControlState {
   nextRunAt: string | null;
 }
 
+interface ReportKpi {
+  label: string;
+  value: number;
+  tone: string;
+  badge?: string;
+  hint?: string;
+}
+
 const props = defineProps<{
   mode: ReportMode;
   accessToken?: string;
 }>();
+const colorMode = useColorMode();
 
 const reportConfig: Record<ReportMode, {
   title: string;
@@ -186,6 +197,10 @@ let pollTimer: ReturnType<typeof setInterval> | null = null;
 const config = computed(() => reportConfig[props.mode]);
 const rows = computed<any[]>(() => payload.value.rows ?? []);
 const isRunning = computed(() => job.value.status === 'running');
+const currentTheme = computed(() => (colorMode.value === 'dark' ? 'dark' : 'light'));
+const nextTheme = computed(() => (currentTheme.value === 'dark' ? 'light' : 'dark'));
+const themeLabel = computed(() => (currentTheme.value === 'dark' ? 'Светлая' : 'Темная'));
+const themeIcon = computed(() => (currentTheme.value === 'dark' ? SunIcon : MoonIcon));
 const progressPercent = computed(() => (
   job.value.progress.total > 0
     ? Math.min(100, Math.round((job.value.progress.current / job.value.progress.total) * 100))
@@ -307,16 +322,17 @@ const pagedRows = computed(() => {
   return filteredRows.value.slice((current - 1) * pageSize, current * pageSize);
 });
 
-const kpis = computed(() => {
+const kpis = computed<ReportKpi[]>(() => {
   const list = filteredRows.value;
   if (props.mode === 'sla-first-contact') {
     const violations = list.filter((row: SlaRow) => row.status === 'Контакта не было' || row.violationFlag === 'Да').length;
     const within = list.filter((row: SlaRow) => row.status === 'В пределах 15 минут' || row.status === 'Входящий звонок').length;
+    const rate = (value: number) => (list.length > 0 ? `${Math.round((value / list.length) * 100)}%` : '0%');
     return [
-      { label: 'Всего лидов', value: list.length, tone: 'blue' },
-      { label: 'Нарушения', value: violations, tone: 'red' },
-      { label: 'В SLA', value: within, tone: 'green' },
-      { label: 'Без контакта', value: list.filter((row: SlaRow) => row.status === 'Контакта не было').length, tone: 'amber' }
+      { label: 'Всего лидов', value: list.length, tone: 'blue', hint: 'в текущей выборке' },
+      { label: 'Нарушения', value: violations, tone: 'red', badge: rate(violations), hint: 'требуют внимания' },
+      { label: 'В SLA', value: within, tone: 'green', badge: rate(within), hint: 'обработаны без ошибок' },
+      { label: 'Без контакта', value: list.filter((row: SlaRow) => row.status === 'Контакта не было').length, tone: 'amber', hint: 'нет активности' }
     ];
   }
   if (props.mode === 'data-quality') {
@@ -345,15 +361,28 @@ const kpis = computed(() => {
 
 const chartSegments = computed(() => {
   const counts = new Map<string, number>();
-  for (const row of filteredRows.value) {
-    const key = props.mode === 'reactivation'
-      ? 'План'
-      : normalizeStatus(row);
-    counts.set(key, (counts.get(key) ?? 0) + 1);
+  if (props.mode === 'sla-first-contact') {
+    const ok = filteredRows.value.filter((row: SlaRow) => row.violationFlag === 'Нет').length;
+    const bad = filteredRows.value.filter((row: SlaRow) => row.violationFlag === 'Да').length;
+    counts.set('Без ошибок', ok);
+    counts.set('С ошибками', bad);
+  } else {
+    for (const row of filteredRows.value) {
+      const key = props.mode === 'reactivation'
+        ? 'План'
+        : normalizeStatus(row);
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
   }
-  const colors = ['#31c484', '#ffb02e', '#ff5752', '#2fc6f6', '#8b96a7'];
+  const colors = props.mode === 'sla-first-contact'
+    ? ['#31c484', '#ff5752']
+    : ['#31c484', '#ffb02e', '#ff5752', '#2fc6f6', '#8b96a7'];
   return [...counts.entries()].map(([label, value], index) => ({ label, value, color: colors[index % colors.length] }));
 });
+
+function setTheme() {
+  colorMode.preference = nextTheme.value;
+}
 
 async function loadLog() {
   loading.value = true;
@@ -493,12 +522,18 @@ onUnmounted(stopPolling);
   <main class="admin-report">
     <header class="admin-report-header">
       <div>
-        <p class="report-kicker">Административный дашборд</p>
+        <p class="report-kicker">Отдел прямых продаж / SLA</p>
         <h1>{{ config.title }}</h1>
         <span>{{ config.subtitle }}</span>
       </div>
       <div class="report-actions">
         <span>Последняя проверка: {{ formatDateTime(payload.generatedAt) }}</span>
+        <B24Button
+          :icon="themeIcon"
+          :label="themeLabel"
+          class="theme-toggle header-theme-toggle"
+          @click="setTheme"
+        />
         <B24Button label="Экспорт" class="border border-default bg-default text-label" :disabled="filteredRows.length === 0" @click="exportRows" />
         <B24Button
           :icon="RefreshIcon"
@@ -527,6 +562,13 @@ onUnmounted(stopPolling);
           <option v-for="responsible in responsibleOptions" :key="responsible" :value="responsible">{{ responsible }}</option>
         </select>
       </B24FormField>
+      <B24FormField v-if="mode === 'sla-first-contact'" label="Нарушение SLA">
+        <select v-model="filters.violation" class="native-select">
+          <option value="Все">Все</option>
+          <option value="Да">Да</option>
+          <option value="Нет">Нет</option>
+        </select>
+      </B24FormField>
       <B24FormField label="Поиск">
         <B24Input v-model="filters.query" :placeholder="config.searchPlaceholder" />
       </B24FormField>
@@ -549,7 +591,7 @@ onUnmounted(stopPolling);
     </section>
 
     <section v-if="mode === 'sla-first-contact' && slaAutoControl" class="automation-panel">
-      <div>
+      <div class="automation-summary">
         <p class="report-kicker">Автоконтроль</p>
         <h2>SLA первого контакта</h2>
         <span>
@@ -558,12 +600,18 @@ onUnmounted(stopPolling);
       </div>
       <label class="switch-line">
         <input v-model="slaAutoControl.enabled" type="checkbox" />
-        Включить
+        Включить автоматический контроль
       </label>
-      <B24Input v-model="slaAutoControl.startDate" type="date" />
-      <B24Input v-model="slaAutoControl.time" type="time" />
-      <B24Input v-model="slaAutoControl.intervalDays" type="number" min="1" />
-      <B24Button label="Сохранить" :loading="slaAutoSaving" class="border border-default bg-default text-label" @click="saveSlaAutoControl" />
+      <B24FormField label="Первый запуск">
+        <B24Input v-model="slaAutoControl.startDate" type="date" />
+      </B24FormField>
+      <B24FormField label="Время">
+        <B24Input v-model="slaAutoControl.time" type="time" />
+      </B24FormField>
+      <B24FormField label="Периодичность, дней">
+        <B24Input v-model="slaAutoControl.intervalDays" type="number" min="1" />
+      </B24FormField>
+      <B24Button label="Сохранить расписание" :loading="slaAutoSaving" class="brand-action automation-save" @click="saveSlaAutoControl" />
       <B24Button label="Заполнить CRM за период" class="brand-action" :disabled="isRunning" @click="() => void runCheck(true)" />
     </section>
 
@@ -590,8 +638,13 @@ onUnmounted(stopPolling);
     <template v-else>
       <section class="report-kpis">
         <article v-for="kpi in kpis" :key="kpi.label" class="report-kpi" :class="`tone-${kpi.tone}`">
+          <i aria-hidden="true" />
           <span>{{ kpi.label }}</span>
-          <strong>{{ kpi.value }}</strong>
+          <div>
+            <strong>{{ kpi.value }}</strong>
+            <b v-if="kpi.badge">{{ kpi.badge }}</b>
+          </div>
+          <small v-if="kpi.hint">{{ kpi.hint }}</small>
         </article>
       </section>
 
@@ -645,17 +698,36 @@ onUnmounted(stopPolling);
           <div class="report-table-wrap">
             <table v-if="mode === 'sla-first-contact'" class="report-table">
               <thead>
-                <tr><th>ID</th><th>Лид</th><th>Создан</th><th>Первый контакт</th><th>Статус</th><th>Ответственный</th><th>Нарушение</th></tr>
+                <tr>
+                  <th>Лид</th>
+                  <th>Статус лида</th>
+                  <th>Причина браковки</th>
+                  <th>Проверка</th>
+                  <th>Создан</th>
+                  <th>Первый контакт</th>
+                  <th>Минут</th>
+                  <th>Просрочка</th>
+                  <th>Статус</th>
+                  <th>Ответственный</th>
+                  <th>Нарушение</th>
+                </tr>
               </thead>
               <tbody>
                 <tr v-for="row in pagedRows" :key="row.id">
-                  <td>{{ row.leadId }}</td>
-                  <td>{{ row.leadTitle }}</td>
+                  <td>
+                    <strong class="lead-link">#{{ row.leadId }}</strong>
+                    <span class="table-muted">{{ row.leadTitle }}</span>
+                  </td>
+                  <td>{{ row.leadStageName || '—' }}</td>
+                  <td>{{ row.rejectionReason || '—' }}</td>
+                  <td>{{ formatDateTime(row.checkedAt) }}</td>
                   <td>{{ formatDateTime(row.leadCreatedAt) }}</td>
                   <td>{{ formatDateTime(row.firstContactAt) }}</td>
+                  <td>{{ row.minutesToFirstContact ?? '—' }}</td>
+                  <td>{{ row.slaOverrunMinutes ?? '—' }}</td>
                   <td><mark>{{ row.status }}</mark></td>
                   <td>{{ row.responsibleName }}</td>
-                  <td><b :class="row.violationFlag === 'Да' ? 'flag-bad' : 'flag-good'">{{ row.violationFlag }}</b></td>
+                  <td><b class="flag-pill" :class="row.violationFlag === 'Да' ? 'flag-bad' : 'flag-good'">{{ row.violationFlag }}</b></td>
                 </tr>
               </tbody>
             </table>

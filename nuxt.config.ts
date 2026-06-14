@@ -16,7 +16,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   ssr: true,
   b24ui: {
-    colorMode: false,
+    colorMode: true,
     experimental: {
       componentDetection: true
     }

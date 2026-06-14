@@ -1,12 +1,20 @@
 <script setup lang="ts">
+import AiIcon from '@bitrix24/b24icons-vue/main/AiIcon';
+import DocumentIcon from '@bitrix24/b24icons-vue/main/DocumentIcon';
+import ListAiIcon from '@bitrix24/b24icons-vue/main/ListAiIcon';
+import PersonCheckIcon from '@bitrix24/b24icons-vue/main/PersonCheckIcon';
+import RefreshIcon from '@bitrix24/b24icons-vue/main/RefreshIcon';
+import Shield2CheckedIcon from '@bitrix24/b24icons-vue/main/Shield2CheckedIcon';
+import TasksIcon from '@bitrix24/b24icons-vue/main/TasksIcon';
 import { parseDate } from '@internationalized/date';
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
+import { computed, markRaw, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 type HistoryType = 'buyer' | 'lead';
 type WorkspaceMode = 'reactivation' | 'ai-next-step';
 type AdminReportMode = 'sla-first-contact' | 'data-quality' | 'reactivation-report' | 'next-step-control';
 type AdminPanelMode = 'sla-first-contact' | 'data-quality' | 'reactivation' | 'next-step-control';
 type ShellSection = 'manager-assistant' | AdminReportMode;
+type ThemePreference = 'light' | 'dark';
 
 interface DashboardAccess {
   isAuthenticated: boolean;
@@ -20,12 +28,12 @@ interface DashboardAccess {
 }
 
 const toast = useToast();
+const colorMode = useColorMode();
 
 const activeShellSection = ref<ShellSection>('manager-assistant');
 const dashboardAccess = ref<DashboardAccess | null>(null);
 const accessLoading = ref(false);
 const accessError = ref('');
-const colorTheme = ref<'light' | 'dark'>('light');
 const workspaceMode = ref<WorkspaceMode>('reactivation');
 const agentName = ref('Елена');
 const clientName = ref('Александр');
@@ -87,8 +95,9 @@ const normalizedDealCategoryName = computed(() => dealCategoryName.value.trim().
 const isReactivationFunnel = computed(() => normalizedDealCategoryName.value.includes('реактивац'));
 const isQualityLeadFunnel = computed(() => normalizedDealCategoryName.value.includes('качественный лид'));
 const isDashboardAdmin = computed(() => dashboardAccess.value?.isAdmin === true);
-const nextColorTheme = computed(() => (colorTheme.value === 'dark' ? 'light' : 'dark'));
-const colorThemeLabel = computed(() => (colorTheme.value === 'dark' ? 'Светлая тема' : 'Темная тема'));
+const currentTheme = computed<ThemePreference>(() => (colorMode.value === 'dark' ? 'dark' : 'light'));
+const nextColorTheme = computed<ThemePreference>(() => (currentTheme.value === 'dark' ? 'light' : 'dark'));
+const colorThemeLabel = computed(() => (currentTheme.value === 'dark' ? 'Светлая' : 'Темная'));
 const shellSectionModules: Record<ShellSection, string> = {
   'manager-assistant': 'manager-assistant',
   'sla-first-contact': 'sla-first-contact',
@@ -96,19 +105,19 @@ const shellSectionModules: Record<ShellSection, string> = {
   'reactivation-report': 'reactivation',
   'next-step-control': 'next-step-control'
 };
-const allShellNavItems: Array<{ id: ShellSection; label: string; description: string }> = [
-  { id: 'manager-assistant', label: 'Manager-Assistant', description: 'Скрипты и планирование дел' },
-  { id: 'sla-first-contact', label: 'Первичный контакт', description: 'SLA по лидам' },
-  { id: 'data-quality', label: 'Качество данных', description: 'Контакты CRM' },
-  { id: 'reactivation-report', label: 'Реактивация', description: 'План и рейтинг' },
-  { id: 'next-step-control', label: 'Контроль шагов', description: 'Качество дел' }
+const allShellNavItems: Array<{ id: ShellSection; label: string; description: string; icon: any }> = [
+  { id: 'manager-assistant', label: 'Manager-Assistant', description: 'Скрипты и планирование дел', icon: markRaw(AiIcon) },
+  { id: 'sla-first-contact', label: 'Первичный контакт', description: 'SLA по лидам', icon: markRaw(DocumentIcon) },
+  { id: 'data-quality', label: 'Качество данных', description: 'Контакты CRM', icon: markRaw(PersonCheckIcon) },
+  { id: 'reactivation-report', label: 'Реактивация', description: 'План и рейтинг', icon: markRaw(Shield2CheckedIcon) },
+  { id: 'next-step-control', label: 'Контроль шагов', description: 'Качество дел', icon: markRaw(TasksIcon) }
 ];
 function canAccessShellSection(section: ShellSection, access = dashboardAccess.value): boolean {
   if (!access) return section === 'manager-assistant';
   if (section === 'sla-first-contact' && access.isAdmin) return true;
   return access.allowedModules.includes(shellSectionModules[section]);
 }
-const shellNavItems = computed<Array<{ id: ShellSection; label: string; description: string }>>(() => {
+const shellNavItems = computed<Array<{ id: ShellSection; label: string; description: string; icon: any }>>(() => {
   return allShellNavItems.filter((item) => canAccessShellSection(item.id));
 });
 const adminReportMode = computed<AdminPanelMode>(() => {
@@ -225,21 +234,8 @@ function switchShellSection(section: ShellSection) {
   activeShellSection.value = section;
 }
 
-function setColorTheme(theme: 'light' | 'dark') {
-  colorTheme.value = theme;
-  window.localStorage.setItem('dashboard-theme', theme);
-}
-
-function restoreColorTheme() {
-  const storedTheme = window.localStorage.getItem('dashboard-theme');
-  if (storedTheme === 'light' || storedTheme === 'dark') {
-    colorTheme.value = storedTheme;
-    return;
-  }
-
-  if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
-    colorTheme.value = 'dark';
-  }
+function setColorTheme(theme: ThemePreference) {
+  colorMode.preference = theme;
 }
 
 function startTimer() {
@@ -664,7 +660,6 @@ async function copyText(text: string) {
 }
 
 onMounted(() => {
-  restoreColorTheme();
   startTimer();
   void loadCurrentAccess();
   initB24Integration();
@@ -675,7 +670,7 @@ onUnmounted(clearTimer);
 
 <template>
   <B24App>
-    <div class="unified-shell" :data-theme="colorTheme">
+    <div class="unified-shell" :data-theme="currentTheme">
       <aside class="unified-sidebar">
         <div class="unified-brand">
           <img class="brand-logo" src="/favicon.png" alt="Русский Экспресс" />
@@ -693,8 +688,11 @@ onUnmounted(clearTimer);
             :class="{ active: activeShellSection === item.id }"
             @click="switchShellSection(item.id)"
           >
-            <strong>{{ item.label }}</strong>
-            <span>{{ item.description }}</span>
+            <component :is="item.icon" class="nav-icon" />
+            <span class="nav-copy">
+              <strong>{{ item.label }}</strong>
+              <span>{{ item.description }}</span>
+            </span>
           </button>
         </nav>
 
@@ -736,20 +734,19 @@ onUnmounted(clearTimer);
         </div>
       </div>
 
-      <header v-if="activeShellSection === 'manager-assistant'" class="sticky top-0 z-40 border-b border-default bg-default/95 px-4 py-3 backdrop-blur">
+      <header v-if="activeShellSection === 'manager-assistant'" class="dashboard-topbar">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-3">
-            <img class="brand-logo" src="/favicon.png" alt="Русский Экспресс" />
             <div>
-              <h1 class="text-base font-bold leading-tight text-label">Русский Экспресс</h1>
-              <p class="text-xs text-description">Ассистент менеджера в карточке Bitrix24</p>
+              <p class="report-kicker">Отдел прямых продаж / Manager-Assistant</p>
+              <h1 class="text-2xl font-black leading-tight text-label">Скрипты и AI-помощник</h1>
             </div>
-            <B24Badge label="B24 UI" class="brand-soft" />
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
             <div class="mode-switch" role="tablist" aria-label="Режим работы">
               <B24Button
+                :icon="ListAiIcon"
                 label="Скрипт по реактивации"
                 size="sm"
                 :disabled="!isReactivationFunnel"
@@ -757,6 +754,7 @@ onUnmounted(clearTimer);
                 @click="switchWorkspaceMode('reactivation')"
               />
               <B24Button
+                :icon="AiIcon"
                 label="AI следующий шаг"
                 size="sm"
                 :disabled="!isQualityLeadFunnel"
@@ -779,7 +777,13 @@ onUnmounted(clearTimer);
               :label="`Длительность разговора: ${formattedTimer}`"
               class="border border-default bg-muted text-label"
             />
-            <B24Button label="Сбросить" class="border border-default bg-default text-label" @click="resetCall" />
+            <B24Button
+              size="sm"
+              :label="colorThemeLabel"
+              class="theme-toggle header-theme-toggle"
+              @click="setColorTheme(nextColorTheme)"
+            />
+            <B24Button :icon="RefreshIcon" label="Сбросить" class="border border-default bg-default text-label" @click="resetCall" />
           </div>
         </div>
       </header>
