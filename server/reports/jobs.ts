@@ -96,7 +96,8 @@ function getApiKey(): string {
 function startJob(
   kind: ReportKind,
   startMessage: string,
-  runner: (apiKey: string, reportProgress: (progress: SlaProgress) => void) => Promise<unknown>
+  authorization: string | null,
+  runner: (apiKey: string, reportProgress: (progress: SlaProgress) => void, authorization: string | null) => Promise<unknown>
 ): ReportJobState {
   const job = reportJobs[kind];
   if (job.status === 'running') {
@@ -115,7 +116,7 @@ function startJob(
     if (job.id === jobId) {
       job.progress = progress;
     }
-  })
+  }, authorization)
     .then(() => {
       if (job.id !== jobId) return;
       job.status = 'completed';
@@ -136,6 +137,7 @@ export function startSlaJob(params: {
   dateRange: { createdFrom: string; createdTo: string };
   updateCrm?: boolean;
   source?: 'manual' | 'auto';
+  authorization?: string | null;
 }): ReportJobState {
   const job = reportJobs.sla;
   if (job.status === 'running') {
@@ -163,7 +165,7 @@ export function startSlaJob(params: {
         job.progress = progress;
       }
     },
-    { updateCrm: params.updateCrm }
+    { updateCrm: params.updateCrm, authorization: params.authorization }
   )
     .then(async () => {
       if (job.id !== jobId) return;
@@ -190,21 +192,21 @@ export function startSlaJob(params: {
   return job;
 }
 
-export function startDataQualityJob(dateRange: { createdFrom: string; createdTo: string }): ReportJobState {
-  return startJob('dataQuality', 'Проверка качества данных запускается', (apiKey, progress) =>
-    runDataQualityCheckJob(apiKey, dateRange, progress)
+export function startDataQualityJob(dateRange: { createdFrom: string; createdTo: string }, authorization: string | null = null): ReportJobState {
+  return startJob('dataQuality', 'Проверка качества данных запускается', authorization, (apiKey, progress, token) =>
+    runDataQualityCheckJob(apiKey, dateRange, progress, token)
   );
 }
 
-export function startReactivationJob(): ReportJobState {
-  return startJob('reactivation', 'Проверка реактивации запускается', (apiKey, progress) =>
-    runReactivationCheckJob(apiKey, progress)
+export function startReactivationJob(authorization: string | null = null): ReportJobState {
+  return startJob('reactivation', 'Проверка реактивации запускается', authorization, (apiKey, progress, token) =>
+    runReactivationCheckJob(apiKey, progress, token)
   );
 }
 
-export function startNextStepJob(): ReportJobState {
-  return startJob('nextStep', 'Проверка следующего шага запускается', (apiKey, progress) =>
-    runNextStepCheckJob(apiKey, progress)
+export function startNextStepJob(authorization: string | null = null): ReportJobState {
+  return startJob('nextStep', 'Проверка следующего шага запускается', authorization, (apiKey, progress, token) =>
+    runNextStepCheckJob(apiKey, progress, token)
   );
 }
 

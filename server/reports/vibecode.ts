@@ -103,7 +103,10 @@ interface VibeDepartmentUser {
 }
 
 export class VibeCodeClient {
-  constructor(private readonly apiKey: string) {}
+  constructor(
+    private readonly apiKey: string,
+    private readonly authorization: string | null = null
+  ) {}
 
   private delay(ms: number): Promise<void> {
     return new Promise((resolve) => {
@@ -126,11 +129,12 @@ export class VibeCodeClient {
   private async request<T>(path: string, init: RequestInit = {}): Promise<T> {
     const response = await fetch(`${API_BASE}${path}`, {
       ...init,
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Api-Key': this.apiKey,
-        ...init.headers
-      }
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Api-Key': this.apiKey,
+          ...(this.authorization ? { Authorization: this.authorization } : {}),
+          ...init.headers
+        }
     });
     const payload = (await response.json().catch(() => ({}))) as VibeResponse<T>;
     if (!response.ok || payload.success === false) {

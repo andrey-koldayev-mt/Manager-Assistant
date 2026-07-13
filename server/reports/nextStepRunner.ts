@@ -6,12 +6,13 @@ import { VibeCodeClient } from './vibecode';
 
 export async function runNextStepCheckJob(
   apiKey: string,
-  reportProgress: (progress: SlaProgress) => void
+  reportProgress: (progress: SlaProgress) => void,
+  authorization: string | null = null
 ): Promise<NextStepLogPayload> {
   reportProgress({ stage: 'starting', message: 'Готовим проверку следующего шага', current: 0, total: 1 });
 
   const checkedAt = new Date().toISOString();
-  const client = new VibeCodeClient(apiKey);
+  const client = new VibeCodeClient(apiKey, authorization);
 
   reportProgress({ stage: 'loading_contacts', message: 'Загружаем сделки и сотрудников', current: 0, total: 1 });
   let loadedDeals = 0;

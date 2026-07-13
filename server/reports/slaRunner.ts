@@ -80,12 +80,12 @@ export async function runSlaCheckJob(
   apiKey: string,
   dateRange: SlaCheckDateRange,
   reportProgress: (progress: SlaProgress) => void,
-  options: { updateCrm?: boolean } = {}
+  options: { updateCrm?: boolean; authorization?: string | null } = {}
 ): Promise<SlaLogPayload> {
   reportProgress({ stage: 'starting', message: 'Готовим проверку', current: 0, total: 1 });
 
   const checkedAt = new Date().toISOString();
-  const client = new VibeCodeClient(apiKey);
+  const client = new VibeCodeClient(apiKey, options.authorization ?? null);
 
   reportProgress({ stage: 'loading_leads', message: 'Загружаем лиды и сотрудников', current: 0, total: 1 });
   const [leads, users, leadStatusNames, rejectionReasonNames, leadSourceNames] = await Promise.all([

@@ -20,12 +20,13 @@ function isCreatedAtInRange(value: string | null | undefined, range: SlaCheckDat
 export async function runDataQualityCheckJob(
   apiKey: string,
   dateRange: SlaCheckDateRange,
-  reportProgress: (progress: SlaProgress) => void
+  reportProgress: (progress: SlaProgress) => void,
+  authorization: string | null = null
 ): Promise<DataQualityLogPayload> {
   reportProgress({ stage: 'starting', message: 'Готовим проверку качества данных', current: 0, total: 1 });
 
   const checkedAt = new Date().toISOString();
-  const client = new VibeCodeClient(apiKey);
+  const client = new VibeCodeClient(apiKey, authorization);
 
   reportProgress({ stage: 'loading_contacts', message: 'Загружаем контакты и сотрудников', current: 0, total: 1 });
   let loadedContacts = 0;

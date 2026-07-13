@@ -1,5 +1,6 @@
 import { parseMoscowDateRange, startSlaJob, type ReportDateRangeRequest } from '../reports/jobs';
 import { requireAdmin } from '../utils/access';
+import { getVibeAuthorizationHeader } from '../utils/b24';
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event);
@@ -10,6 +11,7 @@ export default defineEventHandler(async (event) => {
   return startSlaJob({
     dateRange,
     updateCrm: Boolean(body.updateCrm),
-    source: 'manual'
+    source: 'manual',
+    authorization: getVibeAuthorizationHeader(event) || null
   });
 });

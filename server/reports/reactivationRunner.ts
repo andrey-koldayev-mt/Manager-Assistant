@@ -12,13 +12,14 @@ import { VibeCodeClient } from './vibecode';
 
 export async function runReactivationCheckJob(
   apiKey: string,
-  reportProgress: (progress: SlaProgress) => void
+  reportProgress: (progress: SlaProgress) => void,
+  authorization: string | null = null
 ): Promise<ReactivationLogPayload> {
   reportProgress({ stage: 'starting', message: 'Готовим проверку реактивации', current: 0, total: 1 });
 
   const checkedAt = new Date().toISOString();
   const week = getMoscowWeekRange(checkedAt);
-  const client = new VibeCodeClient(apiKey);
+  const client = new VibeCodeClient(apiKey, authorization);
 
   reportProgress({ stage: 'loading_history', message: 'Загружаем сохраненный отчет', current: 0, total: 1 });
   const saved = await readReactivationLog();

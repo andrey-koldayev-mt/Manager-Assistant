@@ -1,5 +1,6 @@
 import { parseMoscowDateRange, startDataQualityJob, type ReportDateRangeRequest } from '../reports/jobs';
 import { requireAuthenticated } from '../utils/access';
+import { getVibeAuthorizationHeader } from '../utils/b24';
 
 export default defineEventHandler(async (event) => {
   await requireAuthenticated(event);
@@ -7,5 +8,5 @@ export default defineEventHandler(async (event) => {
   const dateRange = parseMoscowDateRange(body);
 
   setResponseStatus(event, 202);
-  return startDataQualityJob(dateRange);
+  return startDataQualityJob(dateRange, getVibeAuthorizationHeader(event) || null);
 });
