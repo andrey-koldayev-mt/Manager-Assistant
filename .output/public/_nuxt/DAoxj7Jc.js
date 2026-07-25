@@ -1,0 +1,1 @@
+import{k as o,aD as r,af as e,A as t,V as s,a6 as n}from"./CWhIcGkA.js";import c from"./Bh8F3Zyx.js";const p={__name:"ProseCaution",setup(i){return(a,_)=>(s(),o(c,{color:"air-secondary-alert",icon:e(t).caution},{default:r(()=>[n(a.$slots,"default",{mdcUnwrap:"p"})]),_:3},8,["icon"]))}};export{p as default};
