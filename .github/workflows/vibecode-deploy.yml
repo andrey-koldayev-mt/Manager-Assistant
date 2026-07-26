@@ -18,7 +18,10 @@ jobs:
     name: Deploy application
     runs-on: ubuntu-latest
     env:
-      VIBE_API_KEY: ${{ secrets.VIBE_API_KEY }}
+      # Personal vibe_api_ key that manages the Galaxy application.
+      VIBE_DEPLOY_API_KEY: ${{ secrets.VIBE_DEPLOY_API_KEY }}
+      # OAuth vibe_app_ key that the application uses at runtime.
+      VIBE_APP_API_KEY: ${{ secrets.VIBE_API_KEY }}
       VIBE_SERVER_ID: c557c68b-fd15-427a-83a0-9e6f0238f5cb
 
     steps:
@@ -42,7 +45,8 @@ jobs:
 
       - name: Validate deployment configuration
         run: |
-          test -n "$VIBE_API_KEY"
+          test -n "$VIBE_DEPLOY_API_KEY"
+          test -n "$VIBE_APP_API_KEY"
           test -n "$VIBE_SERVER_ID"
 
       - name: Deploy to VibeCode

@@ -47,7 +47,8 @@ async function fetchJson(url, options = {}) {
 }
 
 async function deploy() {
-  const apiKey = requiredEnv('VIBE_API_KEY');
+  const deployApiKey = requiredEnv('VIBE_DEPLOY_API_KEY');
+  const appApiKey = requiredEnv('VIBE_APP_API_KEY');
   const serverId = requiredEnv('VIBE_SERVER_ID');
 
   console.log('Reading app.zip archive...');
@@ -57,7 +58,7 @@ async function deploy() {
   }
 
   const fileBuffer = fs.readFileSync(zipPath);
-  const payload = createDeployPayload(fileBuffer, apiKey);
+  const payload = createDeployPayload(fileBuffer, appApiKey);
   console.log(`Payload size: ${fileBuffer.length} bytes (${payload.source.content.length} chars base64)`);
 
   console.log(`Sending deployment request to server ${serverId}...`);
@@ -65,7 +66,7 @@ async function deploy() {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Api-Key': apiKey
+      'X-Api-Key': deployApiKey
     },
     body: JSON.stringify(payload)
   });

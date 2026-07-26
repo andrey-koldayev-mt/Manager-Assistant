@@ -44,7 +44,8 @@ Note: during migration, a test deploy was briefly made to the Galaxy host URL `h
 
 Do not commit secrets. Runtime secrets should be provided by VibeCode deploy/GitHub secrets:
 
-- `VIBE_API_KEY`: OAuth app key used server-side to call VibeCode/Bitrix24 APIs with the gateway-injected user session.
+- `VIBE_APP_API_KEY`: OAuth app key (`vibe_app_`) used server-side to call VibeCode/Bitrix24 APIs with the gateway-injected user session. In GitHub Actions, it comes from the existing `VIBE_API_KEY` secret.
+- `VIBE_DEPLOY_API_KEY`: personal API key (`vibe_api_`) that manages the Galaxy application. It is used only for VibeCode infrastructure requests and must be saved in the GitHub secret with the same name.
 - `VIBE_AI_MODEL`: optional; defaults to `bitrix/bitrixgpt-5.5`.
 - `NODE_ENV=production` in deployment.
 
