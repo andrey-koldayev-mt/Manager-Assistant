@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VIBE_API_KEY: ${{ secrets.VIBE_API_KEY }}
-      VIBE_SERVER_ID: 25afbe82-1162-4bb8-9bd9-770e52b1ff3f
+      VIBE_SERVER_ID: c557c68b-fd15-427a-83a0-9e6f0238f5cb
 
     steps:
       - name: Checkout repository

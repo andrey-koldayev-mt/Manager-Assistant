@@ -69,7 +69,7 @@ npm run archive
 npm run deploy:vibecode
 ```
 
-The current `deploy.js` is designed for standalone Black Hole VMs and installs Node 22 with `apt`. For Galaxy apps, prefer deploying a prebuilt `.output` archive with `runtime: "node20"` and `start: "cd /opt/app && PORT=3000 node .output/server/index.mjs"`, or update `deploy.js` before relying on it for Galaxy.
+GitHub Actions builds the Nuxt application with Node 22, then deploys the prebuilt `.output` archive to the active Galaxy application. `deploy.js` uses the Galaxy-compatible inline archive flow with `runtime: "node20"` and starts Nitro with `cd /opt/app && PORT=3000 node .output/server/index.mjs`.
 
 ## Important Files
 
@@ -169,7 +169,7 @@ The server:
 - Several Russian strings in server-side TS/Vue files currently appear as mojibake, e.g. `Р...`. This should be fixed with a careful UTF-8 pass, but avoid mass rewrites unless you can verify runtime behavior afterward.
 - `.env.example` is still mostly the old AI Studio/Gemini template and should be updated to reflect VibeCode variables.
 - `README.md` is still the original AI Studio template and does not describe the real project.
-- `deploy.js` is not Galaxy-native. It was written for standalone VMs and may fail or be inefficient for Galaxy deployments.
+- `deploy.js` targets the active Galaxy application. Do not replace it with the old standalone VM recovery flow: Galaxy deployment errors must be surfaced from the deploy response rather than followed by `/exec` recovery commands.
 - `package-lock.json` may show line-ending noise in some Windows git contexts. Check `git diff` before assuming meaningful dependency changes.
 - Direct browser access to Black Hole URLs may show the VibeCode access page when `accessPolicy=OWNER_ONLY`. Use an access token for smoke tests or open through Bitrix24 placement.
 
