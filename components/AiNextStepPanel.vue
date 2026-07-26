@@ -64,15 +64,16 @@ const activityLabel = computed(() => {
   return labels[result.value?.recommendation.activityType || 'Todo'] || 'CRM-действие';
 });
 
-const headers = computed<Record<string, string>>(() => {
-  if (!props.accessToken) {
-    const emptyHeaders: Record<string, string> = {};
-    return emptyHeaders;
-  }
+function getAuthorizationHeaders(): Record<string, string> {
+  const sdkAuth = import.meta.client ? (window as any).BX24?.getAuth?.() : null;
+  const token = props.accessToken
+    || sdkAuth?.access_token
+    || sdkAuth?.AUTH_ID
+    || sdkAuth?.auth_id
+    || '';
 
-  const authHeaders: Record<string, string> = { Authorization: `Bearer ${props.accessToken}` };
-  return authHeaders;
-});
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 const formattedDeadline = computed(() => {
   const value = result.value?.recommendation.deadline;
@@ -105,7 +106,7 @@ async function analyze() {
   try {
     const response = await $fetch('/api/b24/analyze-next-step', {
       method: 'POST',
-      headers: headers.value,
+      headers: getAuthorizationHeaders(),
       body: {
         dealId: props.dealId,
         mode: 'preview'
@@ -149,7 +150,7 @@ async function askAi() {
   try {
     const response = await $fetch('/api/b24/ask-next-step-ai', {
       method: 'POST',
-      headers: headers.value,
+      headers: getAuthorizationHeaders(),
       body: {
         dealId: props.dealId,
         question: text,
@@ -212,7 +213,7 @@ async function createActivity() {
   try {
     const response = await $fetch('/api/b24/analyze-next-step', {
       method: 'POST',
-      headers: headers.value,
+      headers: getAuthorizationHeaders(),
       body: {
         dealId: props.dealId,
         mode: 'live',
