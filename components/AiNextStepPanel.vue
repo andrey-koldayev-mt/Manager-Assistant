@@ -27,6 +27,12 @@ type AnalyzeResult = {
   pinnedTimelineLogId?: number | string | null;
 };
 
+type ChatMessage = {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+};
+
 const props = defineProps<{
   dealId: number | null;
   agentName: string;
@@ -38,11 +44,16 @@ const props = defineProps<{
 const toast = useToast();
 const pending = ref(false);
 const creating = ref(false);
+const asking = ref(false);
 const errorMessage = ref('');
 const result = ref<AnalyzeResult | null>(null);
+const question = ref('');
+const chatMessages = ref<ChatMessage[]>([]);
+const chatScroll = ref<HTMLElement | null>(null);
 
 const canAnalyze = computed(() => Boolean(props.dealId) && !pending.value && !creating.value && !props.loadingContext);
 const canCreate = computed(() => Boolean(result.value?.recommendation) && !creating.value && !pending.value);
+const canAskAi = computed(() => Boolean(props.dealId && result.value?.recommendation && question.value.trim() && !asking.value));
 const activityLabel = computed(() => {
   const labels: Record<string, string> = {
     Call: 'звонок',
@@ -102,6 +113,7 @@ async function analyze() {
     }) as { success: boolean; data: AnalyzeResult };
 
     result.value = response.data;
+    chatMessages.value = [];
     toast.add({
       title: 'AI-рекомендация готова',
       description: 'Проверьте следующий шаг перед созданием дела.',
@@ -120,6 +132,74 @@ async function analyze() {
     pending.value = false;
   }
 }
+
+async function askAi() {
+  const text = question.value.trim();
+  if (!props.dealId || !result.value?.recommendation || !text || asking.value) {
+    return;
+  }
+
+  const userMessage: ChatMessage = { id: crypto.randomUUID(), role: 'user', content: text };
+  question.value = '';
+  chatMessages.value.push(userMessage);
+  asking.value = true;
+  errorMessage.value = '';
+  await scrollChatToBottom();
+
+  try {
+    const response = await $fetch('/api/b24/ask-next-step-ai', {
+      method: 'POST',
+      headers: headers.value,
+      body: {
+        dealId: props.dealId,
+        question: text,
+        recommendation: result.value.recommendation,
+        history: chatMessages.value.map(({ role, content }) => ({ role, content }))
+      }
+    }) as { success: boolean; data: { answer: string } };
+
+    chatMessages.value.push({ id: crypto.randomUUID(), role: 'assistant', content: response.data.answer });
+    await scrollChatToBottom();
+  } catch (error: any) {
+    chatMessages.value.pop();
+    question.value = text;
+    errorMessage.value = error?.statusMessage || error?.message || 'Не удалось получить ответ AI.';
+    toast.add({
+      title: 'Ошибка AI-чата',
+      description: errorMessage.value,
+      color: 'air-primary-alert',
+      icon: WarningIcon
+    });
+  } finally {
+    asking.value = false;
+  }
+}
+
+function onQuestionKeydown(event: KeyboardEvent) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    void askAi();
+  }
+}
+
+function setQuestion(value: string) {
+  question.value = value;
+}
+
+function clearChat() {
+  chatMessages.value = [];
+  question.value = '';
+}
+
+async function scrollChatToBottom() {
+  await nextTick();
+  chatScroll.value?.scrollTo({ top: chatScroll.value.scrollHeight, behavior: 'smooth' });
+}
+
+watch(() => props.dealId, () => {
+  chatMessages.value = [];
+  question.value = '';
+});
 
 async function createActivity() {
   if (!props.dealId || !result.value?.recommendation || !canCreate.value) {
@@ -298,6 +378,79 @@ async function copyRecommendation() {
               </div>
             </div>
           </div>
+        </article>
+
+        <article v-if="result" class="script-card overflow-hidden">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-default px-5 py-4">
+            <div>
+              <h2 class="text-base font-bold text-label">Обсудить с AI</h2>
+              <p class="mt-1 text-sm text-description">Спросите о рекомендации, истории или текущем состоянии сделки.</p>
+            </div>
+            <B24Button
+              v-if="chatMessages.length"
+              label="Очистить диалог"
+              size="sm"
+              class="border border-default bg-default text-label"
+              @click="clearChat"
+            />
+          </div>
+
+          <div ref="chatScroll" class="ai-chat-scroll grid gap-3 bg-muted px-5 py-4">
+            <div v-if="!chatMessages.length" class="grid gap-2">
+              <p class="text-sm text-description">Например:</p>
+              <div class="flex flex-wrap gap-2">
+                <button type="button" class="ai-question-suggestion" @click="setQuestion('Почему вы рекомендуете именно этот следующий шаг?')">
+                  Почему этот шаг?
+                </button>
+                <button type="button" class="ai-question-suggestion" @click="setQuestion('Какие факты в истории сделки важнее всего сейчас?')">
+                  Какие факты важны?
+                </button>
+                <button type="button" class="ai-question-suggestion" @click="setQuestion('Что стоит уточнить у клиента перед созданием дела?')">
+                  Что уточнить?
+                </button>
+              </div>
+            </div>
+
+            <div
+              v-for="message in chatMessages"
+              :key="message.id"
+              class="ai-chat-message"
+              :class="message.role === 'user' ? 'ai-chat-message-user' : 'ai-chat-message-assistant'"
+            >
+              <p class="mb-1 text-xs font-semibold" :class="message.role === 'user' ? 'text-white/80' : 'text-[var(--brand-red)]'">
+                {{ message.role === 'user' ? 'Вы' : 'AI ассистент' }}
+              </p>
+              <p class="whitespace-pre-wrap text-sm leading-6">{{ message.content }}</p>
+            </div>
+
+            <div v-if="asking" class="ai-chat-message ai-chat-message-assistant">
+              <p class="text-sm text-description">AI изучает актуальный контекст сделки…</p>
+            </div>
+          </div>
+
+          <form class="grid gap-3 border-t border-default bg-default p-4" @submit.prevent="askAi">
+            <label class="text-sm font-semibold text-label" for="ai-next-step-question">Ваш вопрос</label>
+            <textarea
+              id="ai-next-step-question"
+              v-model="question"
+              class="ai-chat-input"
+              :disabled="asking"
+              maxlength="4000"
+              placeholder="Например: как лучше сформулировать звонок клиенту?"
+              rows="3"
+              @keydown="onQuestionKeydown"
+            />
+            <div class="flex items-center justify-between gap-3">
+              <p class="text-xs text-description">Enter — отправить · Shift + Enter — новая строка</p>
+              <B24Button
+                type="submit"
+                :loading="asking"
+                :disabled="!canAskAi"
+                label="Спросить AI"
+                class="brand-action"
+              />
+            </div>
+          </form>
         </article>
 
         <article v-else class="script-card p-8">

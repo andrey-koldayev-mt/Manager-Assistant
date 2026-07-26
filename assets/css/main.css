@@ -309,6 +309,76 @@ textarea:focus-visible {
   scrollbar-color: #b7c3d2 transparent;
 }
 
+.ai-chat-scroll {
+  min-height: 188px;
+  max-height: 420px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #b7c3d2 transparent;
+}
+
+.ai-chat-message {
+  width: fit-content;
+  max-width: min(680px, 90%);
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  color: var(--app-text);
+}
+
+.ai-chat-message-user {
+  margin-left: auto;
+  border-color: var(--brand-red);
+  background: var(--brand-red);
+  color: #fff;
+}
+
+.ai-chat-message-assistant {
+  margin-right: auto;
+}
+
+.ai-question-suggestion {
+  border: 1px solid var(--brand-red-border);
+  border-radius: 6px;
+  padding: 6px 9px;
+  background: #fff;
+  color: #962323;
+  font-size: 13px;
+  line-height: 1.25;
+  cursor: pointer;
+}
+
+.ai-question-suggestion:hover,
+.ai-question-suggestion:focus-visible {
+  border-color: var(--brand-red);
+  background: var(--brand-red-soft);
+}
+
+.ai-chat-input {
+  width: 100%;
+  resize: vertical;
+  min-height: 76px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: #fff;
+  color: var(--app-text);
+  font: inherit;
+  line-height: 1.5;
+}
+
+.ai-chat-input:hover,
+.ai-chat-input:focus {
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 2px var(--brand-focus);
+}
+
+.ai-chat-input:disabled {
+  cursor: wait;
+  background: #f5f7fa;
+}
+
 @media (min-width: 1024px) {
   .sidebar-sticky {
     position: sticky;

@@ -9,13 +9,13 @@ import {
   type AiRecommendation
 } from '../../domain/deal-analysis';
 import { NEXT_STEP_SYSTEM_PROMPT } from '../../domain/next-step-prompt';
+import { loadDealBundle, requestVibe, requestVibeRaw } from '../../utils/deal-bundle';
 import {
   B24_API_KEY,
   ensureVibeApiKey,
   getVibeAuthorizationHeader
 } from '../../utils/b24';
 
-const VIBE_BASE_URL = 'https://vibecode.bitrix24.tech/v1';
 const DEFAULT_AI_MODEL = 'bitrix/bitrixgpt-5.5';
 
 type AnalyzeMode = 'preview' | 'live';
@@ -98,49 +98,8 @@ export default defineEventHandler(async (event) => {
   }
 });
 
-async function loadDealBundle({ dealId, headers }: { dealId: number; headers: Record<string, string> }) {
-  const deal = await requestVibe(`/deals/${dealId}`, { headers });
-  const contactId = deal?.contactId ?? deal?.CONTACT_ID ?? deal?.contactIds?.[0] ?? deal?.CONTACT_IDS?.[0];
-  const [timelines, activities, messages, contact] = await Promise.all([
-    safeRequestVibe(`/timelines?entityType=deal&entityId=${dealId}`, { headers }),
-    safeRequestVibe('/activities/search', {
-      headers,
-      method: 'POST',
-      body: {
-        filter: { ownerTypeId: 2, ownerId: dealId },
-        sort: 'createdAt',
-        limit: 200
-      }
-    }),
-    loadCrmMessages({ dealId, headers }),
-    contactId ? safeRequestVibe(`/contacts/${contactId}`, { headers }) : Promise.resolve(null)
-  ]);
-
-  return {
-    deal,
-    timelines: toItems(timelines),
-    activities: toItems(activities),
-    messages: toItems(messages),
-    contact: contact && typeof contact === 'object' && !Array.isArray(contact) ? contact : null
-  };
-}
-
-async function loadCrmMessages({ dealId, headers }: { dealId: number; headers: Record<string, string> }) {
-  try {
-    const chat = await requestVibe(`/chats/find?entityType=CRM&entityId=DEAL|${dealId}`, { headers });
-    const dialogId = chat?.dialogId ?? chat?.id ?? chat?.chatId;
-    if (!dialogId) {
-      return [];
-    }
-
-    return await requestVibe(`/chats/${encodeURIComponent(String(dialogId))}/messages?limit=100`, { headers });
-  } catch {
-    return [];
-  }
-}
-
 async function getAiRecommendation({ context, headers }: { context: unknown; headers: Record<string, string> }) {
-  const response = await requestRaw(`${VIBE_BASE_URL}/chat/completions`, {
+  const response = await requestVibeRaw('https://vibecode.bitrix24.tech/v1/chat/completions', {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -193,53 +152,4 @@ async function safeCreateTimelineLog({ payload, headers }: { payload: Record<str
     console.warn('AI timeline log creation failed:', error);
     return null;
   }
-}
-
-async function safeRequestVibe(path: string, options: RequestOptions) {
-  try {
-    return await requestVibe(path, options);
-  } catch {
-    return [];
-  }
-}
-
-type RequestOptions = {
-  method?: string;
-  headers: Record<string, string>;
-  body?: unknown;
-};
-
-async function requestVibe(path: string, options: RequestOptions) {
-  return requestRaw(`${VIBE_BASE_URL}${path}`, {
-    method: options.method || 'GET',
-    headers: options.headers,
-    body: options.body ? JSON.stringify(options.body) : undefined
-  });
-}
-
-async function requestRaw(url: string, options: RequestInit) {
-  const response = await fetch(url, options);
-  const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
-
-  if (!response.ok || data?.success === false || data?.error) {
-    const message = data?.error?.userMessage ?? data?.error?.message ?? data?.error_description ?? response.statusText;
-    const error: any = new Error(message);
-    error.statusCode = response.status;
-    throw error;
-  }
-
-  return data?.data ?? data?.result ?? data;
-}
-
-function toItems(value: unknown): Record<string, any>[] {
-  if (Array.isArray(value)) {
-    return value;
-  }
-  if (value && typeof value === 'object') {
-    const record = value as Record<string, unknown>;
-    const items = record.items ?? record.results ?? record.data;
-    return Array.isArray(items) ? items as Record<string, any>[] : [];
-  }
-  return [];
 }
