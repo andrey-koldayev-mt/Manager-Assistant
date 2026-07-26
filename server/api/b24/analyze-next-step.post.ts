@@ -1,10 +1,9 @@
 import {
+  CRM_ACTIVITY_RECOMMENDATION_TOOL,
+  buildActivityPayload,
   buildDealContext,
-  buildLinkedTaskPayload,
   buildPromptMessages,
   buildTimelineLogPayload,
-  buildTodoPayload,
-  detectNativeAiTodo,
   ensureFutureRecommendationDeadline,
   validateAiRecommendation,
   type AiRecommendation
@@ -51,16 +50,10 @@ export default defineEventHandler(async (event) => {
   try {
     const bundle = await loadDealBundle({ dealId, headers });
     const context = buildDealContext(bundle);
-    const nativeAiTodo = detectNativeAiTodo(bundle.activities);
-    const rawRecommendation = body.recommendation
-      ? body.recommendation
-      : nativeAiTodo
-        ? copyNativeAiTodo(nativeAiTodo, context.deal.assignedById)
-        : await getAiRecommendation({ context, headers });
+    const rawRecommendation = body.recommendation || await getAiRecommendation({ context, headers });
 
     const recommendation = ensureFutureRecommendationDeadline(rawRecommendation);
     const validated = validateAiRecommendation(recommendation);
-    const todoPayload = buildTodoPayload({ dealId, recommendation: validated });
     const timelineLogPayload = buildTimelineLogPayload({ dealId, recommendation: validated });
 
     if (body.mode !== 'live') {
@@ -69,15 +62,18 @@ export default defineEventHandler(async (event) => {
         data: {
           mode: 'preview',
           context,
-          nativeAiTodoFound: Boolean(nativeAiTodo),
           recommendation: validated,
-          todoPayload,
           timelineLogPayload
         }
       };
     }
 
-    const created = await createCrmTodo({ dealId, recommendation: validated, todoPayload, headers });
+    const activityPayload = buildActivityPayload({
+      dealId,
+      recommendation: validated,
+      communications: context.deal.communications
+    });
+    const created = await createCrmActivity({ activityPayload, headers });
     const createdActivityId = created?.id ?? created?.ID ?? created?.activity?.id ?? created?.activityId ?? null;
     const logPayload = buildTimelineLogPayload({ dealId, recommendation: validated, activityId: createdActivityId });
     const timelineLog = await safeCreateTimelineLog({ payload: logPayload, headers });
@@ -87,9 +83,8 @@ export default defineEventHandler(async (event) => {
       data: {
         mode: 'live',
         context,
-        nativeAiTodoFound: Boolean(nativeAiTodo),
         recommendation: validated,
-        todoPayload,
+        activityPayload,
         timelineLogPayload: logPayload,
         createdActivityId,
         pinnedTimelineLogId: timelineLog?.id ?? timelineLog?.ID ?? null
@@ -104,17 +99,10 @@ export default defineEventHandler(async (event) => {
 });
 
 async function loadDealBundle({ dealId, headers }: { dealId: number; headers: Record<string, string> }) {
-  const [deal, timelines, activities, messages] = await Promise.all([
-    requestVibe(`/deals/${dealId}`, { headers }),
-    safeRequestVibe('/timelines/search', {
-      headers,
-      method: 'POST',
-      body: {
-        filter: { entityTypeId: 2, entityId: dealId },
-        sort: 'createdAt',
-        limit: 200
-      }
-    }),
+  const deal = await requestVibe(`/deals/${dealId}`, { headers });
+  const contactId = deal?.contactId ?? deal?.CONTACT_ID ?? deal?.contactIds?.[0] ?? deal?.CONTACT_IDS?.[0];
+  const [timelines, activities, messages, contact] = await Promise.all([
+    safeRequestVibe(`/timelines?entityType=deal&entityId=${dealId}`, { headers }),
     safeRequestVibe('/activities/search', {
       headers,
       method: 'POST',
@@ -124,14 +112,16 @@ async function loadDealBundle({ dealId, headers }: { dealId: number; headers: Re
         limit: 200
       }
     }),
-    loadCrmMessages({ dealId, headers })
+    loadCrmMessages({ dealId, headers }),
+    contactId ? safeRequestVibe(`/contacts/${contactId}`, { headers }) : Promise.resolve(null)
   ]);
 
   return {
     deal,
-    timelines: Array.isArray(timelines) ? timelines : [],
-    activities: Array.isArray(activities) ? activities : [],
-    messages: Array.isArray(messages) ? messages : []
+    timelines: toItems(timelines),
+    activities: toItems(activities),
+    messages: toItems(messages),
+    contact: contact && typeof contact === 'object' && !Array.isArray(contact) ? contact : null
   };
 }
 
@@ -163,43 +153,33 @@ async function getAiRecommendation({ context, headers }: { context: unknown; hea
         systemPrompt: NEXT_STEP_SYSTEM_PROMPT
       }),
       temperature: 0.2,
-      response_format: { type: 'json_object' }
+      tools: [CRM_ACTIVITY_RECOMMENDATION_TOOL],
+      tool_choice: {
+        type: 'function',
+        function: { name: CRM_ACTIVITY_RECOMMENDATION_TOOL.function.name }
+      }
     })
   });
 
-  const content = response?.choices?.[0]?.message?.content ?? response?.message?.content ?? response?.content;
-  if (typeof content !== 'string') {
-    throw new Error('AI response does not contain text content');
+  const message = response?.choices?.[0]?.message ?? response?.message;
+  const toolCall = message?.tool_calls?.find((call: any) => call?.function?.name === CRM_ACTIVITY_RECOMMENDATION_TOOL.function.name)
+    ?? message?.toolCalls?.find((call: any) => call?.function?.name === CRM_ACTIVITY_RECOMMENDATION_TOOL.function.name);
+  const argumentsValue = toolCall?.function?.arguments ?? toolCall?.arguments;
+  if (typeof argumentsValue === 'string') {
+    return JSON.parse(argumentsValue);
   }
-
-  return JSON.parse(content);
+  if (argumentsValue && typeof argumentsValue === 'object') {
+    return argumentsValue;
+  }
+  throw new Error('AI response does not contain a CRM activity recommendation');
 }
 
-async function createCrmTodo({
-  dealId,
-  recommendation,
-  todoPayload,
-  headers
-}: {
-  dealId: number;
-  recommendation: AiRecommendation;
-  todoPayload: Record<string, unknown>;
-  headers: Record<string, string>;
-}) {
-  try {
-    return await requestVibe('/activities', {
-      method: 'POST',
-      headers,
-      body: todoPayload
-    });
-  } catch (error) {
-    console.warn('AI todo activity creation failed, falling back to linked task:', error);
-    return await requestVibe('/tasks', {
-      method: 'POST',
-      headers,
-      body: buildLinkedTaskPayload({ dealId, recommendation })
-    });
-  }
+async function createCrmActivity({ activityPayload, headers }: { activityPayload: Record<string, unknown>; headers: Record<string, string> }) {
+  return requestVibe('/activities', {
+    method: 'POST',
+    headers,
+    body: activityPayload
+  });
 }
 
 async function safeCreateTimelineLog({ payload, headers }: { payload: Record<string, unknown>; headers: Record<string, string> }) {
@@ -252,16 +232,14 @@ async function requestRaw(url: string, options: RequestInit) {
   return data?.data ?? data?.result ?? data;
 }
 
-function copyNativeAiTodo(activity: Record<string, any>, fallbackResponsibleId: number | null) {
-  const deadline = activity.deadline ?? activity.endTime ?? new Date(Date.now() + 60 * 60 * 1000).toISOString();
-  return {
-    title: activity.subject ?? activity.title ?? 'AI: следующий шаг по сделке',
-    description: activity.description ?? activity.text ?? activity.comment ?? '',
-    deadline,
-    responsibleId: Number(activity.responsibleId ?? fallbackResponsibleId ?? 1),
-    activityType: activity.activityType ?? 'Todo',
-    importantDetails: ['Найдено открытое штатное AI-дело Bitrix24; создана копия по требованию сценария.'],
-    justification: ['В сделке уже есть открытая рекомендация штатного AI на базе коммуникаций.'],
-    sourceSignals: [`activity:${activity.id ?? activity.ID}`]
-  };
+function toItems(value: unknown): Record<string, any>[] {
+  if (Array.isArray(value)) {
+    return value;
+  }
+  if (value && typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    const items = record.items ?? record.results ?? record.data;
+    return Array.isArray(items) ? items as Record<string, any>[] : [];
+  }
+  return [];
 }

@@ -5,7 +5,6 @@ import WarningIcon from '@bitrix24/b24icons-vue/main/WarningIcon';
 
 type AnalyzeResult = {
   mode: 'preview' | 'live';
-  nativeAiTodoFound: boolean;
   recommendation: {
     title: string;
     description: string;
@@ -18,7 +17,8 @@ type AnalyzeResult = {
   };
   context?: {
     sourceStats?: {
-      timelines: number;
+      comments: number;
+      wazzupComments: number;
       activities: number;
       messages: number;
     };
@@ -43,6 +43,15 @@ const result = ref<AnalyzeResult | null>(null);
 
 const canAnalyze = computed(() => Boolean(props.dealId) && !pending.value && !creating.value && !props.loadingContext);
 const canCreate = computed(() => Boolean(result.value?.recommendation) && !creating.value && !pending.value);
+const activityLabel = computed(() => {
+  const labels: Record<string, string> = {
+    Call: 'звонок',
+    Meeting: 'встречу',
+    Todo: 'задачу',
+    Email: 'письмо'
+  };
+  return labels[result.value?.recommendation.activityType || 'Todo'] || 'CRM-действие';
+});
 
 const headers = computed<Record<string, string>>(() => {
   if (!props.accessToken) {
@@ -134,7 +143,7 @@ async function createActivity() {
     result.value = response.data;
     const createdId = response.data.createdActivityId;
     toast.add({
-      title: 'Дело создано в CRM',
+      title: 'CRM-действие создано',
       description: createdId ? `ID: ${createdId}` : 'Откройте карточку сделки для проверки.',
       color: 'air-primary-success',
       icon: CircleCheckIcon
@@ -212,7 +221,7 @@ async function copyRecommendation() {
         <B24Button
           :loading="creating"
           :disabled="!canCreate"
-          label="Создать дело в CRM"
+          :label="`Создать ${activityLabel}`"
           block
           class="border border-default bg-default text-label"
           @click="createActivity"
@@ -267,14 +276,6 @@ async function copyRecommendation() {
             </div>
 
             <div class="grid content-start gap-4">
-              <B24Alert
-                v-if="result.nativeAiTodoFound"
-                color="air-primary-warning"
-                variant="soft"
-                title="Найдено штатное AI-дело"
-                description="Рекомендация построена на уже найденном открытом AI-деле Bitrix24."
-              />
-
               <div class="rounded-lg border border-default bg-default p-3">
                 <h3 class="text-sm font-bold text-label">Важные детали</h3>
                 <ul class="mt-2 grid gap-2 text-sm text-description">
@@ -290,7 +291,8 @@ async function copyRecommendation() {
               </div>
 
               <div v-if="result.context?.sourceStats" class="rounded-lg border border-default bg-default p-3 text-sm text-description">
-                Источники: таймлайн {{ result.context.sourceStats.timelines }},
+                Источники: комментарии {{ result.context.sourceStats.comments }},
+                Wazzup {{ result.context.sourceStats.wazzupComments }},
                 дела {{ result.context.sourceStats.activities }},
                 сообщения {{ result.context.sourceStats.messages }}.
               </div>

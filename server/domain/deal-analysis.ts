@@ -1,10 +1,20 @@
 const DEAL_ENTITY_TYPE_ID = 2;
 
+export const AI_ACTIVITY_TYPES = ['Call', 'Meeting', 'Todo', 'Email'] as const;
+
+export type AiActivityType = typeof AI_ACTIVITY_TYPES[number];
+
+export type ContactCommunication = {
+  type: 'PHONE' | 'EMAIL';
+  value: string;
+};
+
 export type DealBundle = {
   deal: Record<string, any>;
   timelines?: Record<string, any>[];
   activities?: Record<string, any>[];
   messages?: Record<string, any>[];
+  contact?: Record<string, any> | null;
 };
 
 export type AiRecommendation = {
@@ -12,13 +22,13 @@ export type AiRecommendation = {
   description: string;
   deadline: string;
   responsibleId: number;
-  activityType: string;
+  activityType: AiActivityType;
   importantDetails: string[];
   justification: string[];
   sourceSignals: string[];
 };
 
-export function buildDealContext({ deal, timelines = [], activities = [], messages = [] }: DealBundle) {
+export function buildDealContext({ deal, timelines = [], activities = [], messages = [], contact = null }: DealBundle) {
   if (!deal || !Number.isFinite(Number(deal.id ?? deal.ID))) {
     throw new Error('deal is required');
   }
@@ -42,11 +52,13 @@ export function buildDealContext({ deal, timelines = [], activities = [], messag
       currencyId: deal.currencyId ?? deal.currency ?? deal.CURRENCY_ID ?? null,
       assignedById: numberOrNull(deal.assignedById ?? deal.responsibleId ?? deal.ASSIGNED_BY_ID),
       contactId: numberOrNull(deal.contactId ?? deal.CONTACT_ID),
-      companyId: numberOrNull(deal.companyId ?? deal.COMPANY_ID)
+      companyId: numberOrNull(deal.companyId ?? deal.COMPANY_ID),
+      communications: extractContactCommunications(contact)
     },
     history,
     sourceStats: {
-      timelines: timelines.length,
+      comments: timelines.length,
+      wazzupComments: timelines.filter(isWazzupComment).length,
       activities: activities.length,
       messages: messages.length
     }
@@ -101,12 +113,17 @@ export function validateAiRecommendation(value: any, now = new Date()): AiRecomm
     throw new Error('responsibleId must be a positive number');
   }
 
+  const activityType = normalizeActivityType(value.activityType);
+  if (!activityType) {
+    throw new Error(`activityType must be one of: ${AI_ACTIVITY_TYPES.join(', ')}`);
+  }
+
   return {
     title: value.title.trim(),
     description: value.description.trim(),
     deadline: value.deadline,
     responsibleId,
-    activityType: value.activityType.trim(),
+    activityType,
     importantDetails: toStringArray(value.importantDetails),
     justification: toStringArray(value.justification),
     sourceSignals: toStringArray(value.sourceSignals)
@@ -129,22 +146,37 @@ export function ensureFutureRecommendationDeadline(value: any, now = new Date())
   };
 }
 
-export function buildTodoPayload({ dealId, recommendation }: { dealId: number | string; recommendation: AiRecommendation }) {
+export function buildActivityPayload({ dealId, recommendation, communications }: {
+  dealId: number | string;
+  recommendation: AiRecommendation;
+  communications: ContactCommunication[];
+}) {
   const numericDealId = Number(dealId);
   if (!Number.isFinite(numericDealId) || numericDealId <= 0) {
     throw new Error('dealId must be a positive number');
   }
 
   const validated = validateAiRecommendation(recommendation, new Date(0));
+  const communication = selectCommunication(validated.activityType, communications);
+  if (!communication) {
+    const required = validated.activityType === 'Call' ? 'номер телефона' :
+      validated.activityType === 'Email' ? 'email' : 'контактный канал';
+    throw new Error(`Невозможно создать ${activityTypeLabel(validated.activityType)}: у контакта не найден ${required}.`);
+  }
+
+  const endTime = new Date(validated.deadline);
+  const startTime = new Date(endTime.getTime() - 30 * 60 * 1000);
 
   return {
     ownerTypeId: DEAL_ENTITY_TYPE_ID,
     ownerId: numericDealId,
-    deadline: validated.deadline,
-    title: validated.title,
+    subject: validated.title,
+    typeId: activityTypeId(validated.activityType),
+    startTime: startTime.toISOString(),
+    endTime: endTime.toISOString(),
     description: validated.description,
     responsibleId: validated.responsibleId,
-    pingOffsets: []
+    communications: [communication]
   };
 }
 
@@ -185,6 +217,29 @@ export function buildPromptMessages({ context, systemPrompt }: { context: unknow
   ];
 }
 
+export const CRM_ACTIVITY_RECOMMENDATION_TOOL = {
+  type: 'function',
+  function: {
+    name: 'recommend_crm_activity',
+    description: 'Выбирает одну CRM-активность, которую менеджер создаст после ручного подтверждения.',
+    parameters: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['title', 'description', 'deadline', 'responsibleId', 'activityType', 'importantDetails', 'justification', 'sourceSignals'],
+      properties: {
+        title: { type: 'string', description: 'Короткое название активности на русском.' },
+        description: { type: 'string', description: 'Готовый практичный текст для менеджера.' },
+        deadline: { type: 'string', description: 'Будущая дата и время в ISO-8601 с timezone.' },
+        responsibleId: { type: 'number', description: 'ID ответственного менеджера.' },
+        activityType: { type: 'string', enum: AI_ACTIVITY_TYPES, description: 'Тип создаваемого CRM-действия.' },
+        importantDetails: { type: 'array', items: { type: 'string' } },
+        justification: { type: 'array', items: { type: 'string' } },
+        sourceSignals: { type: 'array', items: { type: 'string' } }
+      }
+    }
+  }
+} as const;
+
 function normalizeActivity(activity: Record<string, any>) {
   return {
     id: `activity:${activity.id ?? activity.ID}`,
@@ -200,11 +255,65 @@ function normalizeTimeline(item: Record<string, any>) {
   return {
     id: `timeline:${item.id ?? item.ID}`,
     at: item.createdAt ?? item.dateCreate ?? item.updatedAt ?? new Date(0).toISOString(),
-    channel: item.type ?? item.typeName ?? 'timeline',
+    channel: isWazzupComment(item) ? 'wazzup' : item.type ?? item.typeName ?? 'timeline',
     author: item.authorName ?? item.userName ?? null,
     title: item.title ?? item.subject ?? '',
     text: item.text ?? item.description ?? item.comment ?? ''
   };
+}
+
+function extractContactCommunications(contact: Record<string, any> | null): ContactCommunication[] {
+  if (!contact) {
+    return [];
+  }
+
+  return [
+    ...extractCommunicationValues(contact.phone ?? contact.PHONE ?? contact.phones ?? contact.PHONES, 'PHONE'),
+    ...extractCommunicationValues(contact.email ?? contact.EMAIL ?? contact.emails ?? contact.EMAILS, 'EMAIL')
+  ].filter((communication, index, all) => (
+    all.findIndex((item) => item.type === communication.type && item.value === communication.value) === index
+  ));
+}
+
+function extractCommunicationValues(value: unknown, type: ContactCommunication['type']): ContactCommunication[] {
+  const values = Array.isArray(value) ? value : [value];
+  return values
+    .map((item) => typeof item === 'object' && item
+      ? (item as Record<string, unknown>).value ?? (item as Record<string, unknown>).VALUE
+      : item)
+    .filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+    .map((item) => ({ type, value: item.trim() }));
+}
+
+function selectCommunication(activityType: AiActivityType, communications: ContactCommunication[]) {
+  if (activityType === 'Call') {
+    return communications.find((item) => item.type === 'PHONE') ?? null;
+  }
+  if (activityType === 'Email') {
+    return communications.find((item) => item.type === 'EMAIL') ?? null;
+  }
+  return communications[0] ?? null;
+}
+
+function normalizeActivityType(value: string): AiActivityType | null {
+  const normalized = value.trim().toLowerCase();
+  return AI_ACTIVITY_TYPES.find((type) => type.toLowerCase() === normalized) ?? null;
+}
+
+function activityTypeId(activityType: AiActivityType): number {
+  return { Call: 1, Meeting: 2, Todo: 3, Email: 6 }[activityType];
+}
+
+function activityTypeLabel(activityType: AiActivityType): string {
+  return { Call: 'звонок', Meeting: 'встречу', Todo: 'задачу', Email: 'email' }[activityType];
+}
+
+function isWazzupComment(item: Record<string, any>) {
+  return [item.providerId, item.providerTypeId, item.originatorId, item.originId, item.title, item.text, item.comment]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase()
+    .includes('wazzup');
 }
 
 function normalizeMessage(message: Record<string, any>) {
