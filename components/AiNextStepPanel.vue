@@ -22,6 +22,13 @@ type AnalyzeResult = {
       activities: number;
       messages: number;
     };
+    transcriptStats?: {
+      calls: number;
+      native: number;
+      cached: number;
+      transcribed: number;
+      unavailable: number;
+    };
   };
   createdActivityId?: number | string | null;
   pinnedTimelineLogId?: number | string | null;
@@ -377,6 +384,13 @@ async function copyRecommendation() {
                 дела {{ result.context.sourceStats.activities }},
                 сообщения {{ result.context.sourceStats.messages }}.
               </div>
+              <B24Alert
+                v-if="result.context?.transcriptStats"
+                color="air-primary"
+                variant="soft"
+                title="Транскрибации звонков"
+                :description="'Найдено звонков: ' + result.context.transcriptStats.calls + '; готовых: ' + result.context.transcriptStats.native + '; из кэша: ' + result.context.transcriptStats.cached + '; создано сейчас: ' + result.context.transcriptStats.transcribed + '; недоступно: ' + result.context.transcriptStats.unavailable + '.'"
+              />
             </div>
           </div>
         </article>

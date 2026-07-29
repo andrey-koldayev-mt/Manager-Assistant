@@ -12,6 +12,7 @@ type Headers = Record<string, string>;
 type RecordValue = Record<string, any>;
 
 export type TranscriptStats = {
+  calls: number;
   native: number;
   cached: number;
   transcribed: number;
@@ -23,11 +24,12 @@ export async function enrichCallTranscripts({ dealId, bundle, headers }: {
   bundle: DealBundle;
   headers: Headers;
 }): Promise<TranscriptStats> {
-  const stats: TranscriptStats = { native: 0, cached: 0, transcribed: 0, unavailable: 0 };
+  const stats: TranscriptStats = { calls: 0, native: 0, cached: 0, transcribed: 0, unavailable: 0 };
   const calls = (bundle.activities || []).filter(isCallActivity);
+  stats.calls = calls.length;
   if (!calls.length) return stats;
 
-  const folderFiles = await loadFolderFiles(headers);
+  const recordingFolders = await loadRecordingFolders(headers);
   for (const activity of calls) {
     const activityId = Number(activity.id ?? activity.ID);
     if (!Number.isFinite(activityId) || activityId <= 0) continue;
@@ -46,7 +48,7 @@ export async function enrichCallTranscripts({ dealId, bundle, headers }: {
       continue;
     }
 
-    const recording = selectRecording(activity, folderFiles);
+    const recording = await selectRecording(activity, recordingFolders, headers);
     if (!recording) {
       stats.unavailable += 1;
       continue;
@@ -99,43 +101,82 @@ function findCachedTranscript(activityId: number, timelines: RecordValue[]): str
   return '';
 }
 
-async function loadFolderFiles(headers: Headers): Promise<RecordValue[]> {
+async function loadRecordingFolders(headers: Headers): Promise<RecordValue[]> {
   try {
-    const response = await requestVibe(`/files?filter[folderId]=${RECORDINGS_FOLDER_ID}&limit=500`, { headers });
-    return toItems(response).filter(isAudioFile);
+    const response = await requestVibe(`/folders?filter[parentId]=${RECORDINGS_FOLDER_ID}&limit=100`, { headers });
+    return toItems(response).filter((folder) => /^\d{4}-\d{2}$/.test(firstText(folder.name)));
   } catch (error) {
     console.warn('Call recordings folder is unavailable:', error);
     return [];
   }
 }
 
-function selectRecording(activity: RecordValue, folderFiles: RecordValue[]): RecordValue | null {
+async function selectRecording(activity: RecordValue, recordingFolders: RecordValue[], headers: Headers): Promise<RecordValue | null> {
   const attached = flattenFiles(activity.files ?? activity.FILES ?? activity.webdavElements ?? activity.WEBDAV_ELEMENTS);
   const direct = attached.find(isAudioFile);
   if (direct) return direct;
 
-  const activityId = String(activity.id ?? activity.ID ?? '');
-  const subject = firstText(activity.subject, activity.title).toLowerCase();
-  const byName = folderFiles.find((file) => {
-    const name = firstText(file.name, file.title, file.filename).toLowerCase();
-    return (activityId && name.includes(activityId)) || (subject.length >= 5 && name.includes(subject));
-  });
-  if (byName) return byName;
-
-  const phoneDigits = collectDigits(activity.communications ?? activity.COMMUNICATIONS);
-  const byPhone = folderFiles.find((file) => phoneDigits.some((digits) => digits.length >= 7
-    && collectDigits(file).some((candidate) => candidate.includes(digits) || digits.includes(candidate))));
-  if (byPhone) return byPhone;
-
   const activityTime = toTimestamp(activity.createdAt ?? activity.startTime ?? activity.deadline);
-  if (!activityTime) return null;
-  const nearby = folderFiles
-    .map((file) => ({ file, distance: Math.abs(toTimestamp(file.createdAt ?? file.updateTime ?? file.dateCreate) - activityTime) }))
-    .filter(({ distance }) => Number.isFinite(distance) && distance <= 15 * 60 * 1000)
-    .sort((a, b) => a.distance - b.distance);
-  return nearby.length === 1 ? nearby[0]!.file : null;
+  const phoneTerms = getPhoneSearchTerms(activity.communications ?? activity.COMMUNICATIONS);
+  if (!phoneTerms.length || !Number.isFinite(activityTime)) return null;
+
+  const folderIds = recordingFolders
+    .filter((folder) => folderMatchesActivityMonth(folder, activityTime))
+    .map((folder) => Number(folder.id ?? folder.ID))
+    .filter((id) => Number.isFinite(id) && id > 0);
+  if (!folderIds.length) return null;
+
+  const recordings = await findRecordingsByPhone({ folderIds, phoneTerms, headers });
+  return chooseClosestRecording(recordings, activityTime);
 }
 
+async function findRecordingsByPhone({ folderIds, phoneTerms, headers }: {
+  folderIds: number[];
+  phoneTerms: string[];
+  headers: Headers;
+}): Promise<RecordValue[]> {
+  const requests = folderIds.flatMap((folderId) => phoneTerms.map(async (phone) => {
+    try {
+      const response = await requestVibe(
+        `/files?filter[folderId]=${folderId}&filter[name][$contains]=${encodeURIComponent(phone)}&limit=100`,
+        { headers }
+      );
+      return toItems(response).filter(isAudioFile);
+    } catch (error) {
+      console.warn(`Could not search call recordings in folder ${folderId}:`, error);
+      return [];
+    }
+  }));
+
+  const results = await Promise.all(requests);
+  const unique = new Map<string, RecordValue>();
+  for (const recording of results.flat()) {
+    const id = String(recording.id ?? recording.ID ?? recording.fileId ?? recording.name);
+    unique.set(id, recording);
+  }
+  return [...unique.values()];
+}
+
+function folderMatchesActivityMonth(folder: RecordValue, activityTime: number) {
+  const folderMonth = firstText(folder.name);
+  const current = new Date(activityTime);
+  const previous = new Date(activityTime);
+  previous.setMonth(previous.getMonth() - 1);
+  const next = new Date(activityTime);
+  next.setMonth(next.getMonth() + 1);
+  return [monthKey(current), monthKey(previous), monthKey(next)].includes(folderMonth);
+}
+
+function chooseClosestRecording(recordings: RecordValue[], activityTime: number): RecordValue | null {
+  const candidates = recordings
+    .map((file) => ({ file, distance: Math.abs(recordingTimestamp(file) - activityTime) }))
+    .filter(({ distance }) => Number.isFinite(distance))
+    .sort((left, right) => left.distance - right.distance);
+
+  if (!candidates.length || candidates[0]!.distance > 60 * 60 * 1000) return null;
+  if (candidates.length > 1 && candidates[1]!.distance === candidates[0]!.distance) return null;
+  return candidates[0]!.file;
+}
 async function transcribeRecording(file: RecordValue, headers: Headers): Promise<string> {
   const url = firstText(file.downloadUrlMachine, file.downloadUrl, file.url, file.urlDownload, file.download);
   if (!isAllowedAudioUrl(url)) return '';
@@ -237,6 +278,40 @@ function collectDigits(value: unknown): string[] {
   return [];
 }
 
+function getPhoneSearchTerms(value: unknown): string[] {
+  const terms = new Set<string>();
+  for (const source of collectDigits(value)) {
+    const digits = source.replace(/\D/g, '');
+    if (digits.length < 10) continue;
+    terms.add(digits);
+    terms.add(digits.slice(-10));
+    if (digits.length === 11 && digits.startsWith('8')) terms.add(`7${digits.slice(1)}`);
+    if (digits.length === 10) terms.add(`7${digits}`);
+  }
+  return [...terms].filter((value) => value.length >= 10);
+}
+
+function monthKey(value: Date) {
+  return `${value.getUTCFullYear()}-${String(value.getUTCMonth() + 1).padStart(2, '0')}`;
+}
+
+function recordingTimestamp(file: RecordValue): number {
+  const name = firstText(file.name, file.title, file.filename);
+  const match = name.match(/-(\d{8})-(\d{6})-/);
+  if (match) {
+    const [, date, time] = match;
+    const timestamp = Date.UTC(
+      Number(date.slice(0, 4)),
+      Number(date.slice(4, 6)) - 1,
+      Number(date.slice(6, 8)),
+      Number(time.slice(0, 2)),
+      Number(time.slice(2, 4)),
+      Number(time.slice(4, 6))
+    );
+    if (Number.isFinite(timestamp)) return timestamp;
+  }
+  return toTimestamp(file.createdAt ?? file.updateTime ?? file.dateCreate);
+}
 function toTimestamp(value: unknown): number {
   const timestamp = new Date(String(value || '')).getTime();
   return Number.isFinite(timestamp) ? timestamp : Number.NaN;
