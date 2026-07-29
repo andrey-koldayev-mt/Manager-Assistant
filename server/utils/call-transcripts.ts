@@ -296,21 +296,27 @@ function monthKey(value: Date) {
 }
 
 function recordingTimestamp(file: RecordValue): number {
+  // Disk returns createdAt in ISO UTC; it is more reliable than a timestamp
+  // embedded in a provider-specific file name.
+  const storedTimestamp = toTimestamp(file.createdAt ?? file.updateTime ?? file.dateCreate);
+  if (Number.isFinite(storedTimestamp)) return storedTimestamp;
+
   const name = firstText(file.name, file.title, file.filename);
   const match = name.match(/-(\d{8})-(\d{6})-/);
   if (match) {
     const [, date, time] = match;
-    const timestamp = Date.UTC(
+    // Call recordings use Moscow local time in their filename, not UTC.
+    const moscowTimestamp = Date.UTC(
       Number(date.slice(0, 4)),
       Number(date.slice(4, 6)) - 1,
       Number(date.slice(6, 8)),
       Number(time.slice(0, 2)),
       Number(time.slice(2, 4)),
       Number(time.slice(4, 6))
-    );
-    if (Number.isFinite(timestamp)) return timestamp;
+    ) - 3 * 60 * 60 * 1000;
+    if (Number.isFinite(moscowTimestamp)) return moscowTimestamp;
   }
-  return toTimestamp(file.createdAt ?? file.updateTime ?? file.dateCreate);
+  return Number.NaN;
 }
 function toTimestamp(value: unknown): number {
   const timestamp = new Date(String(value || '')).getTime();
