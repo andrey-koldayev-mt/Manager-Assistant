@@ -247,7 +247,7 @@ function normalizeActivity(activity: Record<string, any>) {
     channel: activity.activityType ?? activity.typeName ?? activity.providerTypeId ?? 'activity',
     author: activity.authorName ?? activity.responsibleName ?? null,
     title: activity.subject ?? activity.title ?? '',
-    text: activity.description ?? activity.text ?? activity.comment ?? ''
+    text: activity.transcript ?? activity.transcription ?? activity.description ?? activity.text ?? activity.comment ?? ''
   };
 }
 

@@ -1,5 +1,6 @@
 import { buildDealContext, type AiRecommendation } from '../../domain/deal-analysis';
 import { loadDealBundle, requestVibeRaw } from '../../utils/deal-bundle';
+import { enrichCallTranscripts } from '../../utils/call-transcripts';
 import { B24_API_KEY, ensureVibeApiKey, getVibeAuthorizationHeader } from '../../utils/b24';
 
 const DEFAULT_AI_MODEL = 'bitrix/bitrixgpt-5.5';
@@ -32,7 +33,9 @@ export default defineEventHandler(async (event) => {
 
   const headers = { 'X-Api-Key': B24_API_KEY, Authorization: authHeader, 'Content-Type': 'application/json' };
   try {
-    const context = buildDealContext(await loadDealBundle({ dealId, headers }));
+    const bundle = await loadDealBundle({ dealId, headers });
+    const transcriptStats = await enrichCallTranscripts({ dealId, bundle, headers });
+    const context = { ...buildDealContext(bundle), transcriptStats };
     const response = await requestVibeRaw('https://vibecode.bitrix24.tech/v1/chat/completions', {
       method: 'POST',
       headers,

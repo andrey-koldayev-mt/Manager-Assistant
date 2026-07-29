@@ -10,6 +10,7 @@ import {
 } from '../../domain/deal-analysis';
 import { NEXT_STEP_SYSTEM_PROMPT } from '../../domain/next-step-prompt';
 import { loadDealBundle, requestVibe, requestVibeRaw } from '../../utils/deal-bundle';
+import { enrichCallTranscripts } from '../../utils/call-transcripts';
 import {
   B24_API_KEY,
   ensureVibeApiKey,
@@ -49,6 +50,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const bundle = await loadDealBundle({ dealId, headers });
+    const transcriptStats = await enrichCallTranscripts({ dealId, bundle, headers });
     const context = buildDealContext(bundle);
     const rawRecommendation = body.recommendation || await getAiRecommendation({ context, headers });
 
@@ -61,7 +63,7 @@ export default defineEventHandler(async (event) => {
         success: true,
         data: {
           mode: 'preview',
-          context,
+          context: { ...context, transcriptStats },
           recommendation: validated,
           timelineLogPayload
         }
@@ -82,7 +84,7 @@ export default defineEventHandler(async (event) => {
       success: true,
       data: {
         mode: 'live',
-        context,
+        context: { ...context, transcriptStats },
         recommendation: validated,
         activityPayload,
         timelineLogPayload: logPayload,

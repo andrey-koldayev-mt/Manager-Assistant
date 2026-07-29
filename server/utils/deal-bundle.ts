@@ -16,7 +16,12 @@ export async function loadDealBundle({ dealId, headers }: { dealId: number; head
     safeRequestVibe('/activities/search', {
       headers,
       method: 'POST',
-      body: { filter: { ownerTypeId: 2, ownerId: dealId }, sort: 'createdAt', limit: 200 }
+      body: {
+        filter: { ownerTypeId: 2, ownerId: dealId },
+        sort: 'createdAt',
+        limit: 200,
+        select: ['id', 'subject', 'description', 'typeId', 'activityType', 'createdAt', 'deadline', 'communications', 'files', 'webdavElements']
+      }
     }),
     loadCrmMessages({ dealId, headers }),
     contactId ? safeRequestVibe(`/contacts/${contactId}`, { headers }) : Promise.resolve(null)
