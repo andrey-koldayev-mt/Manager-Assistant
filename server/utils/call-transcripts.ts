@@ -2,9 +2,9 @@ import type { DealBundle } from '../domain/deal-analysis';
 import { requestVibe } from './deal-bundle';
 import { B24_API_KEY } from './b24';
 
-const AUDIO_MODEL = 'bitrix/deepdml/faster-whisper-large-v3-turbo-ct2';
-const RECORDINGS_FOLDER_ID = 259146;
-const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
+const DEFAULT_AUDIO_MODEL = 'bitrix/deepdml/faster-whisper-large-v3-turbo-ct2';
+const DEFAULT_RECORDINGS_FOLDER_ID = 259146;
+const MAX_ALLOWED_AUDIO_BYTES = 25 * 1024 * 1024;
 const TRANSCRIPT_MARKER = 'AI_CALL_TRANSCRIPT';
 const AUDIO_EXTENSIONS = /\.(mp3|mp4|mpeg|mpga|m4a|wav|webm|flac|ogg)(?:$|[?#])/i;
 
@@ -19,17 +19,26 @@ export type TranscriptStats = {
   unavailable: number;
 };
 
+export type TranscriptConfig = {
+  folderId: number;
+  model: string;
+  language: string;
+  maxAudioBytes: number;
+  prompt: string;
+};
+
 export async function enrichCallTranscripts({ dealId, bundle, headers }: {
   dealId: number;
   bundle: DealBundle;
   headers: Headers;
 }): Promise<TranscriptStats> {
   const stats: TranscriptStats = { calls: 0, native: 0, cached: 0, transcribed: 0, unavailable: 0 };
+  const config = getTranscriptConfig();
   const calls = (bundle.activities || []).filter(isCallActivity);
   stats.calls = calls.length;
   if (!calls.length) return stats;
 
-  const recordingFolders = await loadRecordingFolders(headers);
+  let recordingFolders: RecordValue[] | null = null;
   for (const activity of calls) {
     const activityId = Number(activity.id ?? activity.ID);
     if (!Number.isFinite(activityId) || activityId <= 0) continue;
@@ -48,6 +57,7 @@ export async function enrichCallTranscripts({ dealId, bundle, headers }: {
       continue;
     }
 
+    recordingFolders ??= await loadRecordingFolders(headers, config.folderId);
     const recording = await selectRecording(activity, recordingFolders, headers);
     if (!recording) {
       stats.unavailable += 1;
@@ -55,7 +65,7 @@ export async function enrichCallTranscripts({ dealId, bundle, headers }: {
     }
 
     try {
-      const transcript = await transcribeRecording(recording, headers);
+      const transcript = await transcribeRecording(recording, headers, config);
       if (!transcript) {
         stats.unavailable += 1;
         continue;
@@ -85,7 +95,7 @@ async function getNativeTranscript(activityId: number, headers: Headers): Promis
   }
 }
 
-function findCachedTranscript(activityId: number, timelines: RecordValue[]): string {
+export function findCachedTranscript(activityId: number, timelines: RecordValue[]): string {
   const marker = `[${TRANSCRIPT_MARKER}:${activityId}]`;
   for (const item of timelines) {
     const text = firstText(item.text, item.description, item.comment);
@@ -101,9 +111,9 @@ function findCachedTranscript(activityId: number, timelines: RecordValue[]): str
   return '';
 }
 
-async function loadRecordingFolders(headers: Headers): Promise<RecordValue[]> {
+async function loadRecordingFolders(headers: Headers, folderId: number): Promise<RecordValue[]> {
   try {
-    const response = await requestVibe(`/folders?filter[parentId]=${RECORDINGS_FOLDER_ID}&limit=100`, { headers });
+    const response = await requestVibe(`/folders?filter[parentId]=${folderId}&limit=100`, { headers });
     return toItems(response).filter((folder) => /^\d{4}-\d{2}$/.test(firstText(folder.name)));
   } catch (error) {
     console.warn('Call recordings folder is unavailable:', error);
@@ -167,7 +177,7 @@ function folderMatchesActivityMonth(folder: RecordValue, activityTime: number) {
   return [monthKey(current), monthKey(previous), monthKey(next)].includes(folderMonth);
 }
 
-function chooseClosestRecording(recordings: RecordValue[], activityTime: number): RecordValue | null {
+export function chooseClosestRecording(recordings: RecordValue[], activityTime: number): RecordValue | null {
   const candidates = recordings
     .map((file) => ({ file, distance: Math.abs(recordingTimestamp(file) - activityTime) }))
     .filter(({ distance }) => Number.isFinite(distance))
@@ -177,23 +187,23 @@ function chooseClosestRecording(recordings: RecordValue[], activityTime: number)
   if (candidates.length > 1 && candidates[1]!.distance === candidates[0]!.distance) return null;
   return candidates[0]!.file;
 }
-async function transcribeRecording(file: RecordValue, headers: Headers): Promise<string> {
+export async function transcribeRecording(file: RecordValue, headers: Headers, config = getTranscriptConfig()): Promise<string> {
   const url = firstText(file.downloadUrlMachine, file.downloadUrl, file.url, file.urlDownload, file.download);
   if (!isAllowedAudioUrl(url)) return '';
   const response = await fetch(url, { headers: buildAuthorizationHeaders(headers) });
-  if (!response.ok) throw new Error(`Не удалось скачать запись звонка: ${response.status}`);
+  if (!response.ok) throw new CallTranscriptionError('download_failed', `Не удалось скачать запись звонка: ${response.status}`);
   const size = Number(response.headers.get('content-length'));
-  if (Number.isFinite(size) && size > MAX_AUDIO_BYTES) throw new Error('Запись звонка превышает лимит 25 МБ.');
+  if (Number.isFinite(size) && size > config.maxAudioBytes) throw new CallTranscriptionError('file_too_large', 'Запись звонка превышает допустимый размер.');
   const audio = await response.blob();
-  if (!audio.size || audio.size > MAX_AUDIO_BYTES) throw new Error('Запись звонка превышает лимит 25 МБ.');
+  if (!audio.size || audio.size > config.maxAudioBytes) throw new CallTranscriptionError('file_too_large', 'Запись звонка превышает допустимый размер.');
 
   const form = new FormData();
   form.append('file', audio, firstText(file.name, file.title, file.filename) || 'call-recording.mp3');
-  form.append('model', AUDIO_MODEL);
-  form.append('language', 'ru');
+  form.append('model', config.model);
+  form.append('language', config.language);
   form.append('response_format', 'json');
   form.append('vad_filter', 'true');
-  form.append('prompt', 'Разговор менеджера туристической компании с клиентом о поездке, бронировании, оплате и условиях тура.');
+  if (config.prompt) form.append('prompt', config.prompt);
 
   const transcription = await fetch('https://vibecode.bitrix24.tech/v1/audio/transcriptions', {
     method: 'POST',
@@ -201,7 +211,9 @@ async function transcribeRecording(file: RecordValue, headers: Headers): Promise
     body: form
   });
   const payload = await transcription.json().catch(() => null);
-  if (!transcription.ok || payload?.error) throw new Error(payload?.error?.message || `Whisper вернул ошибку ${transcription.status}`);
+  if (!transcription.ok || payload?.error) {
+    throw new CallTranscriptionError(payload?.error?.code || 'transcription_failed', payload?.error?.message || `Whisper вернул ошибку ${transcription.status}`);
+  }
   return firstText(payload?.text);
 }
 
@@ -304,7 +316,8 @@ function recordingTimestamp(file: RecordValue): number {
   const name = firstText(file.name, file.title, file.filename);
   const match = name.match(/-(\d{8})-(\d{6})-/);
   if (match) {
-    const [, date, time] = match;
+    const date = match[1]!;
+    const time = match[2]!;
     // Call recordings use Moscow local time in their filename, not UTC.
     const moscowTimestamp = Date.UTC(
       Number(date.slice(0, 4)),
@@ -325,4 +338,28 @@ function toTimestamp(value: unknown): number {
 
 function buildAuthorizationHeaders(headers: Headers): Record<string, string> {
   return headers.Authorization ? { Authorization: headers.Authorization } : {};
+}
+
+export class CallTranscriptionError extends Error {
+  constructor(public readonly code: string, message: string) {
+    super(message);
+    this.name = 'CallTranscriptionError';
+  }
+}
+
+export function getTranscriptConfig(env: NodeJS.ProcessEnv = process.env): TranscriptConfig {
+  const folderId = positiveInteger(env.B24_CALL_RECORDINGS_FOLDER_ID, DEFAULT_RECORDINGS_FOLDER_ID);
+  const requestedSize = positiveInteger(env.VIBE_TRANSCRIPTION_MAX_BYTES, MAX_ALLOWED_AUDIO_BYTES);
+  return {
+    folderId,
+    model: env.VIBE_TRANSCRIPTION_MODEL?.trim() || DEFAULT_AUDIO_MODEL,
+    language: env.VIBE_TRANSCRIPTION_LANGUAGE?.trim() || 'ru',
+    maxAudioBytes: Math.min(requestedSize, MAX_ALLOWED_AUDIO_BYTES),
+    prompt: env.VIBE_TRANSCRIPTION_PROMPT?.trim() || ''
+  };
+}
+
+function positiveInteger(value: string | undefined, fallback: number) {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
 }

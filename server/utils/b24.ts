@@ -1,13 +1,15 @@
 import type { H3Event } from 'h3';
 import { createError, getHeader } from 'h3';
 
-export const B24_API_KEY = process.env.VIBE_API_KEY ?? '';
+// VIBE_APP_API_KEY is the production OAuth application key. VIBE_API_KEY is
+// retained for the existing CI/deploy secret mapping.
+export const B24_API_KEY = process.env.VIBE_APP_API_KEY ?? process.env.VIBE_API_KEY ?? '';
 
 export function ensureVibeApiKey() {
   if (!B24_API_KEY) {
     throw createError({
       statusCode: 500,
-      statusMessage: 'VIBE_API_KEY is not configured'
+      statusMessage: 'VIBE_APP_API_KEY is not configured'
     });
   }
 }

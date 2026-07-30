@@ -2,6 +2,7 @@
 import CircleCheckIcon from '@bitrix24/b24icons-vue/main/CircleCheckIcon';
 import RocketIcon from '@bitrix24/b24icons-vue/main/RocketIcon';
 import WarningIcon from '@bitrix24/b24icons-vue/main/WarningIcon';
+import { getCurrentB24AuthorizationHeaders } from '~/utils/b24-client-auth';
 
 type AnalyzeResult = {
   mode: 'preview' | 'live';
@@ -71,15 +72,9 @@ const activityLabel = computed(() => {
   return labels[result.value?.recommendation.activityType || 'Todo'] || 'CRM-действие';
 });
 
-function getAuthorizationHeaders(): Record<string, string> {
-  const sdkAuth = import.meta.client ? (window as any).BX24?.getAuth?.() : null;
-  const token = props.accessToken
-    || sdkAuth?.access_token
-    || sdkAuth?.AUTH_ID
-    || sdkAuth?.auth_id
-    || '';
-
-  return token ? { Authorization: `Bearer ${token}` } : {};
+async function getAuthorizationHeaders(): Promise<Record<string, string>> {
+  const sdk = import.meta.client ? (window as any).BX24 : null;
+  return getCurrentB24AuthorizationHeaders(sdk, props.accessToken);
 }
 
 const formattedDeadline = computed(() => {
@@ -113,7 +108,7 @@ async function analyze() {
   try {
     const response = await $fetch('/api/b24/analyze-next-step', {
       method: 'POST',
-      headers: getAuthorizationHeaders(),
+      headers: await getAuthorizationHeaders(),
       body: {
         dealId: props.dealId,
         mode: 'preview'
@@ -157,7 +152,7 @@ async function askAi() {
   try {
     const response = await $fetch('/api/b24/ask-next-step-ai', {
       method: 'POST',
-      headers: getAuthorizationHeaders(),
+      headers: await getAuthorizationHeaders(),
       body: {
         dealId: props.dealId,
         question: text,
@@ -220,7 +215,7 @@ async function createActivity() {
   try {
     const response = await $fetch('/api/b24/analyze-next-step', {
       method: 'POST',
-      headers: getAuthorizationHeaders(),
+      headers: await getAuthorizationHeaders(),
       body: {
         dealId: props.dealId,
         mode: 'live',
