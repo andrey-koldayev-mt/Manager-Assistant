@@ -9,6 +9,8 @@ type B24Sdk = {
   refreshAuth?: (callback: (auth: B24Auth | false | null | undefined) => void) => unknown;
 };
 
+const authorizationHeaderCache = new WeakMap<B24Sdk, string>();
+
 function firstToken(...values: unknown[]): string {
   for (const value of values) {
     if (typeof value === 'string' && value.trim()) {
@@ -41,11 +43,33 @@ export async function getCurrentB24AuthorizationHeaders(sdk: B24Sdk | null | und
   const currentAuth = sdk?.getAuth?.();
   const currentHeaders = getB24AuthorizationHeaders(currentAuth || null);
   if (currentHeaders.Authorization) {
+    rememberAuthorizationHeader(sdk, currentHeaders.Authorization);
     return currentHeaders;
   }
 
   const refreshedAuth = await refreshB24Auth(sdk);
-  return getB24AuthorizationHeaders(refreshedAuth, launchToken);
+  const refreshedHeaders = getB24AuthorizationHeaders(refreshedAuth || null);
+  if (refreshedHeaders.Authorization) {
+    rememberAuthorizationHeader(sdk, refreshedHeaders.Authorization);
+    return refreshedHeaders;
+  }
+
+  const cachedHeader = sdk ? authorizationHeaderCache.get(sdk) : '';
+  if (cachedHeader) {
+    return { Authorization: cachedHeader };
+  }
+
+  const launchHeaders = getB24AuthorizationHeaders(null, launchToken);
+  if (launchHeaders.Authorization) {
+    rememberAuthorizationHeader(sdk, launchHeaders.Authorization);
+  }
+  return launchHeaders;
+}
+
+function rememberAuthorizationHeader(sdk: B24Sdk | null | undefined, value: string) {
+  if (sdk && value) {
+    authorizationHeaderCache.set(sdk, value);
+  }
 }
 
 function refreshB24Auth(sdk: B24Sdk | null | undefined): Promise<B24Auth | null> {

@@ -26,4 +26,18 @@ describe('getB24AuthorizationHeaders', () => {
 
     expect(headers).toEqual({ Authorization: 'Bearer refreshed-token' });
   });
+  it('keeps the last valid SDK token during a transient empty auth response', async () => {
+    let token = 'fresh-session-token';
+    const sdk = {
+      getAuth: () => token ? { access_token: token } : false,
+      refreshAuth: (callback: (auth: any) => void) => callback(false)
+    };
+
+    await getCurrentB24AuthorizationHeaders(sdk);
+    token = '';
+
+    await expect(getCurrentB24AuthorizationHeaders(sdk)).resolves.toEqual({
+      Authorization: 'Bearer fresh-session-token'
+    });
+  });
 });
