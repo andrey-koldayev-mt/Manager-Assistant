@@ -21,7 +21,6 @@ const activeStep = ref(1);
 const interest = ref<boolean | null>(null);
 const crmNotes = ref('');
 const isCallFinished = ref(false);
-const accessToken = ref('');
 const b24DealId = ref<number | null>(null);
 const dealCategoryId = ref<number | null>(null);
 const dealCategoryName = ref('');
@@ -38,6 +37,7 @@ const timerSeconds = ref(0);
 const bx24Instance = ref<any>(null);
 const bx24Ready = ref(false);
 let timerId: ReturnType<typeof setInterval> | null = null;
+let vibeSessionKeepaliveId: ReturnType<typeof setInterval> | null = null;
 
 const formattedTimer = computed(() => {
   const mins = String(Math.floor(timerSeconds.value / 60)).padStart(2, '0');
@@ -155,6 +155,31 @@ function clearTimer() {
   }
 }
 
+async function keepVibeSessionAlive() {
+  if (document.visibilityState !== 'visible') {
+    return;
+  }
+
+  try {
+    await $fetch('/api/b24/session', { credentials: 'same-origin' });
+  } catch {
+    // A following user action reports an expired Gateway session explicitly.
+  }
+}
+
+function startVibeSessionKeepalive() {
+  if (vibeSessionKeepaliveId) {
+    clearInterval(vibeSessionKeepaliveId);
+  }
+  vibeSessionKeepaliveId = setInterval(() => void keepVibeSessionAlive(), 15 * 60 * 1000);
+}
+
+function clearVibeSessionKeepalive() {
+  if (vibeSessionKeepaliveId) {
+    clearInterval(vibeSessionKeepaliveId);
+    vibeSessionKeepaliveId = null;
+  }
+}
 function setWorkspaceModeForCurrentFunnel() {
   if (isReactivationFunnel.value) {
     workspaceMode.value = 'reactivation';
@@ -304,7 +329,7 @@ async function loadDealContextFromServer() {
 
   try {
     const response = await $fetch(`/api/b24/load-deal-context?dealId=${b24DealId.value}`, {
-      headers: accessToken.value ? { Authorization: `Bearer ${accessToken.value}` } : {}
+      credentials: 'same-origin'
     }) as any;
 
     if (!response.success || !response.data) {
@@ -346,7 +371,6 @@ async function initB24Integration() {
   try {
     const params = new URLSearchParams(window.location.search);
     placementCode.value = params.get('placement') || '';
-    accessToken.value = params.get('access_token') || params.get('AUTH_ID') || params.get('auth_id') || '';
     const placementOptions = params.get('placement_options') || params.get('PLACEMENT_OPTIONS');
     const dealId = extractDealIdFromPlacementOptions(placementOptions || window.location.href || window.name);
 
@@ -361,11 +385,6 @@ async function initB24Integration() {
       BX24.init(async () => {
         bx24Instance.value = BX24;
         bx24Ready.value = true;
-        const auth = BX24.getAuth ? BX24.getAuth() : {};
-        const token = auth?.access_token || auth?.AUTH_ID || auth?.auth_id;
-        if (token) {
-          accessToken.value = token;
-        }
 
         const placementInfo = BX24.placement?.info ? BX24.placement.info() : null;
         const sdkDealId = extractDealIdFromPlacementOptions(placementInfo?.options || placementInfo?.OPTIONS || placementInfo);
@@ -457,7 +476,7 @@ async function saveActivityToB24() {
   try {
     const response = await $fetch('/api/b24/create-call-activity', {
       method: 'POST',
-      headers: accessToken.value ? { Authorization: `Bearer ${accessToken.value}` } : {},
+      credentials: 'same-origin',
       body: {
         dealId: b24DealId.value,
         crmNotes: crmNotes.value,
@@ -521,9 +540,13 @@ async function copyText(text: string) {
 onMounted(() => {
   startTimer();
   initB24Integration();
+  startVibeSessionKeepalive();
 });
 
-onUnmounted(clearTimer);
+onUnmounted(() => {
+  clearTimer();
+  clearVibeSessionKeepalive();
+});
 </script>
 
 <template>
@@ -825,7 +848,6 @@ onUnmounted(clearTimer);
         :deal-id="b24DealId"
         :agent-name="agentName"
         :client-name="clientName"
-        :access-token="accessToken"
         :loading-context="dealContextOverlayVisible"
       />
     </div>

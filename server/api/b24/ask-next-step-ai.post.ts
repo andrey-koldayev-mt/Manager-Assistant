@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: `Вопрос должен содержать от 1 до ${MAX_QUESTION_LENGTH} символов.` });
   }
   if (!authHeader) {
-    throw createError({ statusCode: 401, statusMessage: 'Missing authorization header' });
+    throw createError({ statusCode: 401, statusMessage: 'Vibe Gateway session is missing. Reopen the widget from the deal card.' });
   }
   ensureVibeApiKey();
 

@@ -2,7 +2,6 @@
 import CircleCheckIcon from '@bitrix24/b24icons-vue/main/CircleCheckIcon';
 import RocketIcon from '@bitrix24/b24icons-vue/main/RocketIcon';
 import WarningIcon from '@bitrix24/b24icons-vue/main/WarningIcon';
-import { getCurrentB24AuthorizationHeaders } from '~/utils/b24-client-auth';
 
 type AnalyzeResult = {
   mode: 'preview' | 'live';
@@ -45,7 +44,6 @@ const props = defineProps<{
   dealId: number | null;
   agentName: string;
   clientName: string;
-  accessToken?: string;
   loadingContext?: boolean;
 }>();
 
@@ -71,11 +69,6 @@ const activityLabel = computed(() => {
   };
   return labels[result.value?.recommendation.activityType || 'Todo'] || 'CRM-действие';
 });
-
-async function getAuthorizationHeaders(): Promise<Record<string, string>> {
-  const sdk = import.meta.client ? (window as any).BX24 : null;
-  return getCurrentB24AuthorizationHeaders(sdk, props.accessToken);
-}
 
 const formattedDeadline = computed(() => {
   const value = result.value?.recommendation.deadline;
@@ -108,7 +101,7 @@ async function analyze() {
   try {
     const response = await $fetch('/api/b24/analyze-next-step', {
       method: 'POST',
-      headers: await getAuthorizationHeaders(),
+      credentials: 'same-origin',
       body: {
         dealId: props.dealId,
         mode: 'preview'
@@ -152,7 +145,7 @@ async function askAi() {
   try {
     const response = await $fetch('/api/b24/ask-next-step-ai', {
       method: 'POST',
-      headers: await getAuthorizationHeaders(),
+      credentials: 'same-origin',
       body: {
         dealId: props.dealId,
         question: text,
@@ -178,6 +171,12 @@ async function askAi() {
   }
 }
 
+function formatApiError(error: any, fallback: string) {
+  if (error?.statusCode === 401) {
+    return '\u0421\u0435\u0430\u043d\u0441 \u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u044f \u0438\u0441\u0442\u0451\u043a. \u041e\u0442\u043a\u0440\u043e\u0439\u0442\u0435 \u0432\u0438\u0434\u0436\u0435\u0442 \u0437\u0430\u043d\u043e\u0432\u043e \u0438\u0437 \u043a\u0430\u0440\u0442\u043e\u0447\u043a\u0438 \u0441\u0434\u0435\u043b\u043a\u0438.';
+  }
+  return error?.statusMessage || error?.message || fallback;
+}
 function onQuestionKeydown(event: KeyboardEvent) {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
@@ -215,7 +214,7 @@ async function createActivity() {
   try {
     const response = await $fetch('/api/b24/analyze-next-step', {
       method: 'POST',
-      headers: await getAuthorizationHeaders(),
+      credentials: 'same-origin',
       body: {
         dealId: props.dealId,
         mode: 'live',

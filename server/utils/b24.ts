@@ -28,10 +28,9 @@ export function firstString(...values: unknown[]): string {
 }
 
 export function getVibeAuthorizationHeader(event: H3Event): string {
-  return firstString(
-    getHeader(event, 'x-vibe-authorization'),
-    getHeader(event, 'authorization')
-  );
+  // Gateway owns the Vibe session and strips spoofed client values before this
+  // request reaches the app. Do not accept browser Authorization headers here.
+  return firstString(getHeader(event, 'x-vibe-authorization'));
 }
 
 export function buildActivityDeadline(dateValue: string): string {
