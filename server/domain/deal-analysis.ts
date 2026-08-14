@@ -11,6 +11,7 @@ export type ContactCommunication = {
 
 export type DealBundle = {
   deal: Record<string, any>;
+  linkedLead?: Record<string, any> | null;
   timelines?: Record<string, any>[];
   activities?: Record<string, any>[];
   messages?: Record<string, any>[];
@@ -28,7 +29,7 @@ export type AiRecommendation = {
   sourceSignals: string[];
 };
 
-export function buildDealContext({ deal, timelines = [], activities = [], messages = [], contact = null }: DealBundle) {
+export function buildDealContext({ deal, linkedLead = null, timelines = [], activities = [], messages = [], contact = null }: DealBundle) {
   if (!deal || !Number.isFinite(Number(deal.id ?? deal.ID))) {
     throw new Error('deal is required');
   }
@@ -53,6 +54,7 @@ export function buildDealContext({ deal, timelines = [], activities = [], messag
       assignedById: numberOrNull(deal.assignedById ?? deal.responsibleId ?? deal.ASSIGNED_BY_ID),
       contactId: numberOrNull(deal.contactId ?? deal.CONTACT_ID),
       companyId: numberOrNull(deal.companyId ?? deal.COMPANY_ID),
+      linkedLeadId: numberOrNull(linkedLead?.id ?? linkedLead?.ID ?? deal.leadId ?? deal.LEAD_ID),
       communications: extractContactCommunications(contact)
     },
     history,
@@ -60,7 +62,9 @@ export function buildDealContext({ deal, timelines = [], activities = [], messag
       comments: timelines.length,
       wazzupComments: timelines.filter(isWazzupComment).length,
       activities: activities.length,
-      messages: messages.length
+      messages: messages.length,
+      leadActivities: activities.filter((item) => item.sourceEntityType === 'lead').length,
+      leadMessages: messages.filter((item) => item.sourceEntityType === 'lead').length
     }
   };
 }
@@ -250,9 +254,9 @@ export const CRM_ACTIVITY_RECOMMENDATION_TOOL = {
 
 function normalizeActivity(activity: Record<string, any>) {
   return {
-    id: `activity:${activity.id ?? activity.ID}`,
+    id: `${activity.sourceEntityType ?? 'deal'}:activity:${activity.id ?? activity.ID}`,
     at: activity.createdAt ?? activity.deadline ?? activity.startTime ?? activity.dateCreate ?? new Date(0).toISOString(),
-    channel: activity.activityType ?? activity.typeName ?? activity.providerTypeId ?? 'activity',
+    channel: sourceLabel(activity, activity.activityType ?? activity.typeName ?? activity.providerTypeId ?? activity.typeId ?? activity.TYPE_ID ?? 'activity'),
     author: activity.authorName ?? activity.responsibleName ?? null,
     title: activity.subject ?? activity.title ?? '',
     text: activity.transcript ?? activity.transcription ?? activity.description ?? activity.text ?? activity.comment ?? ''
@@ -261,9 +265,9 @@ function normalizeActivity(activity: Record<string, any>) {
 
 function normalizeTimeline(item: Record<string, any>) {
   return {
-    id: `timeline:${item.id ?? item.ID}`,
+    id: `${item.sourceEntityType ?? 'deal'}:timeline:${item.id ?? item.ID}`,
     at: item.createdAt ?? item.dateCreate ?? item.updatedAt ?? new Date(0).toISOString(),
-    channel: isWazzupComment(item) ? 'wazzup' : item.type ?? item.typeName ?? 'timeline',
+    channel: sourceLabel(item, isWazzupComment(item) ? 'wazzup' : item.type ?? item.typeName ?? 'timeline'),
     author: item.authorName ?? item.userName ?? null,
     title: item.title ?? item.subject ?? '',
     text: item.text ?? item.description ?? item.comment ?? ''
@@ -326,13 +330,17 @@ function isWazzupComment(item: Record<string, any>) {
 
 function normalizeMessage(message: Record<string, any>) {
   return {
-    id: `message:${message.id ?? message.ID}`,
+    id: `${message.sourceEntityType ?? 'deal'}:message:${message.id ?? message.ID}`,
     at: message.date ?? message.createdAt ?? message.dateCreate ?? new Date(0).toISOString(),
-    channel: 'chat',
+    channel: sourceLabel(message, 'chat'),
     author: message.authorName ?? message.senderName ?? message.userName ?? null,
     title: message.chatTitle ?? message.dialogId ?? '',
     text: message.text ?? message.message ?? ''
   };
+}
+
+function sourceLabel(item: Record<string, any>, channel: string) {
+  return item.sourceEntityType === 'lead' ? `lead:${channel}` : channel;
 }
 
 function numberOrNull(value: unknown) {

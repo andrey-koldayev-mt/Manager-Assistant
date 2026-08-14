@@ -11,28 +11,51 @@ type RequestOptions = {
 export async function loadDealBundle({ dealId, headers }: { dealId: number; headers: Record<string, string> }): Promise<DealBundle> {
   const deal = await requestVibe(`/deals/${dealId}`, { headers });
   const contactId = deal?.contactId ?? deal?.CONTACT_ID ?? deal?.contactIds?.[0] ?? deal?.CONTACT_IDS?.[0];
-  const [timelines, activities, messages, contact] = await Promise.all([
-    safeRequestVibe(`/timelines?entityType=deal&entityId=${dealId}`, { headers }),
+  const leadId = positiveId(deal?.leadId ?? deal?.LEAD_ID);
+  const [dealHistory, lead, contact] = await Promise.all([
+    loadEntityHistory({ entityType: 'deal', entityId: dealId, ownerTypeId: 2, headers }),
+    leadId ? safeRequestVibe(`/leads/${leadId}`, { headers }) : Promise.resolve(null),
+    contactId ? safeRequestVibe(`/contacts/${contactId}`, { headers }) : Promise.resolve(null)
+  ]);
+  const leadHistory = leadId
+    ? await loadEntityHistory({ entityType: 'lead', entityId: leadId, ownerTypeId: 1, headers })
+    : emptyHistory();
+
+  return {
+    deal,
+    linkedLead: lead && typeof lead === 'object' && !Array.isArray(lead) ? lead : null,
+    timelines: [...dealHistory.timelines, ...leadHistory.timelines],
+    activities: [...dealHistory.activities, ...leadHistory.activities],
+    messages: [...dealHistory.messages, ...leadHistory.messages],
+    contact: contact && typeof contact === 'object' && !Array.isArray(contact) ? contact : null
+  };
+}
+
+async function loadEntityHistory({ entityType, entityId, ownerTypeId, headers }: {
+  entityType: 'deal' | 'lead';
+  entityId: number;
+  ownerTypeId: 1 | 2;
+  headers: Record<string, string>;
+}) {
+  const [timelines, activities, messages] = await Promise.all([
+    safeRequestVibe(`/timelines?entityType=${entityType}&entityId=${entityId}`, { headers }),
     safeRequestVibe('/activities/search', {
       headers,
       method: 'POST',
       body: {
-        filter: { ownerTypeId: 2, ownerId: dealId },
+        filter: { ownerTypeId, ownerId: entityId },
         sort: 'createdAt',
         limit: 200,
         select: ['id', 'subject', 'description', 'typeId', 'activityType', 'createdAt', 'deadline', 'communications', 'files', 'webdavElements']
       }
     }),
-    loadCrmMessages({ dealId, headers }),
-    contactId ? safeRequestVibe(`/contacts/${contactId}`, { headers }) : Promise.resolve(null)
+    loadCrmMessages({ entityType, entityId, headers })
   ]);
 
   return {
-    deal,
-    timelines: toItems(timelines),
-    activities: toItems(activities),
-    messages: toItems(messages),
-    contact: contact && typeof contact === 'object' && !Array.isArray(contact) ? contact : null
+    timelines: markSource(toItems(timelines), entityType, entityId),
+    activities: markSource(toItems(activities), entityType, entityId),
+    messages: markSource(toItems(messages), entityType, entityId)
   };
 }
 
@@ -59,9 +82,13 @@ export async function requestVibeRaw(url: string, options: RequestInit) {
   return data?.data ?? data?.result ?? data;
 }
 
-async function loadCrmMessages({ dealId, headers }: { dealId: number; headers: Record<string, string> }) {
+async function loadCrmMessages({ entityType, entityId, headers }: {
+  entityType: 'deal' | 'lead';
+  entityId: number;
+  headers: Record<string, string>;
+}) {
   try {
-    const chat = await requestVibe(`/chats/find?entityType=CRM&entityId=DEAL|${dealId}`, { headers });
+    const chat = await requestVibe(`/chats/find?entityType=CRM&entityId=${entityType.toUpperCase()}|${entityId}`, { headers });
     const dialogId = chat?.dialogId ?? chat?.id ?? chat?.chatId;
     return dialogId
       ? await requestVibe(`/chats/${encodeURIComponent(String(dialogId))}/messages?limit=100`, { headers })
@@ -87,4 +114,20 @@ function toItems(value: unknown): Record<string, any>[] {
     return Array.isArray(items) ? items as Record<string, any>[] : [];
   }
   return [];
+}
+
+function markSource(items: Record<string, any>[], entityType: 'deal' | 'lead', entityId: number) {
+  return items.map((item) => ({ ...item, sourceEntityType: entityType, sourceEntityId: entityId }));
+}
+
+function emptyHistory() {
+  return { timelines: [] as Record<string, any>[], activities: [] as Record<string, any>[], messages: [] as Record<string, any>[] };
+}
+
+function positiveId(value: unknown): number | null {
+  const rawValue = value && typeof value === 'object'
+    ? (value as Record<string, unknown>).id ?? (value as Record<string, unknown>).ID ?? (value as Record<string, unknown>).value
+    : value;
+  const id = Number(typeof rawValue === 'string' ? rawValue.replace(/^L_/, '') : rawValue);
+  return Number.isInteger(id) && id > 0 ? id : null;
 }

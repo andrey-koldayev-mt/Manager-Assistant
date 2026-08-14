@@ -21,6 +21,8 @@ type AnalyzeResult = {
       wazzupComments: number;
       activities: number;
       messages: number;
+      leadActivities?: number;
+      leadMessages?: number;
     };
     transcriptStats?: {
       calls: number;
@@ -377,6 +379,9 @@ async function copyRecommendation() {
                 Wazzup {{ result.context.sourceStats.wazzupComments }},
                 дела {{ result.context.sourceStats.activities }},
                 сообщения {{ result.context.sourceStats.messages }}.
+                <template v-if="result.context.sourceStats.leadActivities || result.context.sourceStats.leadMessages">
+                  Из привязанного лида: дела {{ result.context.sourceStats.leadActivities }}, сообщения {{ result.context.sourceStats.leadMessages }}.
+                </template>
               </div>
               <B24Alert
                 v-if="result.context?.transcriptStats"

@@ -78,4 +78,24 @@ describe('buildDealContext', () => {
     ]));
     expect(context.deal.communications).toEqual([{ type: 'PHONE', value: '+79990000000' }]);
   });
+
+  it('includes communications inherited from the linked lead in the AI history', () => {
+    const context = buildDealContext({
+      deal: { id: 123, leadId: 456, assignedById: 42 },
+      linkedLead: { id: 456, title: 'Первичный лид' },
+      activities: [{
+        id: 77,
+        typeId: 2,
+        sourceEntityType: 'lead',
+        subject: 'Звонок с клиентом',
+        transcript: 'Клиент попросил подготовить варианты на октябрь.'
+      }]
+    });
+
+    expect(context.deal.linkedLeadId).toBe(456);
+    expect(context.sourceStats).toMatchObject({ activities: 1, leadActivities: 1 });
+    expect(context.history).toEqual(expect.arrayContaining([
+      expect.objectContaining({ channel: 'lead:2', text: 'Клиент попросил подготовить варианты на октябрь.' })
+    ]));
+  });
 });
