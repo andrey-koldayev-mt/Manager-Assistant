@@ -72,6 +72,7 @@ export default defineEventHandler(async (event) => {
 
     const activityPayload = buildActivityPayload({
       dealId,
+      contactId: context.deal.contactId,
       recommendation: validated,
       communications: context.deal.communications
     });

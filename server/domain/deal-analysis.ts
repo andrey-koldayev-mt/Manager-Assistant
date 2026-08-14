@@ -146,8 +146,9 @@ export function ensureFutureRecommendationDeadline(value: any, now = new Date())
   };
 }
 
-export function buildActivityPayload({ dealId, recommendation, communications }: {
+export function buildActivityPayload({ dealId, contactId, recommendation, communications }: {
   dealId: number | string;
+  contactId: number | string | null;
   recommendation: AiRecommendation;
   communications: ContactCommunication[];
 }) {
@@ -157,11 +158,12 @@ export function buildActivityPayload({ dealId, recommendation, communications }:
   }
 
   const validated = validateAiRecommendation(recommendation, new Date(0));
+  const numericContactId = Number(contactId);
   const communication = selectCommunication(validated.activityType, communications);
-  if (!communication) {
+  if (!communication || !Number.isFinite(numericContactId) || numericContactId <= 0) {
     const required = validated.activityType === 'Call' ? 'номер телефона' :
       validated.activityType === 'Email' ? 'email' : 'контактный канал';
-    throw new Error(`Невозможно создать ${activityTypeLabel(validated.activityType)}: у контакта не найден ${required}.`);
+    throw new Error(`Невозможно создать ${activityTypeLabel(validated.activityType)}: у контакта не найден ${required} или он не привязан к сделке.`);
   }
 
   const endTime = new Date(validated.deadline);
@@ -174,9 +176,15 @@ export function buildActivityPayload({ dealId, recommendation, communications }:
     typeId: activityTypeId(validated.activityType),
     startTime: startTime.toISOString(),
     endTime: endTime.toISOString(),
+    deadline: endTime.toISOString(),
     description: validated.description,
     responsibleId: validated.responsibleId,
-    communications: [communication]
+    completed: false,
+    communications: [{
+      VALUE: communication.value,
+      ENTITY_TYPE_ID: 3,
+      ENTITY_ID: numericContactId
+    }]
   };
 }
 
@@ -301,7 +309,7 @@ function normalizeActivityType(value: string): AiActivityType | null {
 }
 
 function activityTypeId(activityType: AiActivityType): number {
-  return { Call: 1, Meeting: 2, Todo: 3, Email: 6 }[activityType];
+  return { Call: 2, Meeting: 1, Todo: 3, Email: 4 }[activityType];
 }
 
 function activityTypeLabel(activityType: AiActivityType): string {

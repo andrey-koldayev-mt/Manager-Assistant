@@ -24,13 +24,14 @@ describe('buildActivityPayload', () => {
   ];
 
   it.each([
-    ['Call', 1, 'PHONE'],
-    ['Meeting', 2, 'PHONE'],
+    ['Call', 2, 'PHONE'],
+    ['Meeting', 1, 'PHONE'],
     ['Todo', 3, 'PHONE'],
-    ['Email', 6, 'EMAIL']
+    ['Email', 4, 'EMAIL']
   ] as const)('maps %s to the VibeCode activity contract', (activityType, typeId, communicationType) => {
     const payload = buildActivityPayload({
       dealId: 123,
+      contactId: 456,
       recommendation: recommendation(activityType),
       communications
     });
@@ -40,15 +41,18 @@ describe('buildActivityPayload', () => {
       ownerId: 123,
       subject: 'Связаться с клиентом',
       typeId,
-      communications: [{ type: communicationType }]
+      completed: false,
+      communications: [{ VALUE: communicationType === 'PHONE' ? '+79990000000' : 'client@example.com', ENTITY_TYPE_ID: 3, ENTITY_ID: 456 }]
     });
     expect(payload.startTime).toBe('2026-07-27T08:30:00.000Z');
     expect(payload.endTime).toBe('2026-07-27T09:00:00.000Z');
+    expect(payload.deadline).toBe('2026-07-27T09:00:00.000Z');
   });
 
   it('requires a matching communication channel for email', () => {
     expect(() => buildActivityPayload({
       dealId: 123,
+      contactId: 456,
       recommendation: recommendation('Email'),
       communications: [{ type: 'PHONE', value: '+79990000000' }]
     })).toThrow('у контакта не найден email');
