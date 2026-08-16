@@ -57,6 +57,25 @@ describe('buildActivityPayload', () => {
       communications: [{ type: 'PHONE', value: '+79990000000' }]
     })).toThrow('у контакта не найден email');
   });
+
+  it('uses email stored in the contact multifield list', () => {
+    const context = buildDealContext({
+      deal: { id: 123, contactId: { id: 456 } },
+      contact: {
+        fm: [{ typeId: 'EMAIL', value: 'client@example.com' }]
+      }
+    });
+
+    const payload = buildActivityPayload({
+      dealId: 123,
+      contactId: context.deal.contactId,
+      recommendation: recommendation('Email'),
+      communications: context.deal.communications
+    });
+
+    expect(context.deal.contactId).toBe(456);
+    expect(payload.communications).toEqual([{ VALUE: 'client@example.com', ENTITY_TYPE_ID: 3, ENTITY_ID: 456 }]);
+  });
 });
 
 describe('buildDealContext', () => {

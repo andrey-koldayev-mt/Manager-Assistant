@@ -70,12 +70,20 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    const activityPayload = buildActivityPayload({
-      dealId,
-      contactId: context.deal.contactId,
-      recommendation: validated,
-      communications: context.deal.communications
-    });
+    let activityPayload: Record<string, unknown>;
+    try {
+      activityPayload = buildActivityPayload({
+        dealId,
+        contactId: context.deal.contactId,
+        recommendation: validated,
+        communications: context.deal.communications
+      });
+    } catch (error: any) {
+      throw createError({
+        statusCode: 422,
+        statusMessage: error?.message || 'Не удалось подготовить CRM-действие.'
+      });
+    }
     const created = await createCrmActivity({ activityPayload, headers });
     const createdActivityId = created?.id ?? created?.ID ?? created?.activity?.id ?? created?.activityId ?? null;
     const logPayload = buildTimelineLogPayload({ dealId, recommendation: validated, activityId: createdActivityId });

@@ -233,7 +233,11 @@ async function createActivity() {
       icon: CircleCheckIcon
     });
   } catch (error: any) {
-    errorMessage.value = error?.statusMessage || error?.message || 'Не удалось создать дело в CRM.';
+    errorMessage.value = error?.data?.statusMessage
+      || error?.data?.message
+      || error?.statusMessage
+      || error?.message
+      || 'Не удалось создать дело в CRM.';
     toast.add({
       title: 'Ошибка создания дела',
       description: errorMessage.value,

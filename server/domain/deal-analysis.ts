@@ -52,7 +52,7 @@ export function buildDealContext({ deal, linkedLead = null, timelines = [], acti
       amount: deal.amount ?? deal.opportunity ?? deal.OPPORTUNITY ?? null,
       currencyId: deal.currencyId ?? deal.currency ?? deal.CURRENCY_ID ?? null,
       assignedById: numberOrNull(deal.assignedById ?? deal.responsibleId ?? deal.ASSIGNED_BY_ID),
-      contactId: numberOrNull(deal.contactId ?? deal.CONTACT_ID),
+      contactId: numberOrNull(deal.contactId ?? deal.CONTACT_ID ?? deal.contactIds?.[0] ?? deal.CONTACT_IDS?.[0]),
       companyId: numberOrNull(deal.companyId ?? deal.COMPANY_ID),
       linkedLeadId: numberOrNull(linkedLead?.id ?? linkedLead?.ID ?? deal.leadId ?? deal.LEAD_ID),
       communications: extractContactCommunications(contact)
@@ -281,10 +281,32 @@ function extractContactCommunications(contact: Record<string, any> | null): Cont
 
   return [
     ...extractCommunicationValues(contact.phone ?? contact.PHONE ?? contact.phones ?? contact.PHONES, 'PHONE'),
-    ...extractCommunicationValues(contact.email ?? contact.EMAIL ?? contact.emails ?? contact.EMAILS, 'EMAIL')
+    ...extractCommunicationValues(contact.email ?? contact.EMAIL ?? contact.emails ?? contact.EMAILS, 'EMAIL'),
+    ...extractFmCommunications(contact.fm ?? contact.FM)
   ].filter((communication, index, all) => (
     all.findIndex((item) => item.type === communication.type && item.value === communication.value) === index
   ));
+}
+
+function extractFmCommunications(value: unknown): ContactCommunication[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.flatMap((item) => {
+    if (!item || typeof item !== 'object') {
+      return [];
+    }
+
+    const record = item as Record<string, unknown>;
+    const typeId = String(record.typeId ?? record.TYPE_ID ?? '').toUpperCase();
+    const type = typeId === 'PHONE' || typeId === 'EMAIL' ? typeId : null;
+    const value = record.value ?? record.VALUE;
+
+    return type && typeof value === 'string' && value.trim()
+      ? [{ type, value: value.trim() }]
+      : [];
+  });
 }
 
 function extractCommunicationValues(value: unknown, type: ContactCommunication['type']): ContactCommunication[] {
@@ -344,7 +366,10 @@ function sourceLabel(item: Record<string, any>, channel: string) {
 }
 
 function numberOrNull(value: unknown) {
-  const number = Number(value);
+  const rawValue = value && typeof value === 'object'
+    ? (value as Record<string, unknown>).id ?? (value as Record<string, unknown>).ID ?? (value as Record<string, unknown>).value
+    : value;
+  const number = Number(rawValue);
   return Number.isFinite(number) && number > 0 ? number : null;
 }
 

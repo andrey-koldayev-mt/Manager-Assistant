@@ -10,7 +10,7 @@ type RequestOptions = {
 
 export async function loadDealBundle({ dealId, headers }: { dealId: number; headers: Record<string, string> }): Promise<DealBundle> {
   const deal = await requestVibe(`/deals/${dealId}`, { headers });
-  const contactId = deal?.contactId ?? deal?.CONTACT_ID ?? deal?.contactIds?.[0] ?? deal?.CONTACT_IDS?.[0];
+  const contactId = positiveId(deal?.contactId ?? deal?.CONTACT_ID ?? deal?.contactIds?.[0] ?? deal?.CONTACT_IDS?.[0]);
   const leadId = positiveId(deal?.leadId ?? deal?.LEAD_ID);
   const [dealHistory, lead, contact] = await Promise.all([
     loadEntityHistory({ entityType: 'deal', entityId: dealId, ownerTypeId: 2, headers }),
