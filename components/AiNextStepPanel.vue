@@ -33,6 +33,7 @@ type AnalyzeResult = {
     };
   };
   createdActivityId?: number | string | null;
+  createdEntityType?: 'activity' | 'task';
   pinnedTimelineLogId?: number | string | null;
 };
 
@@ -226,8 +227,9 @@ async function createActivity() {
 
     result.value = response.data;
     const createdId = response.data.createdActivityId;
+    const createdLabel = response.data.createdEntityType === 'task' ? 'Задача создана' : 'CRM-действие создано';
     toast.add({
-      title: 'CRM-действие создано',
+      title: createdLabel,
       description: createdId ? `ID: ${createdId}` : 'Откройте карточку сделки для проверки.',
       color: 'air-primary-success',
       icon: CircleCheckIcon
@@ -327,8 +329,8 @@ async function copyRecommendation() {
           v-if="result?.createdActivityId"
           color="air-primary-success"
           variant="soft"
-          title="Дело создано"
-          :description="`CRM ID: ${result.createdActivityId}`"
+          :title="result.createdEntityType === 'task' ? 'Задача создана' : 'Дело создано'"
+          :description="`${result.createdEntityType === 'task' ? 'ID задачи' : 'CRM ID'}: ${result.createdActivityId}`"
         />
       </div>
     </aside>

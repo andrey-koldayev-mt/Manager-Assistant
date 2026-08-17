@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildActivityPayload,
   buildDealContext,
+  buildLinkedTaskPayload,
   type AiRecommendation,
   type ContactCommunication
 } from './deal-analysis';
@@ -26,7 +27,6 @@ describe('buildActivityPayload', () => {
   it.each([
     ['Call', 2, 'PHONE'],
     ['Meeting', 1, 'PHONE'],
-    ['Todo', 3, 'PHONE'],
     ['Email', 4, 'EMAIL']
   ] as const)('maps %s to the VibeCode activity contract', (activityType, typeId, communicationType) => {
     const payload = buildActivityPayload({
@@ -58,6 +58,15 @@ describe('buildActivityPayload', () => {
     })).toThrow('у контакта не найден email');
   });
 
+  it('does not create a task through the CRM activity endpoint', () => {
+    expect(() => buildActivityPayload({
+      dealId: 123,
+      contactId: 456,
+      recommendation: recommendation('Todo'),
+      communications
+    })).toThrow('Tasks API');
+  });
+
   it('uses email stored in the contact multifield list', () => {
     const context = buildDealContext({
       deal: { id: 123, contactId: { id: 456 } },
@@ -75,6 +84,20 @@ describe('buildActivityPayload', () => {
 
     expect(context.deal.contactId).toBe(456);
     expect(payload.communications).toEqual([{ VALUE: 'client@example.com', ENTITY_TYPE_ID: 3, ENTITY_ID: 456 }]);
+  });
+});
+
+describe('buildLinkedTaskPayload', () => {
+  it('creates a task linked to the deal', () => {
+    expect(buildLinkedTaskPayload({
+      dealId: 123,
+      recommendation: recommendation('Todo')
+    })).toEqual(expect.objectContaining({
+      title: 'Связаться с клиентом',
+      responsibleId: 42,
+      priority: 1,
+      UF_CRM_TASK: ['D_123']
+    }));
   });
 });
 

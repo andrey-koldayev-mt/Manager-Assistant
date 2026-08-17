@@ -162,6 +162,9 @@ export function buildActivityPayload({ dealId, contactId, recommendation, commun
   }
 
   const validated = validateAiRecommendation(recommendation, new Date(0));
+  if (validated.activityType === 'Todo') {
+    throw new Error('Задача создается через Tasks API, а не через CRM-активности.');
+  }
   const numericContactId = Number(contactId);
   const communication = selectCommunication(validated.activityType, communications);
   if (!communication || !Number.isFinite(numericContactId) || numericContactId <= 0) {
@@ -194,6 +197,9 @@ export function buildActivityPayload({ dealId, contactId, recommendation, commun
 
 export function buildLinkedTaskPayload({ dealId, recommendation }: { dealId: number | string; recommendation: AiRecommendation }) {
   const numericDealId = Number(dealId);
+  if (!Number.isFinite(numericDealId) || numericDealId <= 0) {
+    throw new Error('dealId must be a positive number');
+  }
   return {
     title: recommendation.title,
     description: recommendation.description,
