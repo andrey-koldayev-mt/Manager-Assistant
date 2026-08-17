@@ -46,7 +46,7 @@ textarea:focus-visible {
 }
 
 .app-shell {
-  min-height: 100dvh;
+  min-height: var(--bitrix-frame-min-height, 100dvh);
   background:
     linear-gradient(180deg, #f8fafc 0%, #eef3f8 100%);
 }

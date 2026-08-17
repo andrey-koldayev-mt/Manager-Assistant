@@ -41,6 +41,8 @@ let timerId: ReturnType<typeof setInterval> | null = null;
 let vibeSessionKeepaliveId: ReturnType<typeof setInterval> | null = null;
 let frameResizeObserver: ResizeObserver | null = null;
 let fitWindowFrameId: number | null = null;
+let requestedFrameWidth = 0;
+let requestedFrameHeight = 0;
 
 const formattedTimer = computed(() => {
   const mins = String(Math.floor(timerSeconds.value / 60)).padStart(2, '0');
@@ -190,7 +192,7 @@ function requestBitrixFrameFit() {
   }
 
   const BX24 = bx24Instance.value || (window as any).BX24;
-  if (typeof BX24?.fitWindow !== 'function') {
+  if (typeof BX24?.fitWindow !== 'function' && typeof BX24?.resizeWindow !== 'function') {
     return;
   }
 
@@ -201,9 +203,40 @@ function requestBitrixFrameFit() {
   fitWindowFrameId = window.requestAnimationFrame(() => {
     fitWindowFrameId = window.requestAnimationFrame(() => {
       fitWindowFrameId = null;
+      const minimumHeight = getBitrixFrameHeight();
+      appShell.value?.style.setProperty('--bitrix-frame-min-height', `${minimumHeight}px`);
+
+      const scrollSize = typeof BX24.getScrollSize === 'function' ? BX24.getScrollSize() : null;
+      const width = Math.max(
+        320,
+        Number(scrollSize?.scrollWidth) || 0,
+        appShell.value?.scrollWidth || 0,
+        document.documentElement.scrollWidth
+      );
+      const contentHeight = Math.max(
+        Number(scrollSize?.scrollHeight) || 0,
+        appShell.value?.scrollHeight || 0,
+        document.documentElement.scrollHeight
+      );
+      const height = Math.max(minimumHeight, Math.min(1400, contentHeight));
+
+      if (typeof BX24.resizeWindow === 'function') {
+        if (Math.abs(width - requestedFrameWidth) > 1 || Math.abs(height - requestedFrameHeight) > 1) {
+          requestedFrameWidth = width;
+          requestedFrameHeight = height;
+          BX24.resizeWindow(width, height);
+        }
+        return;
+      }
+
       BX24.fitWindow();
     });
   });
+}
+
+function getBitrixFrameHeight() {
+  const availableHeight = window.screen?.availHeight || window.innerHeight;
+  return Math.max(760, Math.min(1200, availableHeight - 160));
 }
 
 function observeBitrixFrameHeight() {
@@ -578,6 +611,7 @@ onMounted(() => {
   void initB24Integration();
   startVibeSessionKeepalive();
   observeBitrixFrameHeight();
+  window.addEventListener('resize', requestBitrixFrameFit);
   void nextTick(requestBitrixFrameFit);
 });
 
@@ -589,6 +623,7 @@ onUnmounted(() => {
   clearTimer();
   clearVibeSessionKeepalive();
   frameResizeObserver?.disconnect();
+  window.removeEventListener('resize', requestBitrixFrameFit);
   if (fitWindowFrameId !== null && import.meta.client) {
     window.cancelAnimationFrame(fitWindowFrameId);
   }
