@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DateValue } from '@internationalized/date';
 import { parseDate } from '@internationalized/date';
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 type HistoryType = 'buyer' | 'lead';
 type WorkspaceMode = 'reactivation' | 'ai-next-step';
@@ -36,8 +36,11 @@ const createdActivityId = ref<number | string | null>(null);
 const timerSeconds = ref(0);
 const bx24Instance = ref<any>(null);
 const bx24Ready = ref(false);
+const appShell = ref<HTMLElement | null>(null);
 let timerId: ReturnType<typeof setInterval> | null = null;
 let vibeSessionKeepaliveId: ReturnType<typeof setInterval> | null = null;
+let frameResizeObserver: ResizeObserver | null = null;
+let fitWindowFrameId: number | null = null;
 
 const formattedTimer = computed(() => {
   const mins = String(Math.floor(timerSeconds.value / 60)).padStart(2, '0');
@@ -179,6 +182,38 @@ function clearVibeSessionKeepalive() {
     clearInterval(vibeSessionKeepaliveId);
     vibeSessionKeepaliveId = null;
   }
+}
+
+function requestBitrixFrameFit() {
+  if (!import.meta.client) {
+    return;
+  }
+
+  const BX24 = bx24Instance.value || (window as any).BX24;
+  if (typeof BX24?.fitWindow !== 'function') {
+    return;
+  }
+
+  if (fitWindowFrameId !== null) {
+    window.cancelAnimationFrame(fitWindowFrameId);
+  }
+
+  fitWindowFrameId = window.requestAnimationFrame(() => {
+    fitWindowFrameId = window.requestAnimationFrame(() => {
+      fitWindowFrameId = null;
+      BX24.fitWindow();
+    });
+  });
+}
+
+function observeBitrixFrameHeight() {
+  if (!import.meta.client || !appShell.value || typeof ResizeObserver === 'undefined') {
+    return;
+  }
+
+  frameResizeObserver?.disconnect();
+  frameResizeObserver = new ResizeObserver(() => requestBitrixFrameFit());
+  frameResizeObserver.observe(appShell.value);
 }
 function setWorkspaceModeForCurrentFunnel() {
   if (isReactivationFunnel.value) {
@@ -394,6 +429,7 @@ async function initB24Integration() {
         }
 
         reportClientContext('bx24-init-callback', { placementInfo });
+        requestBitrixFrameFit();
       });
     } catch (error) {
       reportClientContext('bx24-init-error', {
@@ -539,19 +575,29 @@ async function copyText(text: string) {
 
 onMounted(() => {
   startTimer();
-  initB24Integration();
+  void initB24Integration();
   startVibeSessionKeepalive();
+  observeBitrixFrameHeight();
+  void nextTick(requestBitrixFrameFit);
 });
+
+watch([workspaceMode, b24Loading, b24Initializing, isCallFinished], () => {
+  void nextTick(requestBitrixFrameFit);
+}, { flush: 'post' });
 
 onUnmounted(() => {
   clearTimer();
   clearVibeSessionKeepalive();
+  frameResizeObserver?.disconnect();
+  if (fitWindowFrameId !== null && import.meta.client) {
+    window.cancelAnimationFrame(fitWindowFrameId);
+  }
 });
 </script>
 
 <template>
   <B24App>
-    <div class="app-shell">
+    <div ref="appShell" class="app-shell">
       <div v-if="b24Loading" class="fixed left-0 right-0 top-0 z-50 h-1 bg-red-100">
         <div class="h-full w-1/2 animate-pulse brand-action" />
       </div>

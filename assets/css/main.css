@@ -46,7 +46,7 @@ textarea:focus-visible {
 }
 
 .app-shell {
-  min-height: 100vh;
+  min-height: 100dvh;
   background:
     linear-gradient(180deg, #f8fafc 0%, #eef3f8 100%);
 }
@@ -383,12 +383,9 @@ textarea:focus-visible {
   .sidebar-sticky {
     position: sticky;
     top: 74px;
-    max-height: calc(100vh - 90px);
-    overflow: auto;
   }
 
   .script-scroll {
-    max-height: calc(100vh - 90px);
-    overflow: auto;
+    overflow: visible;
   }
 }
