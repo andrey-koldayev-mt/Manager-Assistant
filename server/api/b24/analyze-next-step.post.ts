@@ -74,7 +74,9 @@ export default defineEventHandler(async (event) => {
     try {
       activityPayload = buildActivityPayload({
         dealId,
-        recommendation: validated
+        contactId: context.deal.contactId,
+        recommendation: validated,
+        communications: context.deal.communications
       });
     } catch (error: any) {
       throw createError({

@@ -220,7 +220,13 @@ function requestBitrixFrameFit() {
         appShell.value?.scrollWidth || 0,
         document.documentElement.scrollWidth
       );
-      const height = minimumHeight;
+      const contentHeight = Math.max(
+        Number(scrollSize?.scrollHeight) || 0,
+        appShell.value?.scrollHeight || 0,
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight
+      );
+      const height = Math.max(minimumHeight, Math.ceil(contentHeight));
 
       if (typeof BX24.resizeWindow === 'function') {
         if (Math.abs(width - requestedFrameWidth) > 1 || Math.abs(height - requestedFrameHeight) > 1) {

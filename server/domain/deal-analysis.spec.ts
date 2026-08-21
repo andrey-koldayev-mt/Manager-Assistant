@@ -17,10 +17,15 @@ const recommendation = (activityType: AiRecommendation['activityType']): AiRecom
 });
 
 describe('buildActivityPayload', () => {
-  it('always builds a CRM todo activity without requiring a communication channel', () => {
+  it('always includes communications in a CRM todo activity', () => {
     const payload = buildActivityPayload({
       dealId: 123,
-      recommendation: recommendation('Todo')
+      contactId: 456,
+      recommendation: recommendation('Todo'),
+      communications: [
+        { type: 'EMAIL', value: 'client@example.com' },
+        { type: 'PHONE', value: '+79990000000' }
+      ]
     });
 
     expect(payload).toMatchObject({
@@ -30,7 +35,11 @@ describe('buildActivityPayload', () => {
       typeId: 3,
       completed: false
     });
-    expect(payload).not.toHaveProperty('communications');
+    expect(payload.communications).toEqual([{
+      VALUE: '+79990000000',
+      ENTITY_TYPE_ID: 3,
+      ENTITY_ID: 456
+    }]);
     expect(payload.startTime).toBe('2026-07-27T08:30:00.000Z');
     expect(payload.endTime).toBe('2026-07-27T09:00:00.000Z');
     expect(payload.deadline).toBe('2026-07-27T09:00:00.000Z');
@@ -40,10 +49,13 @@ describe('buildActivityPayload', () => {
     const staleRecommendation = { ...recommendation('Todo'), activityType: 'Call' };
     const payload = buildActivityPayload({
       dealId: 123,
-      recommendation: staleRecommendation as AiRecommendation
+      contactId: null,
+      recommendation: staleRecommendation as AiRecommendation,
+      communications: []
     });
 
     expect(payload.typeId).toBe(3);
+    expect(payload.communications).toEqual([]);
   });
 });
 

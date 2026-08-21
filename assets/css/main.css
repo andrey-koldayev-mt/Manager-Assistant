@@ -47,21 +47,14 @@ textarea:focus-visible {
 }
 
 .app-shell {
-  height: var(--bitrix-frame-min-height, 100vh);
-  height: var(--bitrix-frame-min-height, 100dvh);
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  min-height: var(--bitrix-frame-min-height, 100vh);
+  min-height: var(--bitrix-frame-min-height, 100dvh);
   background:
     linear-gradient(180deg, #f8fafc 0%, #eef3f8 100%);
 }
 
 .workspace-layout {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 100%;
 }
 
 .brand-action {
@@ -318,9 +311,6 @@ textarea:focus-visible {
 }
 
 .workspace-scroll {
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: #b7c3d2 transparent;
 }
@@ -397,10 +387,7 @@ textarea:focus-visible {
 
 @media (min-width: 1024px) {
   .sidebar-sticky {
-    position: static;
-  }
-
-  .workspace-layout {
-    grid-template-rows: minmax(0, 1fr);
+    position: sticky;
+    top: 16px;
   }
 }

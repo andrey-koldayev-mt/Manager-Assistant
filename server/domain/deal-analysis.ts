@@ -146,9 +146,11 @@ export function ensureFutureRecommendationDeadline(value: any, now = new Date())
   };
 }
 
-export function buildActivityPayload({ dealId, recommendation }: {
+export function buildActivityPayload({ dealId, contactId, recommendation, communications }: {
   dealId: number | string;
+  contactId: number | string | null;
   recommendation: AiRecommendation;
+  communications: ContactCommunication[];
 }) {
   const numericDealId = Number(dealId);
   if (!Number.isFinite(numericDealId) || numericDealId <= 0) {
@@ -158,6 +160,15 @@ export function buildActivityPayload({ dealId, recommendation }: {
   const validated = validateAiRecommendation(recommendation, new Date(0));
   const endTime = new Date(validated.deadline);
   const startTime = new Date(endTime.getTime() - 30 * 60 * 1000);
+  const numericContactId = Number(contactId);
+  const communication = communications.find((item) => item.type === 'PHONE') ?? communications[0];
+  const activityCommunications = communication && Number.isFinite(numericContactId) && numericContactId > 0
+    ? [{
+      VALUE: communication.value,
+      ENTITY_TYPE_ID: 3,
+      ENTITY_ID: numericContactId
+    }]
+    : [];
 
   return {
     ownerTypeId: DEAL_ENTITY_TYPE_ID,
@@ -169,7 +180,9 @@ export function buildActivityPayload({ dealId, recommendation }: {
     deadline: endTime.toISOString(),
     description: validated.description,
     responsibleId: validated.responsibleId,
-    completed: false
+    completed: false,
+    // VibeCode requires the field even for a generic CRM activity.
+    communications: activityCommunications
   };
 }
 
