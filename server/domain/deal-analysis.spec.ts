@@ -2,9 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildActivityPayload,
   buildDealContext,
-  buildLinkedTaskPayload,
-  type AiRecommendation,
-  type ContactCommunication
+  type AiRecommendation
 } from './deal-analysis';
 
 const recommendation = (activityType: AiRecommendation['activityType']): AiRecommendation => ({
@@ -19,85 +17,33 @@ const recommendation = (activityType: AiRecommendation['activityType']): AiRecom
 });
 
 describe('buildActivityPayload', () => {
-  const communications: ContactCommunication[] = [
-    { type: 'PHONE', value: '+79990000000' },
-    { type: 'EMAIL', value: 'client@example.com' }
-  ];
-
-  it.each([
-    ['Call', 2, 'PHONE'],
-    ['Meeting', 1, 'PHONE'],
-    ['Email', 4, 'EMAIL']
-  ] as const)('maps %s to the VibeCode activity contract', (activityType, typeId, communicationType) => {
+  it('always builds a CRM todo activity without requiring a communication channel', () => {
     const payload = buildActivityPayload({
       dealId: 123,
-      contactId: 456,
-      recommendation: recommendation(activityType),
-      communications
+      recommendation: recommendation('Todo')
     });
 
     expect(payload).toMatchObject({
       ownerTypeId: 2,
       ownerId: 123,
       subject: 'Связаться с клиентом',
-      typeId,
-      completed: false,
-      communications: [{ VALUE: communicationType === 'PHONE' ? '+79990000000' : 'client@example.com', ENTITY_TYPE_ID: 3, ENTITY_ID: 456 }]
+      typeId: 3,
+      completed: false
     });
+    expect(payload).not.toHaveProperty('communications');
     expect(payload.startTime).toBe('2026-07-27T08:30:00.000Z');
     expect(payload.endTime).toBe('2026-07-27T09:00:00.000Z');
     expect(payload.deadline).toBe('2026-07-27T09:00:00.000Z');
   });
 
-  it('requires a matching communication channel for email', () => {
-    expect(() => buildActivityPayload({
-      dealId: 123,
-      contactId: 456,
-      recommendation: recommendation('Email'),
-      communications: [{ type: 'PHONE', value: '+79990000000' }]
-    })).toThrow('у контакта не найден email');
-  });
-
-  it('does not create a task through the CRM activity endpoint', () => {
-    expect(() => buildActivityPayload({
-      dealId: 123,
-      contactId: 456,
-      recommendation: recommendation('Todo'),
-      communications
-    })).toThrow('Tasks API');
-  });
-
-  it('uses email stored in the contact multifield list', () => {
-    const context = buildDealContext({
-      deal: { id: 123, contactId: { id: 456 } },
-      contact: {
-        fm: [{ typeId: 'EMAIL', value: 'client@example.com' }]
-      }
-    });
-
+  it('normalizes a stale recommendation to a CRM todo activity', () => {
+    const staleRecommendation = { ...recommendation('Todo'), activityType: 'Call' };
     const payload = buildActivityPayload({
       dealId: 123,
-      contactId: context.deal.contactId,
-      recommendation: recommendation('Email'),
-      communications: context.deal.communications
+      recommendation: staleRecommendation as AiRecommendation
     });
 
-    expect(context.deal.contactId).toBe(456);
-    expect(payload.communications).toEqual([{ VALUE: 'client@example.com', ENTITY_TYPE_ID: 3, ENTITY_ID: 456 }]);
-  });
-});
-
-describe('buildLinkedTaskPayload', () => {
-  it('creates a task linked to the deal', () => {
-    expect(buildLinkedTaskPayload({
-      dealId: 123,
-      recommendation: recommendation('Todo')
-    })).toEqual(expect.objectContaining({
-      title: 'Связаться с клиентом',
-      responsibleId: 42,
-      priority: 1,
-      UF_CRM_TASK: ['D_123']
-    }));
+    expect(payload.typeId).toBe(3);
   });
 });
 

@@ -2,7 +2,6 @@ import {
   CRM_ACTIVITY_RECOMMENDATION_TOOL,
   buildActivityPayload,
   buildDealContext,
-  buildLinkedTaskPayload,
   buildPromptMessages,
   buildTimelineLogPayload,
   ensureFutureRecommendationDeadline,
@@ -72,29 +71,19 @@ export default defineEventHandler(async (event) => {
     }
 
     let activityPayload: Record<string, unknown> | null = null;
-    let taskPayload: Record<string, unknown> | null = null;
     try {
-      if (validated.activityType === 'Todo') {
-        taskPayload = buildLinkedTaskPayload({ dealId, recommendation: validated });
-      } else {
-        activityPayload = buildActivityPayload({
-          dealId,
-          contactId: context.deal.contactId,
-          recommendation: validated,
-          communications: context.deal.communications
-        });
-      }
+      activityPayload = buildActivityPayload({
+        dealId,
+        recommendation: validated
+      });
     } catch (error: any) {
       throw createError({
         statusCode: 422,
         statusMessage: error?.message || 'Не удалось подготовить действие в CRM.'
       });
     }
-    const isTask = validated.activityType === 'Todo';
-    const created = isTask
-      ? await createCrmTask({ taskPayload: taskPayload!, headers })
-      : await createCrmActivity({ activityPayload: activityPayload!, headers });
-    const createdId = created?.id ?? created?.ID ?? created?.task?.id ?? created?.taskId ?? created?.activity?.id ?? created?.activityId ?? null;
+    const created = await createCrmActivity({ activityPayload: activityPayload!, headers });
+    const createdId = created?.id ?? created?.ID ?? created?.activity?.id ?? created?.activityId ?? null;
     const logPayload = buildTimelineLogPayload({ dealId, recommendation: validated, activityId: createdId });
     const timelineLog = await safeCreateTimelineLog({ payload: logPayload, headers });
 
@@ -104,10 +93,10 @@ export default defineEventHandler(async (event) => {
         mode: 'live',
         context: { ...context, transcriptStats },
         recommendation: validated,
-        activityPayload: activityPayload ?? taskPayload,
+        activityPayload,
         timelineLogPayload: logPayload,
         createdActivityId: createdId,
-        createdEntityType: isTask ? 'task' : 'activity',
+        createdEntityType: 'activity',
         pinnedTimelineLogId: timelineLog?.id ?? timelineLog?.ID ?? null
       }
     };
@@ -159,14 +148,6 @@ async function createCrmActivity({ activityPayload, headers }: { activityPayload
     method: 'POST',
     headers,
     body: activityPayload
-  });
-}
-
-async function createCrmTask({ taskPayload, headers }: { taskPayload: Record<string, unknown>; headers: Record<string, string> }) {
-  return requestVibe('/tasks', {
-    method: 'POST',
-    headers,
-    body: taskPayload
   });
 }
 

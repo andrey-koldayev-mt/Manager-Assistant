@@ -1,6 +1,6 @@
 const DEAL_ENTITY_TYPE_ID = 2;
 
-export const AI_ACTIVITY_TYPES = ['Call', 'Meeting', 'Todo', 'Email'] as const;
+export const AI_ACTIVITY_TYPES = ['Todo'] as const;
 
 export type AiActivityType = typeof AI_ACTIVITY_TYPES[number];
 
@@ -117,17 +117,13 @@ export function validateAiRecommendation(value: any, now = new Date()): AiRecomm
     throw new Error('responsibleId must be a positive number');
   }
 
-  const activityType = normalizeActivityType(value.activityType);
-  if (!activityType) {
-    throw new Error(`activityType must be one of: ${AI_ACTIVITY_TYPES.join(', ')}`);
-  }
-
   return {
     title: value.title.trim(),
     description: value.description.trim(),
     deadline: value.deadline,
     responsibleId,
-    activityType,
+    // The AI module creates only a CRM deal, never a task, call, meeting, or email.
+    activityType: 'Todo',
     importantDetails: toStringArray(value.importantDetails),
     justification: toStringArray(value.justification),
     sourceSignals: toStringArray(value.sourceSignals)
@@ -150,11 +146,9 @@ export function ensureFutureRecommendationDeadline(value: any, now = new Date())
   };
 }
 
-export function buildActivityPayload({ dealId, contactId, recommendation, communications }: {
+export function buildActivityPayload({ dealId, recommendation }: {
   dealId: number | string;
-  contactId: number | string | null;
   recommendation: AiRecommendation;
-  communications: ContactCommunication[];
 }) {
   const numericDealId = Number(dealId);
   if (!Number.isFinite(numericDealId) || numericDealId <= 0) {
@@ -162,17 +156,6 @@ export function buildActivityPayload({ dealId, contactId, recommendation, commun
   }
 
   const validated = validateAiRecommendation(recommendation, new Date(0));
-  if (validated.activityType === 'Todo') {
-    throw new Error('Задача создается через Tasks API, а не через CRM-активности.');
-  }
-  const numericContactId = Number(contactId);
-  const communication = selectCommunication(validated.activityType, communications);
-  if (!communication || !Number.isFinite(numericContactId) || numericContactId <= 0) {
-    const required = validated.activityType === 'Call' ? 'номер телефона' :
-      validated.activityType === 'Email' ? 'email' : 'контактный канал';
-    throw new Error(`Невозможно создать ${activityTypeLabel(validated.activityType)}: у контакта не найден ${required} или он не привязан к сделке.`);
-  }
-
   const endTime = new Date(validated.deadline);
   const startTime = new Date(endTime.getTime() - 30 * 60 * 1000);
 
@@ -180,33 +163,13 @@ export function buildActivityPayload({ dealId, contactId, recommendation, commun
     ownerTypeId: DEAL_ENTITY_TYPE_ID,
     ownerId: numericDealId,
     subject: validated.title,
-    typeId: activityTypeId(validated.activityType),
+    typeId: activityTypeId(),
     startTime: startTime.toISOString(),
     endTime: endTime.toISOString(),
     deadline: endTime.toISOString(),
     description: validated.description,
     responsibleId: validated.responsibleId,
-    completed: false,
-    communications: [{
-      VALUE: communication.value,
-      ENTITY_TYPE_ID: 3,
-      ENTITY_ID: numericContactId
-    }]
-  };
-}
-
-export function buildLinkedTaskPayload({ dealId, recommendation }: { dealId: number | string; recommendation: AiRecommendation }) {
-  const numericDealId = Number(dealId);
-  if (!Number.isFinite(numericDealId) || numericDealId <= 0) {
-    throw new Error('dealId must be a positive number');
-  }
-  return {
-    title: recommendation.title,
-    description: recommendation.description,
-    responsibleId: recommendation.responsibleId,
-    deadline: recommendation.deadline,
-    priority: 1,
-    UF_CRM_TASK: [`D_${numericDealId}`]
+    completed: false
   };
 }
 
@@ -239,7 +202,7 @@ export const CRM_ACTIVITY_RECOMMENDATION_TOOL = {
   type: 'function',
   function: {
     name: 'recommend_crm_activity',
-    description: 'Выбирает одну CRM-активность, которую менеджер создаст после ручного подтверждения.',
+    description: 'Выбирает одно CRM-дело, которое менеджер создаст после ручного подтверждения.',
     parameters: {
       type: 'object',
       additionalProperties: false,
@@ -249,7 +212,7 @@ export const CRM_ACTIVITY_RECOMMENDATION_TOOL = {
         description: { type: 'string', description: 'Готовый практичный текст для менеджера.' },
         deadline: { type: 'string', description: 'Будущая дата и время в ISO-8601 с timezone.' },
         responsibleId: { type: 'number', description: 'ID ответственного менеджера.' },
-        activityType: { type: 'string', enum: AI_ACTIVITY_TYPES, description: 'Тип создаваемого CRM-действия.' },
+        activityType: { type: 'string', enum: AI_ACTIVITY_TYPES, description: 'Всегда Todo: создается только CRM-дело.' },
         importantDetails: { type: 'array', items: { type: 'string' } },
         justification: { type: 'array', items: { type: 'string' } },
         sourceSignals: { type: 'array', items: { type: 'string' } }
@@ -325,27 +288,8 @@ function extractCommunicationValues(value: unknown, type: ContactCommunication['
     .map((item) => ({ type, value: item.trim() }));
 }
 
-function selectCommunication(activityType: AiActivityType, communications: ContactCommunication[]) {
-  if (activityType === 'Call') {
-    return communications.find((item) => item.type === 'PHONE') ?? null;
-  }
-  if (activityType === 'Email') {
-    return communications.find((item) => item.type === 'EMAIL') ?? null;
-  }
-  return communications[0] ?? null;
-}
-
-function normalizeActivityType(value: string): AiActivityType | null {
-  const normalized = value.trim().toLowerCase();
-  return AI_ACTIVITY_TYPES.find((type) => type.toLowerCase() === normalized) ?? null;
-}
-
-function activityTypeId(activityType: AiActivityType): number {
-  return { Call: 2, Meeting: 1, Todo: 3, Email: 4 }[activityType];
-}
-
-function activityTypeLabel(activityType: AiActivityType): string {
-  return { Call: 'звонок', Meeting: 'встречу', Todo: 'задачу', Email: 'email' }[activityType];
+function activityTypeId(): number {
+  return 3;
 }
 
 function isWazzupComment(item: Record<string, any>) {

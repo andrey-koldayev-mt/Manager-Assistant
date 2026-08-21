@@ -33,7 +33,7 @@ type AnalyzeResult = {
     };
   };
   createdActivityId?: number | string | null;
-  createdEntityType?: 'activity' | 'task';
+  createdEntityType?: 'activity';
   pinnedTimelineLogId?: number | string | null;
 };
 
@@ -63,15 +63,7 @@ const chatScroll = ref<HTMLElement | null>(null);
 const canAnalyze = computed(() => Boolean(props.dealId) && !pending.value && !creating.value && !props.loadingContext);
 const canCreate = computed(() => Boolean(result.value?.recommendation) && !creating.value && !pending.value);
 const canAskAi = computed(() => Boolean(props.dealId && result.value?.recommendation && question.value.trim() && !asking.value));
-const activityLabel = computed(() => {
-  const labels: Record<string, string> = {
-    Call: 'звонок',
-    Meeting: 'встречу',
-    Todo: 'задачу',
-    Email: 'письмо'
-  };
-  return labels[result.value?.recommendation.activityType || 'Todo'] || 'CRM-действие';
-});
+const activityLabel = 'дело';
 
 const formattedDeadline = computed(() => {
   const value = result.value?.recommendation.deadline;
@@ -227,9 +219,8 @@ async function createActivity() {
 
     result.value = response.data;
     const createdId = response.data.createdActivityId;
-    const createdLabel = response.data.createdEntityType === 'task' ? 'Задача создана' : 'CRM-действие создано';
     toast.add({
-      title: createdLabel,
+      title: 'Дело создано',
       description: createdId ? `ID: ${createdId}` : 'Откройте карточку сделки для проверки.',
       color: 'air-primary-success',
       icon: CircleCheckIcon
@@ -271,7 +262,7 @@ async function copyRecommendation() {
 </script>
 
 <template>
-  <main class="grid gap-4 p-4 lg:grid-cols-[420px_minmax(0,1fr)]">
+  <main class="workspace-layout grid gap-4 p-4 lg:grid-cols-[420px_minmax(0,1fr)]">
     <aside class="sidebar-sticky work-panel p-4 workspace-scroll">
       <div class="mb-4 border-b border-default pb-3">
         <h2 class="text-base font-bold text-label">AI следующий шаг</h2>
@@ -329,8 +320,8 @@ async function copyRecommendation() {
           v-if="result?.createdActivityId"
           color="air-primary-success"
           variant="soft"
-          :title="result.createdEntityType === 'task' ? 'Задача создана' : 'Дело создано'"
-          :description="`${result.createdEntityType === 'task' ? 'ID задачи' : 'CRM ID'}: ${result.createdActivityId}`"
+          title="Дело создано"
+          :description="`CRM ID: ${result.createdActivityId}`"
         />
       </div>
     </aside>
@@ -351,7 +342,7 @@ async function copyRecommendation() {
               <p class="text-xs font-bold uppercase text-[var(--brand-red)]">Рекомендация AI</p>
               <h2 class="mt-1 text-xl font-bold text-label">{{ result.recommendation.title }}</h2>
               <p class="mt-1 text-sm text-description">
-                {{ result.recommendation.activityType }} · выполнить {{ formattedDeadline }}
+                Дело · выполнить {{ formattedDeadline }}
               </p>
             </div>
             <B24Badge

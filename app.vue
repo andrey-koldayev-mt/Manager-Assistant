@@ -220,12 +220,7 @@ function requestBitrixFrameFit() {
         appShell.value?.scrollWidth || 0,
         document.documentElement.scrollWidth
       );
-      const contentHeight = Math.max(
-        Number(scrollSize?.scrollHeight) || 0,
-        appShell.value?.scrollHeight || 0,
-        document.documentElement.scrollHeight
-      );
-      const height = Math.max(minimumHeight, Math.min(1400, contentHeight));
+      const height = minimumHeight;
 
       if (typeof BX24.resizeWindow === 'function') {
         if (Math.abs(width - requestedFrameWidth) > 1 || Math.abs(height - requestedFrameHeight) > 1) {
@@ -243,7 +238,7 @@ function requestBitrixFrameFit() {
 
 function getBitrixFrameHeight() {
   const availableHeight = window.screen?.availHeight || window.innerHeight;
-  return Math.max(760, Math.min(1200, availableHeight - 160));
+  return Math.max(720, Math.min(1400, availableHeight));
 }
 
 function observeBitrixFrameHeight() {
@@ -740,7 +735,7 @@ onUnmounted(() => {
         </div>
       </header>
 
-      <main v-if="workspaceMode === 'reactivation'" class="grid gap-4 p-4 lg:grid-cols-[460px_minmax(0,1fr)]">
+      <main v-if="workspaceMode === 'reactivation'" class="workspace-layout grid gap-4 p-4 lg:grid-cols-[460px_minmax(0,1fr)]">
         <aside class="sidebar-sticky work-panel p-4 workspace-scroll">
           <div class="mb-4 border-b border-default pb-3">
             <div class="flex items-center justify-between gap-3">
