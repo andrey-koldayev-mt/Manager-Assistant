@@ -5,6 +5,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 type HistoryType = 'buyer' | 'lead';
 type WorkspaceMode = 'reactivation' | 'ai-next-step';
+type TravelContextOption = { label: string; value: string };
 
 const toast = useToast();
 
@@ -16,7 +17,8 @@ const destination = ref('Турцию (Анталию)');
 const tripDate = ref('в сентябре прошлого года');
 const season = ref('Прошлой осенью');
 const destinationLead = ref('Египет');
-const travelContext = ref('предстоящий летний сезон');
+const travelContext = ref(getSeasonalTravelContexts(new Date())[0]?.value || 'предстоящий сезон');
+const isNewEmployee = ref(false);
 const activeStep = ref(1);
 const interest = ref<boolean | null>(null);
 const crmNotes = ref('');
@@ -73,6 +75,7 @@ const resetActionLabel = computed(() => (
 const normalizedDealCategoryName = computed(() => dealCategoryName.value.trim().toLowerCase());
 const isReactivationFunnel = computed(() => normalizedDealCategoryName.value.includes('реактивац'));
 const isQualityLeadFunnel = computed(() => normalizedDealCategoryName.value.includes('качественный лид'));
+const seasonalTravelContexts = computed<TravelContextOption[]>(() => getSeasonalTravelContexts(new Date()));
 
 const contactDateValue = computed<DateValue | undefined>({
   get() {
@@ -127,6 +130,10 @@ const step3Text = computed(() => {
   }
   return '';
 });
+
+const newEmployeeStep3Text = computed(() => (
+  `Давайте я передам информацию вашему менеджеру ${agentName.value}, она свяжется с вами, задаст пару уточняющих вопросов и сделает подборку, от которой вы будете в восторге. ^_^ Когда вам удобно, чтобы она вас набрала?`
+));
 
 const crmNotesReport = computed(() => [
   `Менеджер: ${agentName.value}`,
@@ -410,6 +417,8 @@ async function loadDealContextFromServer() {
     assignedById.value = data.assignedById;
     agentName.value = data.agentName || agentName.value;
     clientName.value = data.clientName || clientName.value;
+    isNewEmployee.value = Boolean(data.isNewEmployee);
+    if (!travelContext.value) travelContext.value = seasonalTravelContexts.value[0]?.value || '';
     setWorkspaceModeForCurrentFunnel();
 
     if (data.previousTrip) {
@@ -594,6 +603,36 @@ function setPresetContext(text: string) {
   travelContext.value = text;
 }
 
+function getSeasonalTravelContexts(date: Date): TravelContextOption[] {
+  const month = date.getMonth() + 1;
+  if (month >= 1 && month <= 4) {
+    return [
+      { label: 'Майские праздники', value: 'майские праздники' },
+      { label: 'Летний сезон', value: 'предстоящий летний сезон' },
+      { label: 'Бархатный сезон', value: 'бархатный сезон' }
+    ];
+  }
+  if (month >= 5 && month <= 7) {
+    return [
+      { label: 'Бархатный сезон', value: 'бархатный сезон' },
+      { label: 'Осенние каникулы', value: 'осенние школьные каникулы' },
+      { label: 'Новогодние каникулы', value: 'новогодние каникулы' }
+    ];
+  }
+  if (month <= 9) {
+    return [
+      { label: 'Бархатный сезон', value: 'бархатный сезон' },
+      { label: 'Осенние каникулы', value: 'осенние школьные каникулы' },
+      { label: 'Новогодние каникулы', value: 'новогодние каникулы' }
+    ];
+  }
+  return [
+    { label: 'Новогодние каникулы', value: 'новогодние каникулы' },
+    { label: 'Зимние каникулы', value: 'зимние школьные каникулы' },
+    { label: 'Майские праздники', value: 'майские праздники' }
+  ];
+}
+
 function scrollToStep(step: number) {
   activeStep.value = step;
   setTimeout(() => {
@@ -756,9 +795,14 @@ onUnmounted(() => {
             </B24FormField>
 
             <div class="flex flex-wrap gap-2">
-              <B24Button size="xs" label="Летний сезон" :class="travelContext === 'предстоящий летний сезон' ? 'brand-action' : 'border border-default bg-default text-label'" @click="setPresetContext('предстоящий летний сезон')" />
-              <B24Button size="xs" label="Майские" :class="travelContext === 'майские праздники' ? 'brand-action' : 'border border-default bg-default text-label'" @click="setPresetContext('майские праздники')" />
-              <B24Button size="xs" label="Бархатный" :class="travelContext === 'бархатный сезон осенью' ? 'brand-action' : 'border border-default bg-default text-label'" @click="setPresetContext('бархатный сезон осенью')" />
+              <B24Button
+                v-for="option in seasonalTravelContexts"
+                :key="option.value"
+                size="xs"
+                :label="option.label"
+                :class="travelContext === option.value ? 'brand-action' : 'border border-default bg-default text-label'"
+                @click="setPresetContext(option.value)"
+              />
             </div>
 
             <div class="border-t border-default pt-3 field-stack">
@@ -885,11 +929,24 @@ onUnmounted(() => {
                 <B24Button label="Нет интереса" :class="interest === false ? 'brand-action' : 'border border-default bg-default text-label'" @click="interest = false" />
               </div>
 
-              <div class="mt-4 rounded-lg border border-default bg-muted p-4">
-                <p v-if="interest === true" class="text-xl font-semibold leading-relaxed text-label">
-                  «Давайте задам пару уточняющих вопросов и после этого обсудим конкретные отели. <span class="variable">{{ clientName }}</span>, с кем поедете?»
-                </p>
-                <p v-else-if="interest === false" class="text-xl font-semibold leading-relaxed text-label">
+              <div v-if="interest === true" class="mt-4 grid gap-3">
+                <div class="rounded-lg border border-default bg-muted p-4">
+                  <p class="text-xs font-bold uppercase text-description">Стандартный сценарий</p>
+                  <p class="mt-2 text-xl font-semibold leading-relaxed text-label">
+                    «Давайте задам пару уточняющих вопросов и после этого обсудим конкретные отели. <span class="variable">{{ clientName }}</span>, с кем поедете?»
+                  </p>
+                  <B24Button size="xs" label="Копировать сценарий" class="mt-3 border border-default bg-default text-label" @click="copyText(step3Text)" />
+                </div>
+                <div v-if="isNewEmployee" class="rounded-lg border border-red-100 bg-red-50/30 p-4">
+                  <p class="text-xs font-bold uppercase text-[var(--brand-red)]">Сценарий для нового сотрудника</p>
+                  <p class="mt-2 text-xl font-semibold leading-relaxed text-label">
+                    «Давайте я передам информацию вашему менеджеру <span class="variable">{{ agentName }}</span>, она свяжется с вами, задаст пару уточняющих вопросов и сделает подборку, от которой вы будете в восторге. ^_^ Когда вам удобно, чтобы она вас набрала?»
+                  </p>
+                  <B24Button size="xs" label="Копировать сценарий" class="mt-3 border border-default bg-default text-label" @click="copyText(newEmployeeStep3Text)" />
+                </div>
+              </div>
+              <div v-else class="mt-4 rounded-lg border border-default bg-muted p-4">
+                <p v-if="interest === false" class="text-xl font-semibold leading-relaxed text-label">
                   «Хорошо, <span class="variable">{{ clientName }}</span>. Когда вопрос с поездкой может стать для вас актуален?»
                 </p>
                 <p v-else class="text-center text-description">Выберите реакцию клиента, чтобы показать нужный речевой модуль.</p>

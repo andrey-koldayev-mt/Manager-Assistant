@@ -8,6 +8,10 @@ import {
   getVibeAuthorizationHeader,
   toRecord
 } from '../../utils/b24';
+import { isNewEmployee, normalizeWorkgroupName } from '../../utils/new-employee';
+
+const VIBE_API_URL = 'https://vibecode.bitrix24.tech/v1';
+const ADAPTATION_WORKGROUP_NAME = 'Обучение и адаптация сотрудников';
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
@@ -50,7 +54,7 @@ export default defineEventHandler(async (event) => {
     dealCategory?.TITLE
   );
 
-  const [userData, contactData, categoryData] = await Promise.all([
+  const [userData, contactData, categoryData, currentEmployee] = await Promise.all([
     assignedById
       ? fetch(`https://vibecode.bitrix24.tech/v1/users/${assignedById}`, { headers })
         .then((response) => response.json())
@@ -74,7 +78,8 @@ export default defineEventHandler(async (event) => {
           console.error('Error fetching deal category:', error);
           return null;
         })
-      : Promise.resolve(null)
+      : Promise.resolve(null),
+    loadNewEmployeeState(headers)
   ]);
 
   const agentName = userData?.success && userData.data
@@ -109,7 +114,65 @@ export default defineEventHandler(async (event) => {
       contactId: contactId ? Number(contactId) : null,
       agentName,
       clientName,
+      isNewEmployee: currentEmployee,
       previousTrip
     }
   };
 });
+
+async function loadNewEmployeeState(headers: Record<string, string>) {
+  try {
+    const me = await fetchVibeData('/me', headers);
+    const currentUserId = Number(
+      me?.currentUser?.bitrixUserId
+      ?? me?.currentUser?.userId
+      ?? me?.userId
+      ?? me?.id
+    );
+    if (!Number.isInteger(currentUserId) || currentUserId <= 0) return false;
+
+    const [user, workgroups] = await Promise.all([
+      fetchVibeData(`/users/${currentUserId}`, headers),
+      fetchVibeData(`/workgroups?filter[name][$contains]=${encodeURIComponent('Обучение')}&limit=100`, headers)
+    ]);
+    const position = firstString(
+      user?.workPosition,
+      user?.WORK_POSITION,
+      user?.personalPosition,
+      user?.PERSONAL_POSITION,
+      user?.position
+    );
+    if (position.trim().toLocaleLowerCase('ru-RU') !== 'менеджер по продажам') return false;
+
+    const workgroup = toItems(workgroups).find((item) => (
+      normalizeWorkgroupName(item?.name ?? item?.NAME) === normalizeWorkgroupName(ADAPTATION_WORKGROUP_NAME)
+    ));
+    const workgroupId = Number(workgroup?.id ?? workgroup?.ID);
+    if (!Number.isInteger(workgroupId) || workgroupId <= 0) return false;
+
+    const members = await fetchVibeData(`/workgroups/${workgroupId}/users`, headers);
+    return isNewEmployee({
+      position,
+      workgroupName: String(workgroup?.name ?? workgroup?.NAME ?? ''),
+      memberIds: toItems(members).map((member) => member?.userId ?? member?.USER_ID ?? member?.id ?? member?.ID),
+      userId: currentUserId
+    });
+  } catch (error) {
+    console.warn('Unable to resolve new employee state:', error);
+    return false;
+  }
+}
+
+async function fetchVibeData(path: string, headers: Record<string, string>) {
+  const response = await fetch(`${VIBE_API_URL}${path}`, { headers });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok || !payload?.success) throw new Error(payload?.error?.message || response.statusText);
+  return payload.data;
+}
+
+function toItems(value: unknown): Record<string, unknown>[] {
+  if (Array.isArray(value)) return value.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === 'object');
+  const record = toRecord(value);
+  const items = record?.items ?? record?.results ?? record?.data;
+  return Array.isArray(items) ? items.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === 'object') : [];
+}
