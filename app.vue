@@ -38,6 +38,7 @@ const createdActivityId = ref<number | string | null>(null);
 const timerSeconds = ref(0);
 const bx24Instance = ref<any>(null);
 const bx24Ready = ref(false);
+const b24Frame = ref<any>(null);
 const appShell = ref<HTMLElement | null>(null);
 let timerId: ReturnType<typeof setInterval> | null = null;
 let vibeSessionKeepaliveId: ReturnType<typeof setInterval> | null = null;
@@ -45,6 +46,7 @@ let frameResizeObserver: ResizeObserver | null = null;
 let fitWindowFrameId: number | null = null;
 let requestedFrameWidth = 0;
 let requestedFrameHeight = 0;
+let frameRetryTimeouts: ReturnType<typeof setTimeout>[] = [];
 
 const formattedTimer = computed(() => {
   const mins = String(Math.floor(timerSeconds.value / 60)).padStart(2, '0');
@@ -193,13 +195,18 @@ function clearVibeSessionKeepalive() {
   }
 }
 
-function requestBitrixFrameFit() {
+function requestBitrixFrameFit(force = false) {
   if (!import.meta.client) {
     return;
   }
 
+  const modernParent = b24Frame.value?.parent;
   const BX24 = bx24Instance.value || (window as any).BX24;
-  if (typeof BX24?.fitWindow !== 'function' && typeof BX24?.resizeWindow !== 'function') {
+  if (
+    typeof modernParent?.resizeWindowAuto !== 'function' &&
+    typeof BX24?.fitWindow !== 'function' &&
+    typeof BX24?.resizeWindow !== 'function'
+  ) {
     return;
   }
 
@@ -214,12 +221,7 @@ function requestBitrixFrameFit() {
       appShell.value?.style.setProperty('--bitrix-frame-min-height', `${minimumHeight}px`);
 
       const scrollSize = typeof BX24.getScrollSize === 'function' ? BX24.getScrollSize() : null;
-      const width = Math.max(
-        320,
-        Number(scrollSize?.scrollWidth) || 0,
-        appShell.value?.scrollWidth || 0,
-        document.documentElement.scrollWidth
-      );
+      const width = Math.max(320, window.innerWidth);
       const contentHeight = Math.max(
         Number(scrollSize?.scrollHeight) || 0,
         appShell.value?.scrollHeight || 0,
@@ -228,8 +230,18 @@ function requestBitrixFrameFit() {
       );
       const height = Math.max(minimumHeight, Math.ceil(contentHeight));
 
+      if (typeof modernParent?.resizeWindowAuto === 'function') {
+        if (force || Math.abs(width - requestedFrameWidth) > 1 || Math.abs(height - requestedFrameHeight) > 1) {
+          requestedFrameWidth = width;
+          requestedFrameHeight = height;
+          void modernParent.resizeWindowAuto(appShell.value, minimumHeight, 320)
+            .catch((error: unknown) => console.warn('B24 frame auto-resize failed:', error));
+        }
+        return;
+      }
+
       if (typeof BX24.resizeWindow === 'function') {
-        if (Math.abs(width - requestedFrameWidth) > 1 || Math.abs(height - requestedFrameHeight) > 1) {
+        if (force || Math.abs(width - requestedFrameWidth) > 1 || Math.abs(height - requestedFrameHeight) > 1) {
           requestedFrameWidth = width;
           requestedFrameHeight = height;
           BX24.resizeWindow(width, height);
@@ -245,6 +257,31 @@ function requestBitrixFrameFit() {
 function getBitrixFrameHeight() {
   const availableHeight = window.screen?.availHeight || window.innerHeight;
   return Math.max(720, Math.min(1400, availableHeight));
+}
+
+async function initializeModernBitrixFrame() {
+  if (!import.meta.client) {
+    return;
+  }
+
+  try {
+    const { initializeB24Frame } = await import('@bitrix24/b24jssdk');
+    b24Frame.value = await initializeB24Frame();
+    scheduleBitrixFrameResize();
+  } catch (error) {
+    console.warn('Modern Bitrix24 frame SDK is unavailable, using legacy resizing:', error);
+  }
+}
+
+function scheduleBitrixFrameResize() {
+  frameRetryTimeouts.forEach((timeout) => clearTimeout(timeout));
+  frameRetryTimeouts = [0, 250, 1000, 2500].map((delay) => (
+    setTimeout(() => requestBitrixFrameFit(true), delay)
+  ));
+}
+
+function handleWindowResize() {
+  requestBitrixFrameFit();
 }
 
 function observeBitrixFrameHeight() {
@@ -649,9 +686,10 @@ async function copyText(text: string) {
 onMounted(() => {
   startTimer();
   void initB24Integration();
+  void initializeModernBitrixFrame();
   startVibeSessionKeepalive();
   observeBitrixFrameHeight();
-  window.addEventListener('resize', requestBitrixFrameFit);
+  window.addEventListener('resize', handleWindowResize);
   void nextTick(requestBitrixFrameFit);
 });
 
@@ -663,7 +701,9 @@ onUnmounted(() => {
   clearTimer();
   clearVibeSessionKeepalive();
   frameResizeObserver?.disconnect();
-  window.removeEventListener('resize', requestBitrixFrameFit);
+  frameRetryTimeouts.forEach((timeout) => clearTimeout(timeout));
+  b24Frame.value?.destroy?.();
+  window.removeEventListener('resize', handleWindowResize);
   if (fitWindowFrameId !== null && import.meta.client) {
     window.cancelAnimationFrame(fitWindowFrameId);
   }
