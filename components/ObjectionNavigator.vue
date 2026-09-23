@@ -6,7 +6,7 @@ import {
   getScenario,
   getScenarioStep,
   type NavigatorChannel
-} from '../shared/objection-navigator';
+} from '~/shared/objection-navigator';
 
 type NavigatorContext = {
   deal: {
