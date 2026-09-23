@@ -35,7 +35,9 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        # package-lock may lag behind Nuxt's optional platform bindings.
+        # Resolve the declared dependency graph in CI before building.
+        run: npm install --no-audit --no-fund
 
       - name: Build application
         run: npm run build
