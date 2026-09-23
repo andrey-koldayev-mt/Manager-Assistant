@@ -91,6 +91,7 @@ textarea:focus-visible {
 
 .mode-switch {
   display: inline-flex;
+  flex-wrap: wrap;
   gap: 4px;
   padding: 3px;
   border: 1px solid var(--app-border);
@@ -383,6 +384,98 @@ textarea:focus-visible {
 .ai-chat-input:disabled {
   cursor: wait;
   background: #f5f7fa;
+}
+
+.navigator-context,
+.navigator-recommendation,
+.navigator-history {
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--app-muted);
+}
+
+.navigator-recommendation {
+  border-color: var(--brand-red-border);
+  background: var(--brand-red-soft);
+}
+
+.navigator-context dl > div {
+  display: grid;
+  grid-template-columns: minmax(0, 112px) minmax(0, 1fr);
+  gap: 8px;
+}
+
+.navigator-context dt {
+  color: #64748b;
+}
+
+.navigator-context dd {
+  overflow-wrap: anywhere;
+  color: var(--app-text);
+  font-weight: 600;
+}
+
+.navigator-category,
+.navigator-category-active {
+  justify-content: flex-start !important;
+  min-height: 36px;
+  text-align: left;
+}
+
+.navigator-category {
+  border: 1px solid var(--app-border) !important;
+  background: #fff !important;
+  color: #334155 !important;
+}
+
+.navigator-category:hover,
+.navigator-category:focus-visible {
+  border-color: var(--brand-red) !important;
+  background: var(--brand-red-soft) !important;
+  color: var(--brand-red-hover) !important;
+}
+
+.navigator-category-active {
+  border-color: var(--brand-red) !important;
+  background: var(--brand-red) !important;
+  color: #fff !important;
+}
+
+.navigator-channel {
+  display: inline-flex;
+  width: fit-content;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-muted);
+}
+
+.navigator-script-text {
+  min-height: 142px;
+  border: 1px solid var(--brand-red-border);
+  border-radius: 8px;
+  padding: 16px;
+  background: #fffafa;
+  color: var(--app-text);
+  font-size: 16px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.navigator-history {
+  background: #fff;
+}
+
+.navigator-history-item {
+  border-top: 1px solid var(--app-border);
+  padding-top: 10px;
+}
+
+.navigator-history-item:first-child {
+  border-top: 0;
+  padding-top: 0;
 }
 
 @media (min-width: 1024px) {

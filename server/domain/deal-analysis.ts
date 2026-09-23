@@ -240,6 +240,7 @@ function normalizeActivity(activity: Record<string, any>) {
     at: activity.createdAt ?? activity.deadline ?? activity.startTime ?? activity.dateCreate ?? new Date(0).toISOString(),
     channel: sourceLabel(activity, activity.activityType ?? activity.typeName ?? activity.providerTypeId ?? activity.typeId ?? activity.TYPE_ID ?? 'activity'),
     author: activity.authorName ?? activity.responsibleName ?? null,
+    direction: activity.direction ?? activity.directionName ?? activity.incoming ?? activity.outgoing ?? null,
     title: activity.subject ?? activity.title ?? '',
     text: activity.transcript ?? activity.transcription ?? activity.description ?? activity.text ?? activity.comment ?? ''
   };
@@ -251,6 +252,7 @@ function normalizeTimeline(item: Record<string, any>) {
     at: item.createdAt ?? item.dateCreate ?? item.updatedAt ?? new Date(0).toISOString(),
     channel: sourceLabel(item, isWazzupComment(item) ? 'wazzup' : item.type ?? item.typeName ?? 'timeline'),
     author: item.authorName ?? item.userName ?? null,
+    direction: item.direction ?? item.directionName ?? item.incoming ?? item.outgoing ?? null,
     title: item.title ?? item.subject ?? '',
     text: item.text ?? item.description ?? item.comment ?? ''
   };
@@ -319,6 +321,7 @@ function normalizeMessage(message: Record<string, any>) {
     at: message.date ?? message.createdAt ?? message.dateCreate ?? new Date(0).toISOString(),
     channel: sourceLabel(message, 'chat'),
     author: message.authorName ?? message.senderName ?? message.userName ?? null,
+    direction: message.direction ?? message.directionName ?? message.incoming ?? message.outgoing ?? null,
     title: message.chatTitle ?? message.dialogId ?? '',
     text: message.text ?? message.message ?? ''
   };

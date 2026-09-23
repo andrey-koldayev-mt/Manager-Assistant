@@ -4,7 +4,7 @@ import { parseDate } from '@internationalized/date';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 type HistoryType = 'buyer' | 'lead';
-type WorkspaceMode = 'reactivation' | 'ai-next-step';
+type WorkspaceMode = 'reactivation' | 'ai-next-step' | 'objection-navigator';
 type TravelContextOption = { label: string; value: string };
 
 const toast = useToast();
@@ -260,17 +260,9 @@ function getBitrixFrameHeight() {
 }
 
 async function initializeModernBitrixFrame() {
-  if (!import.meta.client) {
-    return;
-  }
-
-  try {
-    const { initializeB24Frame } = await import('@bitrix24/b24jssdk');
-    b24Frame.value = await initializeB24Frame();
-    scheduleBitrixFrameResize();
-  } catch (error) {
-    console.warn('Modern Bitrix24 frame SDK is unavailable, using legacy resizing:', error);
-  }
+  // The placement loads the Bitrix24 browser SDK below. Keep frame sizing on
+  // that supported SDK path until b24jssdk is actually installed in CI.
+  if (import.meta.client) scheduleBitrixFrameResize();
 }
 
 function scheduleBitrixFrameResize() {
@@ -309,7 +301,7 @@ function switchWorkspaceMode(mode: WorkspaceMode) {
     return;
   }
 
-  if (mode === 'ai-next-step' && !isQualityLeadFunnel.value) {
+  if ((mode === 'ai-next-step' || mode === 'objection-navigator') && !isQualityLeadFunnel.value) {
     return;
   }
 
@@ -760,6 +752,13 @@ onUnmounted(() => {
                 :class="workspaceMode === 'ai-next-step' ? 'brand-action' : 'mode-switch-button'"
                 @click="switchWorkspaceMode('ai-next-step')"
               />
+              <B24Button
+                label="Навигатор возражений"
+                size="sm"
+                :disabled="!isQualityLeadFunnel"
+                :class="workspaceMode === 'objection-navigator' ? 'brand-action' : 'mode-switch-button'"
+                @click="switchWorkspaceMode('objection-navigator')"
+              />
             </div>
             <B24Badge
               v-if="b24DealId"
@@ -1023,6 +1022,14 @@ onUnmounted(() => {
       </main>
 
       <AiNextStepPanel
+        v-else-if="workspaceMode === 'ai-next-step'"
+        :deal-id="b24DealId"
+        :agent-name="agentName"
+        :client-name="clientName"
+        :loading-context="dealContextOverlayVisible"
+      />
+
+      <ObjectionNavigator
         v-else
         :deal-id="b24DealId"
         :agent-name="agentName"
