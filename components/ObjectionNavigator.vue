@@ -58,6 +58,7 @@ const channel = ref<NavigatorChannel>('message');
 const aiRecommendation = ref<AiRecommendation | null>(null);
 const aiLoading = ref(false);
 const aiErrorMessage = ref('');
+const expandedScenarioGroups = ref<string[]>(['choice']);
 
 const selectedScenario = computed(() => getScenario(selectedScenarioId.value));
 const selectedStep = computed(() => getScenarioStep(selectedScenarioId.value, selectedStepId.value));
@@ -98,6 +99,9 @@ function selectScenario(scenarioId: string, stepId?: string) {
   if (!scenario) return;
   selectedScenarioId.value = scenarioId;
   selectedStepId.value = stepId || scenario.steps[0]?.id || null;
+  if (!expandedScenarioGroups.value.includes(scenario.group)) {
+    expandedScenarioGroups.value = [...expandedScenarioGroups.value, scenario.group];
+  }
   const availableChannels = getScenarioChannels(scenario);
   if (!availableChannels.includes(channel.value)) channel.value = availableChannels[0] || 'message';
 }
@@ -282,19 +286,28 @@ watch(() => props.dealId, () => {
 
         <section>
           <p class="mb-2 text-xs font-semibold uppercase text-description">Каталог</p>
-          <div class="grid gap-4">
-            <div v-for="group in scenarioGroups" :key="group.id" class="grid gap-2">
-              <p class="text-xs font-semibold text-description">{{ group.title }}</p>
-              <B24Button
-                v-for="scenario in group.scenarios"
-                :key="scenario.id"
-                :label="scenario.title"
-                block
-                :class="selectedScenarioId === scenario.id ? 'navigator-category-active' : 'navigator-category'"
-                @click="selectScenario(scenario.id)"
-              />
-            </div>
-          </div>
+          <B24Accordion
+            v-model="expandedScenarioGroups"
+            :items="scenarioGroups"
+            type="multiple"
+            collapsible
+            value-key="id"
+            label-key="title"
+            class="navigator-catalog-accordion"
+          >
+            <template #body="{ item }">
+              <div class="grid gap-2">
+                <B24Button
+                  v-for="scenario in item.scenarios"
+                  :key="scenario.id"
+                  :label="scenario.title"
+                  block
+                  :class="selectedScenarioId === scenario.id ? 'navigator-category-active' : 'navigator-category'"
+                  @click="selectScenario(scenario.id)"
+                />
+              </div>
+            </template>
+          </B24Accordion>
         </section>
       </div>
     </aside>
