@@ -155,7 +155,7 @@ watch(() => props.dealId, () => {
 </script>
 
 <template>
-  <main class="workspace-layout grid gap-4 p-4 lg:grid-cols-[420px_minmax(0,1fr)]">
+  <main class="objection-navigator-layout workspace-layout grid gap-4 p-4 lg:grid-cols-[420px_minmax(0,1fr)]">
     <aside class="sidebar-sticky work-panel p-4 workspace-scroll">
       <div class="mb-4 border-b border-default pb-3">
         <h2 class="text-base font-bold text-label">Навигатор возражений</h2>
@@ -216,9 +216,9 @@ watch(() => props.dealId, () => {
       </div>
     </aside>
 
-    <section class="script-scroll workspace-scroll">
+    <section class="script-scroll workspace-scroll min-w-0">
       <div class="grid gap-4">
-        <article v-if="selectedScenario && selectedStep" class="script-card p-5">
+        <article v-if="selectedScenario && selectedStep" class="script-card min-w-0 p-5">
           <div class="flex flex-wrap items-start justify-between gap-3 border-b border-default pb-4">
             <div>
               <p class="text-xs font-bold uppercase text-[var(--brand-red)]">Сценарий</p>
@@ -228,8 +228,8 @@ watch(() => props.dealId, () => {
             <B24Badge :label="`Шаг ${selectedScenario.steps.findIndex((step) => step.id === selectedStep?.id) + 1} из ${selectedScenario.steps.length}`" class="brand-soft" />
           </div>
 
-          <div class="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1fr)_270px]">
-            <div class="grid gap-4">
+          <div class="mt-5 grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_270px]">
+            <div class="navigator-main-column grid min-w-0 gap-4">
               <div>
                 <p class="text-sm font-semibold text-label">Цель шага</p>
                 <p class="mt-1 text-sm leading-6 text-description">{{ selectedStep.goal }}</p>
@@ -275,7 +275,7 @@ watch(() => props.dealId, () => {
               </div>
             </div>
 
-            <aside class="grid content-start gap-4">
+            <aside class="grid min-w-0 content-start gap-4">
               <B24Alert
                 color="air-primary"
                 variant="soft"

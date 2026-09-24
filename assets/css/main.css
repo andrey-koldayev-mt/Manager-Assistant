@@ -395,6 +395,14 @@ textarea:focus-visible {
   background: var(--app-muted);
 }
 
+.objection-navigator-layout {
+  align-items: start;
+}
+
+.navigator-main-column {
+  align-content: start;
+}
+
 .navigator-recommendation {
   border-color: var(--brand-red-border);
   background: var(--brand-red-soft);
@@ -453,7 +461,7 @@ textarea:focus-visible {
 }
 
 .navigator-script-text {
-  min-height: 142px;
+  min-width: 0;
   border: 1px solid var(--brand-red-border);
   border-radius: 8px;
   padding: 16px;
@@ -465,12 +473,23 @@ textarea:focus-visible {
 }
 
 .navigator-history {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   background: #fff;
 }
 
 .navigator-history-item {
+  min-width: 0;
   border-top: 1px solid var(--app-border);
   padding-top: 10px;
+}
+
+.navigator-history-item p,
+.navigator-history-item span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .navigator-history-item:first-child {
