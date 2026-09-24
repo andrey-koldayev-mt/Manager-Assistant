@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildNavigatorContext, recommendScenario } from './objection-navigator';
-import { OBJECTION_SCENARIOS } from '../../shared/objection-navigator';
+import { OBJECTION_CATALOG_GROUPS, OBJECTION_SCENARIOS, getScenarioChannels } from '../../shared/objection-navigator';
 
 describe('objection navigator', () => {
   it('recommends a sent selection when the latest communication contains a link', () => {
@@ -11,7 +11,7 @@ describe('objection navigator', () => {
       direction: 'manager',
       title: 'Подборка',
       preview: 'https://example.com/selection'
-    }])).toMatchObject({ scenarioId: 'selection-sent' });
+    }])).toMatchObject({ scenarioId: 'think' });
   });
 
   it('recommends a no-response scenario after an outgoing communication', () => {
@@ -22,7 +22,7 @@ describe('objection navigator', () => {
       direction: 'manager',
       title: '',
       preview: 'Написали клиенту'
-    }])).toMatchObject({ scenarioId: 'no-response' });
+    }])).toMatchObject({ scenarioId: 'client-will-call' });
   });
 
   it('does not make a recommendation for an ambiguous context', () => {
@@ -38,7 +38,15 @@ describe('objection navigator', () => {
 
   it('does not include a first-touch scenario', () => {
     expect(OBJECTION_SCENARIOS.some((scenario) => /первое касание|визитка/i.test(scenario.title))).toBe(false);
-    expect(OBJECTION_SCENARIOS).toHaveLength(11);
+    expect(OBJECTION_SCENARIOS).toHaveLength(20);
+    expect(OBJECTION_CATALOG_GROUPS.map((group) => group.id)).toEqual([
+      'choice', 'price', 'timing', 'trust', 'expertise'
+    ]);
+  });
+
+  it('keeps channel availability with each scenario from the catalogue', () => {
+    expect(getScenarioChannels(OBJECTION_SCENARIOS.find((scenario) => scenario.id === 'reviews'))).toEqual(['call', 'remote']);
+    expect(getScenarioChannels(OBJECTION_SCENARIOS.find((scenario) => scenario.id === 'no-local-office'))).toEqual(['remote', 'message']);
   });
 
   it('normalizes and limits communications before returning them to the client', () => {
@@ -59,6 +67,14 @@ describe('objection navigator', () => {
       direction: 'manager',
       preview: 'Подборка https://example.com/selection'
     });
-    expect(context.recommendation).toMatchObject({ scenarioId: 'selection-sent' });
+    expect(context.recommendation).toMatchObject({ scenarioId: 'think' });
+  });
+
+  it('never exposes the technical stage ID as a stage name', () => {
+    const context = buildNavigatorContext({
+      deal: { id: 42, title: 'Тур в Италию', stageId: 'C14:UC_ABC' }
+    });
+
+    expect(context.deal.stage).toBe('Не определена');
   });
 });

@@ -12,23 +12,38 @@ export async function loadDealBundle({ dealId, headers }: { dealId: number; head
   const deal = await requestVibe(`/deals/${dealId}`, { headers });
   const contactId = positiveId(deal?.contactId ?? deal?.CONTACT_ID ?? deal?.contactIds?.[0] ?? deal?.CONTACT_IDS?.[0]);
   const leadId = positiveId(deal?.leadId ?? deal?.LEAD_ID);
-  const [dealHistory, lead, contact] = await Promise.all([
+  const [dealHistory, lead, contact, stageName] = await Promise.all([
     loadEntityHistory({ entityType: 'deal', entityId: dealId, ownerTypeId: 2, headers }),
     leadId ? safeRequestVibe(`/leads/${leadId}`, { headers }) : Promise.resolve(null),
-    contactId ? safeRequestVibe(`/contacts/${contactId}`, { headers }) : Promise.resolve(null)
+    contactId ? safeRequestVibe(`/contacts/${contactId}`, { headers }) : Promise.resolve(null),
+    loadStageName(deal, headers)
   ]);
   const leadHistory = leadId
     ? await loadEntityHistory({ entityType: 'lead', entityId: leadId, ownerTypeId: 1, headers })
     : emptyHistory();
 
   return {
-    deal,
+    deal: { ...deal, stageName: stageName || deal.stageName || deal.STAGE_NAME || '' },
     linkedLead: lead && typeof lead === 'object' && !Array.isArray(lead) ? lead : null,
     timelines: [...dealHistory.timelines, ...leadHistory.timelines],
     activities: [...dealHistory.activities, ...leadHistory.activities],
     messages: [...dealHistory.messages, ...leadHistory.messages],
     contact: contact && typeof contact === 'object' && !Array.isArray(contact) ? contact : null
   };
+}
+
+async function loadStageName(deal: Record<string, any>, headers: Record<string, string>): Promise<string> {
+  const stageId = String(deal.stageId ?? deal.STAGE_ID ?? '').trim();
+  if (!stageId) return '';
+
+  const categoryId = Number(deal.categoryId ?? deal.CATEGORY_ID ?? 0);
+  const entityId = Number.isInteger(categoryId) && categoryId > 0
+    ? `DEAL_STAGE_${categoryId}`
+    : 'DEAL_STAGE';
+  const statuses = await safeRequestVibe(`/statuses?filter[entityId]=${encodeURIComponent(entityId)}`, { headers });
+  const items = toItems(statuses);
+  const match = items.find((item) => String(item.statusId ?? item.STATUS_ID ?? item.id ?? item.ID) === stageId);
+  return String(match?.name ?? match?.NAME ?? match?.title ?? match?.TITLE ?? '').trim();
 }
 
 async function loadEntityHistory({ entityType, entityId, ownerTypeId, headers }: {

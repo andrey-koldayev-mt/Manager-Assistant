@@ -49,6 +49,7 @@ export function buildDealContext({ deal, linkedLead = null, timelines = [], acti
       id: dealId,
       title: deal.title ?? deal.name ?? deal.TITLE ?? `Сделка ${dealId}`,
       stageId: deal.stageId ?? deal.stage ?? deal.STAGE_ID ?? null,
+      stageName: deal.stageName ?? deal.STAGE_NAME ?? deal.stage?.name ?? deal.STAGE?.NAME ?? null,
       amount: deal.amount ?? deal.opportunity ?? deal.OPPORTUNITY ?? null,
       currencyId: deal.currencyId ?? deal.currency ?? deal.CURRENCY_ID ?? null,
       assignedById: numberOrNull(deal.assignedById ?? deal.responsibleId ?? deal.ASSIGNED_BY_ID),

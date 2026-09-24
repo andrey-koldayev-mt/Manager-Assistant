@@ -41,11 +41,11 @@ export function buildNavigatorContext(bundle: DealBundle) {
       id: context.deal.id,
       title: context.deal.title,
       stage: firstString(
+        context.deal.stageName,
         deal.stageName,
         deal.STAGE_NAME,
-        objectName(deal.stage),
-        context.deal.stageId
-      ) || 'не указана',
+        objectName(deal.stage)
+      ) || 'Не определена',
       contactName: firstString(contact.name, contact.NAME, contact.fullName, contact.FULL_NAME),
       responsibleName: '',
       lastActivityAt: history[0]?.at || null,
@@ -70,11 +70,11 @@ export function recommendScenario(communications: NavigatorCommunication[]) {
   }
 
   if (isSelectionSignal(latest)) {
-    return { scenarioId: 'selection-sent', reason: 'В последней коммуникации найдена подборка или ссылка.' };
+    return { scenarioId: 'think', reason: 'В последней коммуникации найдена подборка или ссылка: стоит выяснить, что мешает выбору.' };
   }
 
   if (latest.direction === 'manager') {
-    return { scenarioId: 'no-response', reason: 'Последняя коммуникация была исходящей от менеджера.' };
+    return { scenarioId: 'client-will-call', reason: 'Последняя коммуникация была исходящей от менеджера: согласуйте деликатный повод для следующего контакта.' };
   }
 
   return null;
