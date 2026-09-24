@@ -314,6 +314,7 @@ function extractDealIdFromPlacementOptions(rawOptions: unknown): number | null {
   }
 
   const values: unknown[] = [rawOptions];
+  const visited = new Set<unknown>();
   if (typeof rawOptions === 'string') {
     try {
       values.push(JSON.parse(rawOptions));
@@ -322,14 +323,51 @@ function extractDealIdFromPlacementOptions(rawOptions: unknown): number | null {
     }
   }
 
-  for (const value of values) {
+  while (values.length) {
+    const value = values.shift();
+    if (value === undefined || value === null || visited.has(value)) {
+      continue;
+    }
+    if (typeof value === 'object') {
+      visited.add(value);
+    }
+
     if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
       return value;
     }
 
+    if (Array.isArray(value)) {
+      values.push(...value);
+      continue;
+    }
+
     if (value && typeof value === 'object') {
       const record = value as Record<string, unknown>;
-      values.push(record.ID, record.id, record.DEAL_ID, record.dealId, record.ENTITY_VALUE_ID, record.URI, record.uri);
+      const boundDeal = Array.isArray(record.CRM_BINDINGS)
+        ? record.CRM_BINDINGS.find((binding) => {
+          if (!binding || typeof binding !== 'object') return false;
+          const item = binding as Record<string, unknown>;
+          return String(item.ENTITY_TYPE || item.entityType || '').toUpperCase() === 'DEAL';
+        }) as Record<string, unknown> | undefined
+        : undefined;
+      const primaryEntityIsDeal = String(record.CRM_ENTITY_TYPE || record.crmEntityType || '').toUpperCase() === 'DEAL';
+      const callCardDealId = boundDeal?.ENTITY_ID ?? boundDeal?.entityId ??
+        (primaryEntityIsDeal ? (record.CRM_ENTITY_ID ?? record.crmEntityId) : undefined);
+      const parsedCallCardDealId = Number(callCardDealId);
+      if (Number.isInteger(parsedCallCardDealId) && parsedCallCardDealId > 0) {
+        return parsedCallCardDealId;
+      }
+
+      values.push(
+        record.ID,
+        record.id,
+        record.DEAL_ID,
+        record.dealId,
+        record.ENTITY_VALUE_ID,
+        record.URI,
+        record.uri,
+        record.CRM_BINDINGS
+      );
       continue;
     }
 
