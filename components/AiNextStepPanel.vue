@@ -263,217 +263,117 @@ async function copyRecommendation() {
 
 <template>
   <main class="workspace-layout workspace-ai gap-4 p-4">
-    <section class="ai-command-bar work-panel p-4">
-      <div class="mb-4 border-b border-default pb-3">
-        <h2 class="text-base font-bold text-label">AI следующий шаг</h2>
-        <p class="mt-1 text-xs text-description">
-          Анализирует историю сделки и предлагает одно практичное дело для менеджера.
-        </p>
-      </div>
-
-      <div class="ai-command-content">
+    <section class="ai-decision-column">
+      <section class="ai-command-bar work-panel p-5">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p class="eyebrow">AI следующий шаг</p>
+            <h2 class="mt-1 text-xl font-bold text-label">Одно действие, которое важно сейчас</h2>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-description">AI изучит историю сделки, коммуникации и звонки, затем подготовит одно дело для менеджера.</p>
+          </div>
+          <B24Button
+            :icon="RocketIcon"
+            :loading="pending"
+            :disabled="!canAnalyze"
+            :label="result ? 'Сформировать заново' : 'Сформировать следующий шаг'"
+            class="brand-action"
+            @click="analyze"
+          />
+        </div>
         <B24Alert
           v-if="!dealId"
+          class="mt-4"
           color="air-primary-alert"
           variant="soft"
           title="Сделка не определена"
           description="Откройте виджет из карточки сделки, чтобы AI получил рабочий контекст."
         />
-
-        <div class="rounded-lg border border-default bg-muted p-3">
-          <p class="text-xs font-semibold uppercase text-description">Контекст</p>
-          <div class="mt-2 grid gap-2 text-sm text-label">
-            <p><strong>Сделка:</strong> {{ dealId ? `#${dealId}` : 'не найдена' }}</p>
-            <p><strong>Менеджер:</strong> {{ agentName || 'не указан' }}</p>
-            <p><strong>Клиент:</strong> {{ clientName || 'не указан' }}</p>
-          </div>
-        </div>
-
-        <B24Button
-          :icon="RocketIcon"
-          :loading="pending"
-          :disabled="!canAnalyze"
-          label="Сформировать следующий шаг"
-          class="brand-action"
-          @click="analyze"
-        />
-
-        <B24Button
-          :loading="creating"
-          :disabled="!canCreate"
-          :label="`Создать ${activityLabel}`"
-          class="border border-default bg-default text-label"
-          @click="createActivity"
-        />
-
-        <B24Button
-          :disabled="!result"
-          label="Копировать рекомендацию"
-          class="border border-default bg-default text-label"
-          @click="copyRecommendation"
-        />
-
         <B24Alert
-          v-if="result?.createdActivityId"
+          v-else-if="result?.createdActivityId"
+          class="mt-4"
           color="air-primary-success"
           variant="soft"
           title="Дело создано"
           :description="`CRM ID: ${result.createdActivityId}`"
         />
-      </div>
+      </section>
+
+      <B24Alert
+        v-if="errorMessage"
+        color="air-primary-alert"
+        variant="soft"
+        title="Не удалось выполнить действие"
+        :description="errorMessage"
+      />
+
+      <article v-if="result" class="ai-recommendation-panel work-panel p-5">
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-default pb-4">
+          <div>
+            <p class="eyebrow">Рекомендация</p>
+            <h2 class="mt-1 text-xl font-bold text-label">{{ result.recommendation.title }}</h2>
+            <p class="mt-1 text-sm text-description">Дело · выполнить {{ formattedDeadline }}</p>
+          </div>
+          <B24Badge :label="result.mode === 'live' ? 'Создано в CRM' : 'Готово к созданию'" class="brand-soft" />
+        </div>
+
+        <div class="mt-5 grid gap-5">
+          <div class="ai-recommendation-copy">{{ result.recommendation.description }}</div>
+          <div class="ai-recommendation-meta">
+            <div>
+              <h3>Почему этот шаг</h3>
+              <ul><li v-for="item in result.recommendation.justification" :key="item">{{ item }}</li></ul>
+            </div>
+            <div>
+              <h3>Важно учесть</h3>
+              <ul><li v-for="item in result.recommendation.importantDetails" :key="item">{{ item }}</li></ul>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 border-t border-default pt-4">
+            <B24Button :loading="creating" :disabled="!canCreate" :label="`Создать ${activityLabel}`" class="brand-action" @click="createActivity" />
+            <B24Button :disabled="!result" label="Копировать текст" class="mode-switch-button border border-default" @click="copyRecommendation" />
+          </div>
+          <B24Alert
+            v-if="result.context?.transcriptStats"
+            color="air-primary"
+            variant="soft"
+            title="Звонки в анализе"
+            :description="'Найдено: ' + result.context.transcriptStats.calls + '; готовых: ' + result.context.transcriptStats.native + '; из кэша: ' + result.context.transcriptStats.cached + '; расшифровано сейчас: ' + result.context.transcriptStats.transcribed + '.'"
+          />
+        </div>
+      </article>
+
+      <article v-else class="ai-empty-state work-panel p-8">
+        <RocketIcon class="h-7 w-7 text-[var(--brand-red)]" />
+        <h2 class="mt-3 text-xl font-bold text-label">Готово к анализу сделки</h2>
+        <p class="mt-2 max-w-xl text-sm leading-6 text-description">Создайте рекомендацию, чтобы увидеть приоритетное действие, обоснование и готовый текст для клиента.</p>
+      </article>
     </section>
 
-    <section class="ai-workspace script-scroll workspace-scroll">
-      <div class="grid gap-4">
-        <B24Alert
-          v-if="errorMessage"
-          color="air-primary-alert"
-          variant="soft"
-          title="Не удалось выполнить действие"
-          :description="errorMessage"
-        />
-
-        <article v-if="result" class="script-card p-5">
-          <div class="mb-4 flex flex-wrap items-start justify-between gap-3 border-b border-default pb-3">
-            <div>
-              <p class="text-xs font-bold uppercase text-[var(--brand-red)]">Рекомендация AI</p>
-              <h2 class="mt-1 text-xl font-bold text-label">{{ result.recommendation.title }}</h2>
-              <p class="mt-1 text-sm text-description">
-                Дело · выполнить {{ formattedDeadline }}
-              </p>
-            </div>
-            <B24Badge
-              :label="result.mode === 'live' ? 'Создано в CRM' : 'Preview'"
-              :class="result.mode === 'live' ? 'border border-green-200 bg-green-50 text-green-800' : 'brand-soft'"
-            />
-          </div>
-
-          <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-            <div class="rounded-lg border border-default bg-muted p-4 text-sm leading-6 whitespace-pre-wrap text-label">
-              {{ result.recommendation.description }}
-            </div>
-
-            <div class="grid content-start gap-4">
-              <div class="rounded-lg border border-default bg-default p-3">
-                <h3 class="text-sm font-bold text-label">Важные детали</h3>
-                <ul class="mt-2 grid gap-2 text-sm text-description">
-                  <li v-for="item in result.recommendation.importantDetails" :key="item">{{ item }}</li>
-                </ul>
-              </div>
-
-              <div class="rounded-lg border border-default bg-default p-3">
-                <h3 class="text-sm font-bold text-label">Почему сейчас</h3>
-                <ul class="mt-2 grid gap-2 text-sm text-description">
-                  <li v-for="item in result.recommendation.justification" :key="item">{{ item }}</li>
-                </ul>
-              </div>
-
-              <div v-if="result.context?.sourceStats" class="rounded-lg border border-default bg-default p-3 text-sm text-description">
-                Источники: комментарии {{ result.context.sourceStats.comments }},
-                Wazzup {{ result.context.sourceStats.wazzupComments }},
-                дела {{ result.context.sourceStats.activities }},
-                сообщения {{ result.context.sourceStats.messages }}.
-                <template v-if="result.context.sourceStats.leadActivities || result.context.sourceStats.leadMessages">
-                  Из привязанного лида: дела {{ result.context.sourceStats.leadActivities }}, сообщения {{ result.context.sourceStats.leadMessages }}.
-                </template>
-              </div>
-              <B24Alert
-                v-if="result.context?.transcriptStats"
-                color="air-primary"
-                variant="soft"
-                title="Транскрибации звонков"
-                :description="'Найдено звонков: ' + result.context.transcriptStats.calls + '; готовых: ' + result.context.transcriptStats.native + '; из кэша: ' + result.context.transcriptStats.cached + '; создано сейчас: ' + result.context.transcriptStats.transcribed + '; недоступно: ' + result.context.transcriptStats.unavailable + '.'"
-              />
-            </div>
-          </div>
-        </article>
-
-        <article v-if="result" class="script-card overflow-hidden">
-          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-default px-5 py-4">
-            <div>
-              <h2 class="text-base font-bold text-label">Обсудить с AI</h2>
-              <p class="mt-1 text-sm text-description">Спросите о рекомендации, истории или текущем состоянии сделки.</p>
-            </div>
-            <B24Button
-              v-if="chatMessages.length"
-              label="Очистить диалог"
-              size="sm"
-              class="border border-default bg-default text-label"
-              @click="clearChat"
-            />
-          </div>
-
-          <div ref="chatScroll" class="ai-chat-scroll grid gap-3 bg-muted px-5 py-4">
-            <div v-if="!chatMessages.length" class="grid gap-2">
-              <p class="text-sm text-description">Например:</p>
-              <div class="flex flex-wrap gap-2">
-                <button type="button" class="ai-question-suggestion" @click="setQuestion('Почему вы рекомендуете именно этот следующий шаг?')">
-                  Почему этот шаг?
-                </button>
-                <button type="button" class="ai-question-suggestion" @click="setQuestion('Какие факты в истории сделки важнее всего сейчас?')">
-                  Какие факты важны?
-                </button>
-                <button type="button" class="ai-question-suggestion" @click="setQuestion('Что стоит уточнить у клиента перед созданием дела?')">
-                  Что уточнить?
-                </button>
-              </div>
-            </div>
-
-            <div
-              v-for="message in chatMessages"
-              :key="message.id"
-              class="ai-chat-message"
-              :class="message.role === 'user' ? 'ai-chat-message-user' : 'ai-chat-message-assistant'"
-            >
-              <p class="mb-1 text-xs font-semibold" :class="message.role === 'user' ? 'text-white/80' : 'text-[var(--brand-red)]'">
-                {{ message.role === 'user' ? 'Вы' : 'AI ассистент' }}
-              </p>
-              <p class="whitespace-pre-wrap text-sm leading-6">{{ message.content }}</p>
-            </div>
-
-            <div v-if="asking" class="ai-chat-message ai-chat-message-assistant">
-              <p class="text-sm text-description">AI изучает актуальный контекст сделки…</p>
-            </div>
-          </div>
-
-          <form class="grid gap-3 border-t border-default bg-default p-4" @submit.prevent="askAi">
-            <label class="text-sm font-semibold text-label" for="ai-next-step-question">Ваш вопрос</label>
-            <textarea
-              id="ai-next-step-question"
-              v-model="question"
-              class="ai-chat-input"
-              :disabled="asking"
-              maxlength="4000"
-              placeholder="Например: как лучше сформулировать звонок клиенту?"
-              rows="3"
-              @keydown="onQuestionKeydown"
-            />
-            <div class="flex items-center justify-between gap-3">
-              <p class="text-xs text-description">Enter — отправить · Shift + Enter — новая строка</p>
-              <B24Button
-                type="submit"
-                :loading="asking"
-                :disabled="!canAskAi"
-                label="Спросить AI"
-                class="brand-action"
-              />
-            </div>
-          </form>
-        </article>
-
-        <article v-else class="script-card p-8">
-          <div class="mx-auto flex max-w-xl flex-col items-center gap-3 text-center">
-            <div class="flex h-12 w-12 items-center justify-center rounded-lg brand-soft">
-              <RocketIcon class="h-6 w-6" />
-            </div>
-            <h2 class="text-xl font-bold text-label">Готово к анализу сделки</h2>
-            <p class="text-sm leading-6 text-description">
-              Нажмите кнопку формирования, чтобы AI изучил историю сделки, коммуникации, открытые дела и записи звонков.
-              При отсутствии готовой расшифровки запись будет обработана через AI Router перед анализом.
-            </p>
-          </div>
-        </article>
+    <aside class="ai-chat-panel work-panel overflow-hidden">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-default px-5 py-4">
+        <div><h2 class="text-base font-bold text-label">Обсудить с AI</h2><p class="mt-1 text-xs text-description">Уточните рекомендации и факты сделки.</p></div>
+        <B24Button v-if="chatMessages.length" label="Очистить" size="xs" class="mode-switch-button" @click="clearChat" />
       </div>
-    </section>
+      <div ref="chatScroll" class="ai-chat-scroll grid gap-3 px-5 py-4">
+        <div v-if="!chatMessages.length" class="grid gap-2">
+          <p class="text-xs font-semibold uppercase text-description">Быстрые вопросы</p>
+          <div class="grid gap-2">
+            <button type="button" class="ai-question-suggestion" @click="setQuestion('Почему вы рекомендуете именно этот следующий шаг?')">Почему этот шаг?</button>
+            <button type="button" class="ai-question-suggestion" @click="setQuestion('Какие факты в истории сделки важнее всего сейчас?')">Какие факты важны?</button>
+            <button type="button" class="ai-question-suggestion" @click="setQuestion('Что стоит уточнить у клиента перед созданием дела?')">Что уточнить?</button>
+          </div>
+        </div>
+        <div v-for="message in chatMessages" :key="message.id" class="ai-chat-message" :class="message.role === 'user' ? 'ai-chat-message-user' : 'ai-chat-message-assistant'">
+          <p class="mb-1 text-xs font-semibold" :class="message.role === 'user' ? 'text-white/80' : 'text-[var(--brand-red)]'">{{ message.role === 'user' ? 'Вы' : 'AI ассистент' }}</p>
+          <p class="whitespace-pre-wrap text-sm leading-6">{{ message.content }}</p>
+        </div>
+        <div v-if="asking" class="ai-chat-message ai-chat-message-assistant"><p class="text-sm text-description">AI изучает актуальный контекст сделки…</p></div>
+      </div>
+      <form class="grid gap-3 border-t border-default p-4" @submit.prevent="askAi">
+        <label class="sr-only" for="ai-next-step-question">Ваш вопрос</label>
+        <textarea id="ai-next-step-question" v-model="question" class="ai-chat-input" :disabled="asking" maxlength="4000" placeholder="Задайте вопрос по сделке…" rows="3" @keydown="onQuestionKeydown" />
+        <div class="flex items-center justify-between gap-3"><p class="text-xs text-description">Enter — отправить</p><B24Button type="submit" :loading="asking" :disabled="!canAskAi" label="Спросить" class="brand-action" /></div>
+      </form>
+    </aside>
   </main>
 </template>

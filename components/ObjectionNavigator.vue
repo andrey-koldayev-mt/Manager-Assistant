@@ -237,217 +237,57 @@ watch(() => props.dealId, () => {
 
 <template>
   <main class="objection-navigator-layout workspace-layout workspace-navigator gap-4 p-4">
-    <section class="navigator-command-bar work-panel p-4">
-      <div class="mb-4 border-b border-default pb-3">
-        <h2 class="text-base font-bold text-label">Навигатор возражений</h2>
-        <p class="mt-1 text-xs text-description">Выберите сценарий, пройдите ветку и отправьте текст клиенту вручную.</p>
+    <aside class="navigator-sidebar work-panel p-4">
+      <div class="flex items-center justify-between gap-2 border-b border-default pb-3">
+        <div><p class="eyebrow">Навигатор возражений</p><h2 class="mt-1 text-base font-bold text-label">Каталог сценариев</h2></div>
+        <B24Button label="Обновить" size="xs" :loading="loading" class="mode-switch-button" @click="loadContext" />
       </div>
-
-      <B24Alert
-        v-if="!dealId"
-        color="air-primary-alert"
-        variant="soft"
-        title="Сделка не определена"
-        description="Откройте виджет из карточки сделки, чтобы загрузить контекст."
-      />
-
-      <div v-else class="navigator-command-content">
-        <B24Alert
-          v-if="errorMessage"
-          color="air-primary-alert"
-          variant="soft"
-          title="Контекст не загружен"
-          :description="errorMessage"
-        />
-
-        <div class="navigator-context">
-          <div class="flex items-center justify-between gap-2">
-            <p class="text-xs font-semibold uppercase text-description">Контекст сделки</p>
-            <B24Button label="Обновить" size="xs" :loading="loading" class="mode-switch-button" @click="loadContext" />
-          </div>
-          <dl class="mt-3 grid gap-2 text-sm">
-            <div><dt>Сделка</dt><dd>{{ context?.deal.title || `#${dealId}` }}</dd></div>
-            <div><dt>Стадия</dt><dd>{{ context?.deal.stage || 'не указана' }}</dd></div>
-            <div><dt>Контакт</dt><dd>{{ context?.deal.contactName || clientName || 'не указан' }}</dd></div>
-            <div><dt>Ответственный</dt><dd>{{ context?.deal.responsibleName || agentName || 'не указан' }}</dd></div>
-            <div><dt>Последняя активность</dt><dd>{{ formattedLastActivity }}</dd></div>
-          </dl>
-        </div>
-
-        <div v-if="recommendedScenario" class="navigator-recommendation">
-          <p class="text-xs font-semibold uppercase text-[var(--brand-red)]">Контекстная подсказка</p>
-          <h3 class="mt-1 text-sm font-bold text-label">{{ recommendedScenario.title }}</h3>
-          <p class="mt-1 text-xs leading-5 text-description">{{ context?.recommendation?.reason }}</p>
-          <B24Button label="Открыть сценарий" size="sm" class="brand-action mt-3" @click="selectScenario(recommendedScenario.id)" />
-        </div>
-
-        <div class="navigator-recommendation">
-          <p class="text-xs font-semibold uppercase text-[var(--brand-red)]">AI-рекомендация</p>
-          <p class="mt-1 text-xs leading-5 text-description">Проанализирует карточку, историю, Wazzup, email и расшифровки звонков. Если текста нет, AI Router сначала обработает доступную запись звонка.</p>
-          <B24Button label="Сформировать рекомендацию" size="sm" :loading="aiLoading" class="brand-action mt-3" @click="generateAiRecommendation" />
-          <B24Alert
-            v-if="transcriptStats"
-            class="mt-3"
-            color="air-primary"
-            variant="soft"
-            title="Транскрибации звонков"
-            :description="'Найдено звонков: ' + transcriptStats.calls + '; готовых: ' + transcriptStats.native + '; из кэша: ' + transcriptStats.cached + '; создано сейчас: ' + transcriptStats.transcribed + '; недоступно: ' + transcriptStats.unavailable + '.'"
-          />
-          <B24Alert
-            v-if="aiErrorMessage"
-            class="mt-3"
-            color="air-primary-alert"
-            variant="soft"
-            title="Рекомендация недоступна"
-            :description="aiErrorMessage"
-          />
-        </div>
-
-        <section>
-          <p class="mb-2 text-xs font-semibold uppercase text-description">Каталог</p>
-          <B24Accordion
-            v-model="expandedScenarioGroups"
-            :items="scenarioGroups"
-            type="multiple"
-            collapsible
-            value-key="id"
-            label-key="title"
-            class="navigator-catalog-accordion"
-          >
-            <template #body="{ item }">
-              <div class="grid gap-2">
-                <B24Button
-                  v-for="scenario in item.scenarios"
-                  :key="scenario.id"
-                  :label="scenario.title"
-                  block
-                  :class="selectedScenarioId === scenario.id ? 'navigator-category-active' : 'navigator-category'"
-                  @click="selectScenario(scenario.id)"
-                />
-              </div>
-            </template>
-          </B24Accordion>
-        </section>
+      <B24Alert v-if="!dealId" class="mt-4" color="air-primary-alert" variant="soft" title="Сделка не определена" description="Откройте виджет из карточки сделки, чтобы загрузить контекст." />
+      <B24Alert v-else-if="errorMessage" class="mt-4" color="air-primary-alert" variant="soft" title="Контекст не загружен" :description="errorMessage" />
+      <div v-if="recommendedScenario" class="navigator-match-card mt-4">
+        <p class="eyebrow">Подходит по истории</p><h3 class="mt-1 text-sm font-bold text-label">{{ recommendedScenario.title }}</h3>
+        <p class="mt-1 text-xs leading-5 text-description">{{ context?.recommendation?.reason }}</p>
+        <B24Button label="Открыть сценарий" size="sm" class="brand-action mt-3" @click="selectScenario(recommendedScenario.id)" />
       </div>
-    </section>
+      <section class="mt-4"><p class="mb-2 text-xs font-semibold uppercase text-description">Возражения</p>
+        <B24Accordion v-model="expandedScenarioGroups" :items="scenarioGroups" type="multiple" collapsible value-key="id" label-key="title" class="navigator-catalog-accordion">
+          <template #body="{ item }"><div class="grid gap-1"><B24Button v-for="scenario in item.scenarios" :key="scenario.id" :label="scenario.title" block :class="selectedScenarioId === scenario.id ? 'navigator-category-active' : 'navigator-category'" @click="selectScenario(scenario.id)" /></div></template>
+        </B24Accordion>
+      </section>
+    </aside>
 
-    <section class="navigator-workspace script-scroll workspace-scroll min-w-0">
-      <div class="grid gap-4">
-        <article v-if="selectedScenario && selectedStep" class="script-card min-w-0 p-5">
-          <div class="flex flex-wrap items-start justify-between gap-3 border-b border-default pb-4">
-            <div>
-              <p class="text-xs font-bold uppercase text-[var(--brand-red)]">Сценарий</p>
-              <h2 class="mt-1 text-xl font-bold text-label">{{ selectedScenario.title }}</h2>
-              <p class="mt-1 text-sm text-description">{{ selectedScenario.description }}</p>
-            </div>
-            <B24Badge :label="`Шаг ${selectedScenario.steps.findIndex((step) => step.id === selectedStep?.id) + 1} из ${selectedScenario.steps.length}`" class="brand-soft" />
+    <section class="navigator-workspace min-w-0">
+      <section class="navigator-ai-panel work-panel p-5">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div><p class="eyebrow">AI-рекомендация</p><h2 class="mt-1 text-xl font-bold text-label">Рекомендуемый ответ</h2><p class="mt-2 text-sm text-description">Карточка, Wazzup, email и звонки — без изменения CRM.</p></div>
+          <B24Button label="Сформировать рекомендацию" :loading="aiLoading" class="brand-action" @click="generateAiRecommendation" />
+        </div>
+        <B24Alert v-if="aiErrorMessage" class="mt-4" color="air-primary-alert" variant="soft" title="Рекомендация недоступна" :description="aiErrorMessage" />
+        <div v-if="aiRecommendation" class="navigator-ai-result mt-5">
+          <div><p class="result-label">Ситуация</p><p>{{ aiRecommendation.situation }}</p></div>
+          <div><p class="result-label">Что сделать</p><p>{{ aiRecommendation.recommendedAction }}</p></div>
+          <div class="navigator-script-text">{{ aiRecommendation.responseText }}</div>
+          <div v-if="aiRecommendation.sourceSignals.length"><p class="result-label">Факты сделки</p><ul><li v-for="signal in aiRecommendation.sourceSignals" :key="signal">{{ signal }}</li></ul></div>
+          <div class="flex flex-wrap gap-2"><B24Button label="Скопировать текст" class="brand-action" @click="copyAiRecommendation" /><B24Badge label="Отправка вручную в Wazzup" class="brand-soft" /></div>
+        </div>
+        <B24Alert v-if="transcriptStats" class="mt-4" color="air-primary" variant="soft" title="Звонки в анализе" :description="'Найдено: ' + transcriptStats.calls + '; готовых: ' + transcriptStats.native + '; из кэша: ' + transcriptStats.cached + '; расшифровано: ' + transcriptStats.transcribed + '.'" />
+      </section>
+
+      <article v-if="selectedScenario && selectedStep" class="navigator-scenario-panel work-panel min-w-0 p-5">
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-default pb-4"><div><p class="eyebrow">Сценарий</p><h2 class="mt-1 text-xl font-bold text-label">{{ selectedScenario.title }}</h2><p class="mt-1 text-sm text-description">{{ selectedScenario.description }}</p></div><B24Badge :label="`Шаг ${selectedScenario.steps.findIndex((step) => step.id === selectedStep?.id) + 1} из ${selectedScenario.steps.length}`" class="brand-soft" /></div>
+        <div class="mt-5 grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
+          <div class="navigator-main-column grid min-w-0 gap-4">
+            <div><p class="result-label">Цель шага</p><p class="mt-1 text-sm leading-6 text-description">{{ selectedStep.goal }}</p></div>
+            <div class="navigator-channel" role="tablist" aria-label="Канал коммуникации"><B24Button v-for="item in selectedStepChannels" :key="item" :label="channelLabel(item)" size="sm" :class="channel === item ? 'brand-action' : 'mode-switch-button'" @click="channel = item" /></div>
+            <div class="navigator-script-text">{{ renderedText }}</div>
+            <B24Alert v-if="missingVariables.length" color="air-primary-alert" variant="soft" title="Заполните данные в сделке" :description="missingVariables.map((name) => NAVIGATOR_VARIABLE_LABELS[name] || name).join(', ')" />
+            <div v-if="selectedStep.answers?.length" class="grid gap-2 border-t border-default pt-4"><p class="text-sm font-semibold text-label">Ответ клиента</p><div class="flex flex-wrap gap-2"><B24Button v-for="answer in selectedStep.answers" :key="answer.label" :label="answer.label" class="border border-default bg-default text-label" @click="chooseAnswer(answer.nextStepId)" /></div></div>
+            <div class="flex flex-wrap items-center justify-between gap-3 border-t border-default pt-4"><B24Button label="К каталогу" class="mode-switch-button border border-default" @click="selectedScenarioId = null; selectedStepId = null" /><B24Button label="Скопировать текст" :disabled="!canCopy" class="brand-action" @click="copyCurrentText" /></div>
           </div>
-
-          <div class="mt-5 grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_270px]">
-            <div class="navigator-main-column grid min-w-0 gap-4">
-              <div>
-                <p class="text-sm font-semibold text-label">Цель шага</p>
-                <p class="mt-1 text-sm leading-6 text-description">{{ selectedStep.goal }}</p>
-              </div>
-
-              <div class="navigator-channel" role="tablist" aria-label="Канал коммуникации">
-                <B24Button
-                  v-for="item in selectedStepChannels"
-                  :key="item"
-                  :label="channelLabel(item)"
-                  size="sm"
-                  :class="channel === item ? 'brand-action' : 'mode-switch-button'"
-                  @click="channel = item"
-                />
-              </div>
-
-              <div class="navigator-script-text">{{ renderedText }}</div>
-
-              <B24Alert
-                v-if="missingVariables.length"
-                color="air-primary-alert"
-                variant="soft"
-                title="Заполните данные в сделке"
-                :description="missingVariables.map((name) => NAVIGATOR_VARIABLE_LABELS[name] || name).join(', ')"
-              />
-
-              <div v-if="selectedStep.answers?.length" class="grid gap-2 border-t border-default pt-4">
-                <p class="text-sm font-semibold text-label">Ответ клиента</p>
-                <div class="flex flex-wrap gap-2">
-                  <B24Button
-                    v-for="answer in selectedStep.answers"
-                    :key="answer.label"
-                    :label="answer.label"
-                    class="border border-default bg-default text-label"
-                    @click="chooseAnswer(answer.nextStepId)"
-                  />
-                </div>
-              </div>
-
-              <div class="flex flex-wrap items-center justify-between gap-3 border-t border-default pt-4">
-                <B24Button label="К каталогу" class="border border-default bg-default text-label" @click="selectedScenarioId = null; selectedStepId = null" />
-                <B24Button label="Скопировать текст" :disabled="!canCopy" class="brand-action" @click="copyCurrentText" />
-              </div>
-            </div>
-
-            <aside class="grid min-w-0 content-start gap-4">
-              <div class="navigator-recommendation">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <p class="text-xs font-semibold uppercase text-[var(--brand-red)]">AI-рекомендация</p>
-                    <p class="mt-1 text-xs leading-5 text-description">Учитывает карточку, историю, Wazzup, email и расшифровки звонков.</p>
-                  </div>
-                </div>
-                <div v-if="aiRecommendation" class="mt-3 grid gap-3">
-                  <div>
-                    <p class="text-xs font-semibold text-label">Ситуация</p>
-                    <p class="mt-1 text-xs leading-5 text-description">{{ aiRecommendation.situation }}</p>
-                  </div>
-                  <div>
-                    <p class="text-xs font-semibold text-label">Действие менеджера</p>
-                    <p class="mt-1 text-xs leading-5 text-description">{{ aiRecommendation.recommendedAction }}</p>
-                  </div>
-                  <div class="navigator-script-text text-sm">{{ aiRecommendation.responseText }}</div>
-                  <div v-if="aiRecommendation.sourceSignals.length">
-                    <p class="text-xs font-semibold text-label">Факты сделки</p>
-                    <ul class="mt-1 grid gap-1 text-xs leading-5 text-description">
-                      <li v-for="signal in aiRecommendation.sourceSignals" :key="signal">{{ signal }}</li>
-                    </ul>
-                  </div>
-                  <B24Button label="Скопировать рекомендацию" size="sm" class="mode-switch-button" @click="copyAiRecommendation" />
-                </div>
-              </div>
-              <B24Alert
-                color="air-primary"
-                variant="soft"
-                title="Ручная отправка"
-                description="Скопируйте текст и отправьте его клиенту вручную в Wazzup. Навигатор не меняет CRM."
-              />
-              <div class="navigator-history">
-                <p class="text-sm font-bold text-label">Последние коммуникации</p>
-                <div v-if="context?.communications.length" class="mt-3 grid gap-3">
-                  <div v-for="item in context.communications" :key="item.id" class="navigator-history-item">
-                    <div class="flex items-center justify-between gap-2">
-                      <B24Badge :label="directionLabel(item.direction)" class="border border-default bg-default text-description" />
-                      <span class="text-xs text-description">{{ item.channel }}</span>
-                    </div>
-                    <p v-if="item.title" class="mt-2 text-xs font-semibold text-label">{{ item.title }}</p>
-                    <p v-if="item.preview" class="mt-1 text-xs leading-5 text-description">{{ item.preview }}</p>
-                  </div>
-                </div>
-                <p v-else class="mt-2 text-sm text-description">Коммуникации не найдены.</p>
-              </div>
-            </aside>
-          </div>
-        </article>
-
-        <article v-else class="script-card p-8">
-          <div class="mx-auto flex max-w-xl flex-col items-center gap-3 text-center">
-            <h2 class="text-xl font-bold text-label">Выберите сценарий</h2>
-            <p class="text-sm leading-6 text-description">Каталог слева поможет быстро подобрать ветку для текущего возражения или переписки.</p>
-          </div>
-        </article>
-      </div>
+          <aside class="navigator-history"><p class="text-sm font-bold text-label">Последние коммуникации</p><div v-if="context?.communications.length" class="mt-3 grid gap-2"><div v-for="item in context.communications" :key="item.id" class="navigator-history-item"><div class="flex items-center justify-between gap-2"><span class="text-xs font-semibold text-label">{{ item.channel }} · {{ directionLabel(item.direction) }}</span><span class="text-xs text-description">{{ item.at }}</span></div><p class="mt-1 truncate text-xs text-description">{{ item.title || item.preview }}</p></div></div><p v-else class="mt-2 text-sm text-description">Коммуникации не найдены.</p></aside>
+        </div>
+      </article>
+      <article v-else class="navigator-empty-state work-panel p-8"><h2 class="text-xl font-bold text-label">Выберите возражение</h2><p class="mt-2 text-sm leading-6 text-description">Каталог слева поможет открыть ветку для текущей переписки или звонка.</p></article>
     </section>
   </main>
 </template>

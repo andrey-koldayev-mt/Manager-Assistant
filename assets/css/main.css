@@ -769,3 +769,320 @@ textarea:focus-visible {
     grid-column: auto;
   }
 }
+
+/* Manager workspace — implementation of the approved Русский Экспресс layout. */
+:root {
+  --app-muted: #f5f7f9;
+  --app-border: #e1e7ee;
+}
+
+.app-shell {
+  background: var(--app-muted);
+}
+
+.app-header > div,
+.deal-context-strip,
+.workspace-reactivation,
+.workspace-ai,
+.workspace-navigator {
+  width: min(1240px, 100%);
+}
+
+.assistant-header {
+  padding-block: 10px;
+  box-shadow: 0 1px 0 rgba(23, 32, 51, 0.03);
+}
+
+.assistant-header h1 {
+  font-size: 15px;
+}
+
+.deal-context-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  min-height: 42px;
+  background: transparent;
+  border-bottom: 0;
+}
+
+.deal-context-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: auto;
+  padding: 9px 14px;
+  border-right: 0;
+}
+
+.deal-context-item + .deal-context-item::before {
+  width: 3px;
+  height: 3px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: #a8b5c3;
+  content: '';
+}
+
+.deal-context-item span {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.deal-context-item strong {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.workspace-reactivation {
+  grid-template-columns: minmax(280px, 332px) minmax(0, 1fr);
+  align-items: start;
+}
+
+.reactivation-command-surface {
+  position: sticky;
+  top: 78px;
+}
+
+.reactivation-fields-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 13px;
+}
+
+.reactivation-fields-grid > .brand-soft {
+  grid-column: auto;
+}
+
+.reactivation-followup {
+  grid-column: auto;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 13px;
+}
+
+.reactivation-followup > :nth-child(3) {
+  grid-column: auto;
+}
+
+.reactivation-script-workspace {
+  min-height: 0;
+}
+
+.workspace-ai {
+  grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.75fr);
+  align-items: start;
+}
+
+.ai-decision-column,
+.navigator-workspace {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.ai-command-bar,
+.ai-recommendation-panel,
+.ai-chat-panel,
+.navigator-sidebar,
+.navigator-ai-panel,
+.navigator-scenario-panel,
+.navigator-empty-state,
+.ai-empty-state {
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(23, 32, 51, 0.03);
+}
+
+.eyebrow,
+.result-label {
+  margin: 0;
+  color: var(--brand-red-hover);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.ai-recommendation-copy {
+  padding: 18px;
+  border-left: 3px solid var(--brand-red);
+  border-radius: 0 8px 8px 0;
+  background: #fff8f8;
+  color: var(--app-text);
+  font-size: 16px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.ai-recommendation-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ai-recommendation-meta > div {
+  padding: 13px 14px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+}
+
+.ai-recommendation-meta h3 {
+  margin: 0;
+  color: var(--app-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ai-recommendation-meta ul,
+.navigator-ai-result ul {
+  display: grid;
+  gap: 5px;
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: #627286;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.ai-empty-state,
+.navigator-empty-state {
+  min-height: 230px;
+  background: linear-gradient(135deg, #fff 0%, #fff7f7 100%);
+}
+
+.ai-chat-panel {
+  position: sticky;
+  top: 78px;
+  display: grid;
+  grid-template-rows: auto minmax(240px, 1fr) auto;
+  max-height: min(680px, calc(100vh - 102px));
+}
+
+.ai-chat-scroll {
+  min-height: 240px;
+  max-height: none;
+  background: #fafbfd;
+}
+
+.ai-question-suggestion {
+  width: 100%;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.ai-chat-input:focus {
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 3px var(--brand-focus);
+}
+
+.workspace-navigator {
+  grid-template-columns: minmax(260px, 292px) minmax(0, 1fr);
+  align-items: start;
+}
+
+.navigator-sidebar {
+  position: sticky;
+  top: 78px;
+  max-height: min(720px, calc(100vh - 102px));
+  overflow-y: auto;
+}
+
+.navigator-match-card {
+  padding: 13px;
+  border: 1px solid var(--brand-red-border);
+  border-radius: 8px;
+  background: var(--brand-red-soft);
+}
+
+.navigator-ai-panel {
+  background: #fff;
+}
+
+.navigator-ai-result {
+  display: grid;
+  gap: 14px;
+}
+
+.navigator-ai-result > div:not(.navigator-script-text) > p:not(.result-label) {
+  margin: 5px 0 0;
+  color: #4b5f78;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.navigator-script-text {
+  border-radius: 8px;
+  background: #fff8f8;
+}
+
+.navigator-history {
+  padding: 14px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: #fafbfd;
+}
+
+.navigator-history-item {
+  padding-top: 8px;
+}
+
+.navigator-category,
+.navigator-category-active {
+  min-height: 32px;
+  font-size: 13px;
+}
+
+.navigator-catalog-accordion [data-slot='trigger'] {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@media (max-width: 1080px) {
+  .workspace-reactivation,
+  .workspace-ai,
+  .workspace-navigator {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .reactivation-command-surface,
+  .ai-chat-panel,
+  .navigator-sidebar {
+    position: static;
+    max-height: none;
+  }
+
+  .reactivation-command-surface {
+    order: 0;
+  }
+
+  .ai-chat-panel {
+    min-height: 440px;
+  }
+}
+
+@media (max-width: 720px) {
+  .deal-context-strip {
+    padding-inline: 4px;
+  }
+
+  .deal-context-item {
+    padding: 7px 8px;
+  }
+
+  .deal-context-item span,
+  .deal-context-item strong {
+    font-size: 11px;
+  }
+
+  .ai-recommendation-meta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mode-switch {
+    width: 100%;
+  }
+
+  .mode-switch button {
+    flex: 1 1 auto;
+  }
+}

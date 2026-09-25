@@ -763,7 +763,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <header class="app-header sticky top-0 z-40 border-b border-default bg-default/95 px-4 py-3 backdrop-blur">
+      <header class="app-header assistant-header sticky top-0 z-40 border-b border-default bg-default/95 px-4 py-3 backdrop-blur">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <img class="brand-logo" src="/favicon.png" alt="Русский Экспресс" />
@@ -771,7 +771,6 @@ onUnmounted(() => {
               <h1 class="text-base font-bold leading-tight text-label">Русский Экспресс</h1>
               <p class="text-xs text-description">Ассистент менеджера в карточке Bitrix24</p>
             </div>
-            <B24Badge label="B24 UI" class="brand-soft" />
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
@@ -838,7 +837,7 @@ onUnmounted(() => {
       </section>
 
       <main v-if="workspaceMode === 'reactivation'" class="workspace-layout workspace-reactivation gap-4 p-4">
-        <section class="reactivation-command-surface work-panel p-4">
+        <aside class="reactivation-command-surface work-panel p-4">
           <div class="mb-4 border-b border-default pb-3">
             <div class="flex items-center justify-between gap-3">
               <h2 class="text-base font-bold text-label">Данные для подстановки</h2>
@@ -951,7 +950,7 @@ onUnmounted(() => {
               </div>
             </div>
           </div>
-        </section>
+        </aside>
 
         <section class="reactivation-script-workspace script-scroll workspace-scroll">
           <div class="work-panel mb-4 p-3">
