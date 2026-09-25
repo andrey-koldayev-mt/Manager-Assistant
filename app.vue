@@ -763,7 +763,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <header class="sticky top-0 z-40 border-b border-default bg-default/95 px-4 py-3 backdrop-blur">
+      <header class="app-header sticky top-0 z-40 border-b border-default bg-default/95 px-4 py-3 backdrop-blur">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <img class="brand-logo" src="/favicon.png" alt="Русский Экспресс" />
@@ -818,8 +818,27 @@ onUnmounted(() => {
         </div>
       </header>
 
-      <main v-if="workspaceMode === 'reactivation'" class="workspace-layout grid gap-4 p-4 lg:grid-cols-[460px_minmax(0,1fr)]">
-        <aside class="sidebar-sticky work-panel p-4 workspace-scroll">
+      <section class="deal-context-strip" aria-label="Контекст текущей сделки">
+        <div class="deal-context-item">
+          <span>Сделка</span>
+          <strong>{{ b24DealId ? `#${b24DealId}` : 'не определена' }}</strong>
+        </div>
+        <div class="deal-context-item">
+          <span>Клиент</span>
+          <strong>{{ clientName || 'не указан' }}</strong>
+        </div>
+        <div class="deal-context-item">
+          <span>Ответственный</span>
+          <strong>{{ agentName || 'не указан' }}</strong>
+        </div>
+        <div class="deal-context-item">
+          <span>Воронка</span>
+          <strong>{{ dealCategoryName || 'загружается' }}</strong>
+        </div>
+      </section>
+
+      <main v-if="workspaceMode === 'reactivation'" class="workspace-layout workspace-reactivation gap-4 p-4">
+        <section class="reactivation-command-surface work-panel p-4">
           <div class="mb-4 border-b border-default pb-3">
             <div class="flex items-center justify-between gap-3">
               <h2 class="text-base font-bold text-label">Данные для подстановки</h2>
@@ -828,7 +847,7 @@ onUnmounted(() => {
             <p class="mt-1 text-xs text-description">Поля синхронизируются с карточкой сделки и сразу обновляют скрипт.</p>
           </div>
 
-          <div class="field-stack">
+          <div class="reactivation-fields-grid">
             <B24FormField label="Ваше имя">
               <B24Input v-model="agentName" class="field-control" />
             </B24FormField>
@@ -883,7 +902,7 @@ onUnmounted(() => {
               />
             </div>
 
-            <div class="border-t border-default pt-3 field-stack">
+            <div class="reactivation-followup border-t border-default pt-3 field-stack">
               <B24FormField label="Дата следующего контакта">
                 <B24Popover :content="{ side: 'bottom', align: 'start', sideOffset: 8 }">
                   <B24Button
@@ -932,9 +951,9 @@ onUnmounted(() => {
               </div>
             </div>
           </div>
-        </aside>
+        </section>
 
-        <section class="script-scroll workspace-scroll">
+        <section class="reactivation-script-workspace script-scroll workspace-scroll">
           <div class="work-panel mb-4 p-3">
             <div class="grid gap-2 sm:grid-cols-3">
               <B24Button label="1 Присоединение" block class="step-tab" :class="{ active: activeStep === 1 }" @click="scrollToStep(1)" />

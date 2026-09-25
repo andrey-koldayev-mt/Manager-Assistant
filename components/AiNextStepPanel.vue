@@ -262,8 +262,8 @@ async function copyRecommendation() {
 </script>
 
 <template>
-  <main class="workspace-layout grid gap-4 p-4 lg:grid-cols-[420px_minmax(0,1fr)]">
-    <aside class="sidebar-sticky work-panel p-4 workspace-scroll">
+  <main class="workspace-layout workspace-ai gap-4 p-4">
+    <section class="ai-command-bar work-panel p-4">
       <div class="mb-4 border-b border-default pb-3">
         <h2 class="text-base font-bold text-label">AI следующий шаг</h2>
         <p class="mt-1 text-xs text-description">
@@ -271,7 +271,7 @@ async function copyRecommendation() {
         </p>
       </div>
 
-      <div class="field-stack">
+      <div class="ai-command-content">
         <B24Alert
           v-if="!dealId"
           color="air-primary-alert"
@@ -294,7 +294,6 @@ async function copyRecommendation() {
           :loading="pending"
           :disabled="!canAnalyze"
           label="Сформировать следующий шаг"
-          block
           class="brand-action"
           @click="analyze"
         />
@@ -303,7 +302,6 @@ async function copyRecommendation() {
           :loading="creating"
           :disabled="!canCreate"
           :label="`Создать ${activityLabel}`"
-          block
           class="border border-default bg-default text-label"
           @click="createActivity"
         />
@@ -311,7 +309,6 @@ async function copyRecommendation() {
         <B24Button
           :disabled="!result"
           label="Копировать рекомендацию"
-          block
           class="border border-default bg-default text-label"
           @click="copyRecommendation"
         />
@@ -324,9 +321,9 @@ async function copyRecommendation() {
           :description="`CRM ID: ${result.createdActivityId}`"
         />
       </div>
-    </aside>
+    </section>
 
-    <section class="script-scroll workspace-scroll">
+    <section class="ai-workspace script-scroll workspace-scroll">
       <div class="grid gap-4">
         <B24Alert
           v-if="errorMessage"

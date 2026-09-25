@@ -225,8 +225,8 @@ watch(() => props.dealId, () => {
 </script>
 
 <template>
-  <main class="objection-navigator-layout workspace-layout grid gap-4 p-4 lg:grid-cols-[420px_minmax(0,1fr)]">
-    <aside class="sidebar-sticky work-panel p-4 workspace-scroll">
+  <main class="objection-navigator-layout workspace-layout workspace-navigator gap-4 p-4">
+    <section class="navigator-command-bar work-panel p-4">
       <div class="mb-4 border-b border-default pb-3">
         <h2 class="text-base font-bold text-label">Навигатор возражений</h2>
         <p class="mt-1 text-xs text-description">Выберите сценарий, пройдите ветку и отправьте текст клиенту вручную.</p>
@@ -240,7 +240,7 @@ watch(() => props.dealId, () => {
         description="Откройте виджет из карточки сделки, чтобы загрузить контекст."
       />
 
-      <div v-else class="grid gap-4">
+      <div v-else class="navigator-command-content">
         <B24Alert
           v-if="errorMessage"
           color="air-primary-alert"
@@ -310,9 +310,9 @@ watch(() => props.dealId, () => {
           </B24Accordion>
         </section>
       </div>
-    </aside>
+    </section>
 
-    <section class="script-scroll workspace-scroll min-w-0">
+    <section class="navigator-workspace script-scroll workspace-scroll min-w-0">
       <div class="grid gap-4">
         <article v-if="selectedScenario && selectedStep" class="script-card min-w-0 p-5">
           <div class="flex flex-wrap items-start justify-between gap-3 border-b border-default pb-4">
