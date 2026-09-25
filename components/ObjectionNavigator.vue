@@ -41,6 +41,14 @@ type AiRecommendation = {
   sourceSignals: string[];
 };
 
+type TranscriptStats = {
+  calls: number;
+  native: number;
+  cached: number;
+  transcribed: number;
+  unavailable: number;
+};
+
 const props = defineProps<{
   dealId: number | null;
   agentName: string;
@@ -56,6 +64,7 @@ const selectedScenarioId = ref<string | null>(null);
 const selectedStepId = ref<string | null>(null);
 const channel = ref<NavigatorChannel>('message');
 const aiRecommendation = ref<AiRecommendation | null>(null);
+const transcriptStats = ref<TranscriptStats | null>(null);
 const aiLoading = ref(false);
 const aiErrorMessage = ref('');
 const expandedScenarioGroups = ref<string[]>(['choice']);
@@ -158,9 +167,10 @@ async function generateAiRecommendation() {
       method: 'POST',
       credentials: 'same-origin',
       body: { dealId: props.dealId, scenarioId: selectedScenarioId.value || undefined }
-    }) as { success: boolean; data: { recommendation: AiRecommendation } };
+    }) as { success: boolean; data: { recommendation: AiRecommendation; transcriptStats: TranscriptStats } };
     if (!response.success || !response.data?.recommendation) throw new Error('AI-рекомендация недоступна.');
     aiRecommendation.value = response.data.recommendation;
+    transcriptStats.value = response.data.transcriptStats || null;
     selectScenario(response.data.recommendation.scenarioId);
     channel.value = response.data.recommendation.channel;
   } catch (error: any) {
@@ -219,6 +229,7 @@ watch(() => props.dealId, () => {
   selectedScenarioId.value = null;
   selectedStepId.value = null;
   aiRecommendation.value = null;
+  transcriptStats.value = null;
   aiErrorMessage.value = '';
   void loadContext();
 }, { immediate: true });
@@ -272,8 +283,16 @@ watch(() => props.dealId, () => {
 
         <div class="navigator-recommendation">
           <p class="text-xs font-semibold uppercase text-[var(--brand-red)]">AI-рекомендация</p>
-          <p class="mt-1 text-xs leading-5 text-description">Проанализирует карточку, историю, Wazzup, email и расшифровки звонков.</p>
+          <p class="mt-1 text-xs leading-5 text-description">Проанализирует карточку, историю, Wazzup, email и расшифровки звонков. Если текста нет, AI Router сначала обработает доступную запись звонка.</p>
           <B24Button label="Сформировать рекомендацию" size="sm" :loading="aiLoading" class="brand-action mt-3" @click="generateAiRecommendation" />
+          <B24Alert
+            v-if="transcriptStats"
+            class="mt-3"
+            color="air-primary"
+            variant="soft"
+            title="Транскрибации звонков"
+            :description="'Найдено звонков: ' + transcriptStats.calls + '; готовых: ' + transcriptStats.native + '; из кэша: ' + transcriptStats.cached + '; создано сейчас: ' + transcriptStats.transcribed + '; недоступно: ' + transcriptStats.unavailable + '.'"
+          />
           <B24Alert
             v-if="aiErrorMessage"
             class="mt-3"

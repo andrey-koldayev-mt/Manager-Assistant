@@ -2,7 +2,7 @@ import type { DealBundle } from '../domain/deal-analysis';
 import { requestVibe } from './deal-bundle';
 import { B24_API_KEY } from './b24';
 
-const DEFAULT_AUDIO_MODEL = 'bitrix/deepdml/faster-whisper-large-v3-turbo-ct2';
+const DEFAULT_AUDIO_MODEL = 'bitrix/bitrixgpt-5.6-transcribe';
 const DEFAULT_RECORDINGS_FOLDER_ID = 259146;
 const MAX_ALLOWED_AUDIO_BYTES = 25 * 1024 * 1024;
 const TRANSCRIPT_MARKER = 'AI_CALL_TRANSCRIPT';
@@ -70,7 +70,7 @@ export async function enrichCallTranscripts({ dealId, bundle, headers }: {
         stats.unavailable += 1;
         continue;
       }
-      attachTranscript(activity, transcript, 'whisper');
+      attachTranscript(activity, transcript, 'ai-router');
       stats.transcribed += 1;
       await saveTranscript({ dealId, activityId, transcript, headers });
     } catch (error) {
@@ -212,7 +212,7 @@ export async function transcribeRecording(file: RecordValue, headers: Headers, c
   });
   const payload = await transcription.json().catch(() => null);
   if (!transcription.ok || payload?.error) {
-    throw new CallTranscriptionError(payload?.error?.code || 'transcription_failed', payload?.error?.message || `Whisper вернул ошибку ${transcription.status}`);
+    throw new CallTranscriptionError(payload?.error?.code || 'transcription_failed', payload?.error?.message || `AI Router вернул ошибку ${transcription.status}`);
   }
   return firstText(payload?.text);
 }

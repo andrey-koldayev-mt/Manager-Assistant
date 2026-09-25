@@ -45,7 +45,7 @@ describe('recording selection', () => {
   });
 });
 
-describe('Whisper request failures', () => {
+describe('AI Router transcription request failures', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it('reports a structured error returned by the transcription endpoint', async () => {
@@ -57,11 +57,17 @@ describe('Whisper request failures', () => {
     await expect(transcribeRecording(
       { name: 'call.mp3', downloadUrl: 'https://crm-re.bitrix24.ru/download/call.mp3' },
       headers,
-      { folderId: 1, model: 'bitrix/deepdml/faster-whisper-large-v3-turbo-ct2', language: 'ru', maxAudioBytes: 1024, prompt: '' }
+      { folderId: 1, model: 'bitrix/bitrixgpt-5.6-transcribe', language: 'ru', maxAudioBytes: 1024, prompt: '' }
     )).rejects.toMatchObject({ code: 'ai_pacing_limited' });
+
+    expect((fetchMock.mock.calls[1]?.[1]?.body as FormData).get('model')).toBe('bitrix/bitrixgpt-5.6-transcribe');
   });
 
   it('enforces VibeCode’s 25 MB upload limit even when configuration is larger', () => {
     expect(getTranscriptConfig({ VIBE_TRANSCRIPTION_MAX_BYTES: '99999999' }).maxAudioBytes).toBe(25 * 1024 * 1024);
+  });
+
+  it('uses BitrixGPT 5.6 Transcribe by default', () => {
+    expect(getTranscriptConfig({}).model).toBe('bitrix/bitrixgpt-5.6-transcribe');
   });
 });
