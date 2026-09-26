@@ -191,20 +191,45 @@ async function copyAiRecommendation() {
 }
 
 async function copyText(value: string) {
-  if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(value);
-    return;
+  if (!value) throw new Error('Text is empty');
+
+  // Bitrix24 renders the app in an iframe. In that context Clipboard API can be
+  // exposed but reject writes because the host has not granted clipboard-write.
+  // Fall through to the user-gesture based legacy path instead of surfacing it
+  // as a failed copy operation.
+  if (navigator.clipboard?.writeText && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(value);
+      return;
+    } catch {
+      // Continue with document.execCommand('copy') below.
+    }
   }
 
   const textarea = document.createElement('textarea');
   textarea.value = value;
   textarea.setAttribute('readonly', '');
   textarea.style.position = 'fixed';
+  textarea.style.top = '0';
+  textarea.style.left = '0';
+  textarea.style.width = '1px';
+  textarea.style.height = '1px';
+  textarea.style.padding = '0';
+  textarea.style.border = '0';
   textarea.style.opacity = '0';
+  textarea.style.pointerEvents = 'none';
   document.body.appendChild(textarea);
+  textarea.focus({ preventScroll: true });
   textarea.select();
-  const copied = document.execCommand('copy');
-  textarea.remove();
+  textarea.setSelectionRange(0, value.length);
+
+  let copied = false;
+  try {
+    copied = document.execCommand('copy');
+  } finally {
+    textarea.remove();
+  }
+
   if (!copied) throw new Error('Clipboard is unavailable');
 }
 
