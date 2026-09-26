@@ -850,6 +850,35 @@ textarea:focus-visible {
   gap: 13px;
 }
 
+.reactivation-command-surface,
+.reactivation-command-surface > *,
+.reactivation-fields-grid,
+.reactivation-fields-grid > *,
+.reactivation-fields-grid [data-slot='root'],
+.reactivation-fields-grid [data-slot='base'],
+.reactivation-fields-grid .field-control,
+.reactivation-fields-grid .field-control > * {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.reactivation-fields-grid input,
+.reactivation-fields-grid textarea {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.reactivation-debug-badge {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 58%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .reactivation-fields-grid > .brand-soft {
   grid-column: auto;
 }

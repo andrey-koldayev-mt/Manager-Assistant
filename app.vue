@@ -841,7 +841,7 @@ onUnmounted(() => {
           <div class="mb-4 border-b border-default pb-3">
             <div class="flex items-center justify-between gap-3">
               <h2 class="text-base font-bold text-label">Данные для подстановки</h2>
-              <B24Badge v-if="b24Debug" :label="b24Debug" class="border border-default bg-muted text-description" />
+              <B24Badge v-if="b24Debug" :label="b24Debug" class="reactivation-debug-badge border border-default bg-muted text-description" />
             </div>
             <p class="mt-1 text-xs text-description">Поля синхронизируются с карточкой сделки и сразу обновляют скрипт.</p>
           </div>
@@ -855,7 +855,7 @@ onUnmounted(() => {
               <B24Input v-model="clientName" class="field-control" />
             </B24FormField>
 
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid min-w-0 grid-cols-2 gap-2">
               <B24Button
                 label="Покупал ранее"
                 :class="historyType === 'buyer' ? 'brand-action' : 'border border-default bg-default text-label'"
