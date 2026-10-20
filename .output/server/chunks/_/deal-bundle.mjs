@@ -81,38 +81,21 @@ function ensureFutureRecommendationDeadline(value, now = /* @__PURE__ */ new Dat
     deadline: buildFallbackDeadline(now)
   };
 }
-function buildActivityPayload({ dealId, contactId, recommendation, communications }) {
-  var _a;
+function buildLinkedTaskPayload({ dealId, recommendation }) {
   const numericDealId = Number(dealId);
   if (!Number.isFinite(numericDealId) || numericDealId <= 0) {
     throw new Error("dealId must be a positive number");
   }
   const validated = validateAiRecommendation(recommendation, /* @__PURE__ */ new Date(0));
-  const endTime = new Date(validated.deadline);
-  const startTime = new Date(endTime.getTime() - 30 * 60 * 1e3);
-  const numericContactId = Number(contactId);
-  const communication = (_a = communications.find((item) => item.type === "PHONE")) != null ? _a : communications[0];
-  const activityCommunications = communication && Number.isFinite(numericContactId) && numericContactId > 0 ? [{
-    VALUE: communication.value,
-    ENTITY_TYPE_ID: 3,
-    ENTITY_ID: numericContactId
-  }] : [];
   return {
-    ownerTypeId: DEAL_ENTITY_TYPE_ID,
-    ownerId: numericDealId,
-    subject: validated.title,
-    // typeId 3 is a Bitrix24 Task and cannot be created through the CRM
-    // activities endpoint. Type 5 is a generic CRM action, so it appears as
-    // a linked activity in the deal timeline with the AI text as its body.
-    typeId: activityTypeId(),
-    startTime: startTime.toISOString(),
-    endTime: endTime.toISOString(),
-    deadline: endTime.toISOString(),
+    title: validated.title,
     description: validated.description,
     responsibleId: validated.responsibleId,
-    completed: false,
-    // VibeCode requires the field even for a generic CRM activity.
-    communications: activityCommunications
+    deadline: validated.deadline,
+    priority: 1,
+    // VibeCode Tasks API is the supported way to create a task-type action
+    // and links it to the deal timeline.
+    UF_CRM_TASK: [`D_${numericDealId}`]
   };
 }
 function buildTimelineLogPayload({ dealId, recommendation, activityId }) {
@@ -213,9 +196,6 @@ function extractCommunicationValues(value, type) {
     var _a;
     return typeof item === "object" && item ? (_a = item.value) != null ? _a : item.VALUE : item;
   }).filter((item) => typeof item === "string" && item.trim().length > 0).map((item) => ({ type, value: item.trim() }));
-}
-function activityTypeId() {
-  return 5;
 }
 function isWazzupComment(item) {
   return [item.providerId, item.providerTypeId, item.originatorId, item.originId, item.title, item.text, item.comment].filter(Boolean).join(" ").toLowerCase().includes("wazzup");
@@ -370,5 +350,5 @@ function positiveId(value) {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
-export { CRM_ACTIVITY_RECOMMENDATION_TOOL as C, buildDealContext as a, buildActivityPayload as b, buildPromptMessages as c, buildTimelineLogPayload as d, ensureFutureRecommendationDeadline as e, requestVibeRaw as f, loadDealBundle as l, requestVibe as r, validateAiRecommendation as v };
+export { CRM_ACTIVITY_RECOMMENDATION_TOOL as C, buildLinkedTaskPayload as a, buildDealContext as b, buildPromptMessages as c, buildTimelineLogPayload as d, ensureFutureRecommendationDeadline as e, requestVibeRaw as f, loadDealBundle as l, requestVibe as r, validateAiRecommendation as v };
 //# sourceMappingURL=deal-bundle.mjs.map

@@ -1,6 +1,6 @@
 import { a as defineEventHandler, y as readBody, c as createError } from '../../../_/nitro.mjs';
 import { g as getScenario, a as OBJECTION_SCENARIOS, b as getScenarioChannels } from '../../../_/objection-navigator.mjs';
-import { l as loadDealBundle, a as buildDealContext, f as requestVibeRaw, c as buildPromptMessages } from '../../../_/deal-bundle.mjs';
+import { l as loadDealBundle, b as buildDealContext, f as requestVibeRaw, c as buildPromptMessages } from '../../../_/deal-bundle.mjs';
 import { e as enrichCallTranscripts } from '../../../_/call-transcripts.mjs';
 import { d as getVibeAuthorizationHeader, e as ensureVibeApiKey, B as B24_API_KEY } from '../../../_/b24.mjs';
 import 'node:http';

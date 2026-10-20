@@ -1,5 +1,5 @@
 import { a as defineEventHandler, k as getQuery, c as createError } from '../../../_/nitro.mjs';
-import { a as buildDealContext, l as loadDealBundle } from '../../../_/deal-bundle.mjs';
+import { b as buildDealContext, l as loadDealBundle } from '../../../_/deal-bundle.mjs';
 import { f as firstString, d as getVibeAuthorizationHeader, e as ensureVibeApiKey, B as B24_API_KEY, c as getDisplayName, t as toRecord } from '../../../_/b24.mjs';
 import 'node:http';
 import 'node:https';

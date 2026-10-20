@@ -1,5 +1,5 @@
 import { a as defineEventHandler, y as readBody, c as createError } from '../../../_/nitro.mjs';
-import { l as loadDealBundle, a as buildDealContext, e as ensureFutureRecommendationDeadline, v as validateAiRecommendation, d as buildTimelineLogPayload, b as buildActivityPayload, f as requestVibeRaw, C as CRM_ACTIVITY_RECOMMENDATION_TOOL, c as buildPromptMessages, r as requestVibe } from '../../../_/deal-bundle.mjs';
+import { l as loadDealBundle, b as buildDealContext, e as ensureFutureRecommendationDeadline, v as validateAiRecommendation, d as buildTimelineLogPayload, a as buildLinkedTaskPayload, f as requestVibeRaw, C as CRM_ACTIVITY_RECOMMENDATION_TOOL, c as buildPromptMessages, r as requestVibe } from '../../../_/deal-bundle.mjs';
 import { e as enrichCallTranscripts } from '../../../_/call-transcripts.mjs';
 import { d as getVibeAuthorizationHeader, e as ensureVibeApiKey, B as B24_API_KEY } from '../../../_/b24.mjs';
 import 'node:http';
@@ -69,13 +69,11 @@ const analyzeNextStep_post = defineEventHandler(async (event) => {
         }
       };
     }
-    let activityPayload = null;
+    let taskPayload = null;
     try {
-      activityPayload = buildActivityPayload({
+      taskPayload = buildLinkedTaskPayload({
         dealId,
-        contactId: context.deal.contactId,
-        recommendation: validated,
-        communications: context.deal.communications
+        recommendation: validated
       });
     } catch (error) {
       throw createError({
@@ -83,8 +81,8 @@ const analyzeNextStep_post = defineEventHandler(async (event) => {
         statusMessage: (error == null ? void 0 : error.message) || "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043F\u043E\u0434\u0433\u043E\u0442\u043E\u0432\u0438\u0442\u044C \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435 \u0432 CRM."
       });
     }
-    const created = await createCrmActivity({ activityPayload, headers });
-    const createdId = (_e = (_d = (_c = (_a = created == null ? void 0 : created.id) != null ? _a : created == null ? void 0 : created.ID) != null ? _c : (_b = created == null ? void 0 : created.activity) == null ? void 0 : _b.id) != null ? _d : created == null ? void 0 : created.activityId) != null ? _e : null;
+    const created = await createCrmTask({ taskPayload, headers });
+    const createdId = (_e = (_d = (_c = (_a = created == null ? void 0 : created.id) != null ? _a : created == null ? void 0 : created.ID) != null ? _c : (_b = created == null ? void 0 : created.task) == null ? void 0 : _b.id) != null ? _d : created == null ? void 0 : created.taskId) != null ? _e : null;
     const logPayload = buildTimelineLogPayload({ dealId, recommendation: validated, activityId: createdId });
     const timelineLog = await safeCreateTimelineLog({ payload: logPayload, headers });
     return {
@@ -93,10 +91,10 @@ const analyzeNextStep_post = defineEventHandler(async (event) => {
         mode: "live",
         context: { ...context, transcriptStats },
         recommendation: validated,
-        activityPayload,
+        activityPayload: taskPayload,
         timelineLogPayload: logPayload,
         createdActivityId: createdId,
-        createdEntityType: "activity",
+        createdEntityType: "task",
         pinnedTimelineLogId: (_g = (_f = timelineLog == null ? void 0 : timelineLog.id) != null ? _f : timelineLog == null ? void 0 : timelineLog.ID) != null ? _g : null
       }
     };
@@ -146,11 +144,11 @@ async function getAiRecommendation({ context, headers }) {
   }
   throw new Error("AI response does not contain a CRM activity recommendation");
 }
-async function createCrmActivity({ activityPayload, headers }) {
-  return requestVibe("/activities", {
+async function createCrmTask({ taskPayload, headers }) {
+  return requestVibe("/tasks", {
     method: "POST",
     headers,
-    body: activityPayload
+    body: taskPayload
   });
 }
 async function safeCreateTimelineLog({ payload, headers }) {
