@@ -17,7 +17,7 @@ const recommendation = (activityType: AiRecommendation['activityType']): AiRecom
 });
 
 describe('buildActivityPayload', () => {
-  it('always includes communications in a CRM todo activity', () => {
+  it('creates a generic CRM action rather than a task activity', () => {
     const payload = buildActivityPayload({
       dealId: 123,
       contactId: 456,
@@ -32,7 +32,7 @@ describe('buildActivityPayload', () => {
       ownerTypeId: 2,
       ownerId: 123,
       subject: 'Связаться с клиентом',
-      typeId: 3,
+      typeId: 5,
       completed: false
     });
     expect(payload.communications).toEqual([{
@@ -45,7 +45,7 @@ describe('buildActivityPayload', () => {
     expect(payload.deadline).toBe('2026-07-27T09:00:00.000Z');
   });
 
-  it('normalizes a stale recommendation to a CRM todo activity', () => {
+  it('normalizes a stale recommendation to a generic CRM action', () => {
     const staleRecommendation = { ...recommendation('Todo'), activityType: 'Call' };
     const payload = buildActivityPayload({
       dealId: 123,
@@ -54,7 +54,7 @@ describe('buildActivityPayload', () => {
       communications: []
     });
 
-    expect(payload.typeId).toBe(3);
+    expect(payload.typeId).toBe(5);
     expect(payload.communications).toEqual([]);
   });
 });

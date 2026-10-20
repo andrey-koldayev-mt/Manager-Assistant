@@ -43,15 +43,11 @@ type ChatMessage = {
   content: string;
 };
 
-type TodoRecommendation = AnalyzeResult['recommendation'];
-
 const props = defineProps<{
   dealId: number | null;
   agentName: string;
   clientName: string;
   loadingContext?: boolean;
-  sdkReady?: boolean;
-  createTodo: (recommendation: TodoRecommendation) => Promise<number | string>;
 }>();
 
 const toast = useToast();
@@ -65,7 +61,7 @@ const chatMessages = ref<ChatMessage[]>([]);
 const chatScroll = ref<HTMLElement | null>(null);
 
 const canAnalyze = computed(() => Boolean(props.dealId) && !pending.value && !creating.value && !props.loadingContext);
-const canCreate = computed(() => Boolean(result.value?.recommendation) && Boolean(props.sdkReady) && !creating.value && !pending.value);
+const canCreate = computed(() => Boolean(result.value?.recommendation) && !creating.value && !pending.value);
 const canAskAi = computed(() => Boolean(props.dealId && result.value?.recommendation && question.value.trim() && !asking.value));
 const activityLabel = 'дело';
 
@@ -211,16 +207,18 @@ async function createActivity() {
   errorMessage.value = '';
 
   try {
-    // Universal CRM todos are created through the Bitrix24 placement SDK.
-    // The generic VibeCode activities endpoint maps typeId: 3 to a Task,
-    // which Bitrix24 rejects in this CRM timeline context.
-    const createdId = await props.createTodo(result.value.recommendation);
-    result.value = {
-      ...result.value,
-      mode: 'live',
-      createdActivityId: createdId,
-      createdEntityType: 'activity'
-    };
+    const response = await $fetch('/api/b24/analyze-next-step', {
+      method: 'POST',
+      credentials: 'same-origin',
+      body: {
+        dealId: props.dealId,
+        mode: 'live',
+        recommendation: result.value.recommendation
+      }
+    }) as { success: boolean; data: AnalyzeResult };
+
+    result.value = response.data;
+    const createdId = response.data.createdActivityId;
     toast.add({
       title: 'Дело создано',
       description: createdId ? `ID: ${createdId}` : 'Откройте карточку сделки для проверки.',
@@ -334,7 +332,6 @@ async function copyRecommendation() {
             <B24Button :loading="creating" :disabled="!canCreate" :label="`Создать ${activityLabel}`" class="brand-action" @click="createActivity" />
             <B24Button :disabled="!result" label="Копировать текст" class="mode-switch-button border border-default" @click="copyRecommendation" />
           </div>
-          <p v-if="!sdkReady" class="text-xs text-description">Подключаемся к Bitrix24, создание дела станет доступно автоматически.</p>
           <B24Alert
             v-if="result.context?.transcriptStats"
             color="air-primary"

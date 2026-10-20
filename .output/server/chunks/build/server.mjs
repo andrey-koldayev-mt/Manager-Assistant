@@ -16067,8 +16067,7 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
     dealId: {},
     agentName: {},
     clientName: {},
-    loadingContext: { type: Boolean },
-    createTodo: { type: Function }
+    loadingContext: { type: Boolean }
   },
   setup(__props) {
     const props = __props;
@@ -16151,13 +16150,17 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
       creating.value = true;
       errorMessage.value = "";
       try {
-        const createdId = await props.createTodo(result.value.recommendation);
-        result.value = {
-          ...result.value,
-          mode: "live",
-          createdActivityId: createdId,
-          createdEntityType: "activity"
-        };
+        const response = await $fetch("/api/b24/analyze-next-step", {
+          method: "POST",
+          credentials: "same-origin",
+          body: {
+            dealId: props.dealId,
+            mode: "live",
+            recommendation: result.value.recommendation
+          }
+        });
+        result.value = response.data;
+        const createdId = response.data.createdActivityId;
         toast.add({
           title: "Дело создано",
           description: createdId ? `ID: ${createdId}` : "Откройте карточку сделки для проверки.",
@@ -17377,31 +17380,6 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     function buildDeadlineForB24(dateValue) {
       return /^\d{4}-\d{2}-\d{2}$/.test(dateValue) ? `${dateValue}T10:00:00+03:00` : dateValue;
     }
-    async function createAiNextStepTodo(recommendation) {
-      if (!b24DealId.value) {
-        throw new Error("Сделка не определена. Откройте вкладку из карточки сделки заново.");
-      }
-      const BX24 = bx24Instance.value || null;
-      if (!BX24?.callMethod) {
-        throw new Error("Bitrix24 SDK ещё не готов. Обновите вкладку сделки и повторите попытку.");
-      }
-      bx24Instance.value = BX24;
-      const result = await bx24Call("crm.activity.todo.add", {
-        ownerTypeId: 2,
-        ownerId: b24DealId.value,
-        deadline: recommendation.deadline,
-        title: recommendation.title,
-        description: recommendation.description,
-        responsibleId: recommendation.responsibleId,
-        pingOffsets: [0, 15],
-        colorId: "red"
-      });
-      const activityId = result?.id ?? result?.ID ?? result;
-      if (activityId === null || activityId === void 0 || activityId === "") {
-        throw new Error("Bitrix24 не вернул ID созданного дела.");
-      }
-      return activityId;
-    }
     async function createTodoViaBitrixSdk() {
       const BX24 = bx24Instance.value || null;
       if (!BX24?.callMethod || !b24DealId.value) {
@@ -18071,8 +18049,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                 "deal-id": b24DealId.value,
                 "agent-name": agentName.value,
                 "client-name": clientName.value,
-                "loading-context": dealContextOverlayVisible.value,
-                "create-todo": createAiNextStepTodo
+                "loading-context": dealContextOverlayVisible.value
               }, null, _parent2, _scopeId));
             } else {
               _push2(ssrRenderComponent(_component_ObjectionNavigator, {
@@ -18631,8 +18608,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                   "deal-id": b24DealId.value,
                   "agent-name": agentName.value,
                   "client-name": clientName.value,
-                  "loading-context": dealContextOverlayVisible.value,
-                  "create-todo": createAiNextStepTodo
+                  "loading-context": dealContextOverlayVisible.value
                 }, null, 8, ["deal-id", "agent-name", "client-name", "loading-context"])) : (openBlock(), createBlock(_component_ObjectionNavigator, {
                   key: 4,
                   "deal-id": b24DealId.value,

@@ -101,6 +101,9 @@ function buildActivityPayload({ dealId, contactId, recommendation, communication
     ownerTypeId: DEAL_ENTITY_TYPE_ID,
     ownerId: numericDealId,
     subject: validated.title,
+    // typeId 3 is a Bitrix24 Task and cannot be created through the CRM
+    // activities endpoint. Type 5 is a generic CRM action, so it appears as
+    // a linked activity in the deal timeline with the AI text as its body.
     typeId: activityTypeId(),
     startTime: startTime.toISOString(),
     endTime: endTime.toISOString(),
@@ -212,7 +215,7 @@ function extractCommunicationValues(value, type) {
   }).filter((item) => typeof item === "string" && item.trim().length > 0).map((item) => ({ type, value: item.trim() }));
 }
 function activityTypeId() {
-  return 3;
+  return 5;
 }
 function isWazzupComment(item) {
   return [item.providerId, item.providerTypeId, item.originatorId, item.originId, item.title, item.text, item.comment].filter(Boolean).join(" ").toLowerCase().includes("wazzup");

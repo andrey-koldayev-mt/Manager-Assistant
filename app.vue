@@ -527,32 +527,19 @@ async function initB24Integration() {
 
     try {
       const BX24 = await loadBitrixSdk();
-      await new Promise<void>((resolve, reject) => {
-        const timeout = window.setTimeout(() => {
-          reject(new Error('Bitrix24 SDK did not initialize in the placement context.'));
-        }, 15000);
+      BX24.init(async () => {
+        bx24Instance.value = BX24;
+        bx24Ready.value = true;
 
-        BX24.init(async () => {
-          try {
-            bx24Instance.value = BX24;
-            bx24Ready.value = true;
+        const placementInfo = BX24.placement?.info ? BX24.placement.info() : null;
+        const sdkDealId = extractDealIdFromPlacementOptions(placementInfo?.options || placementInfo?.OPTIONS || placementInfo);
+        if (sdkDealId && sdkDealId !== b24DealId.value) {
+          b24DealId.value = sdkDealId;
+          await loadDealContextFromServer();
+        }
 
-            const placementInfo = BX24.placement?.info ? BX24.placement.info() : null;
-            const sdkDealId = extractDealIdFromPlacementOptions(placementInfo?.options || placementInfo?.OPTIONS || placementInfo);
-            if (sdkDealId && sdkDealId !== b24DealId.value) {
-              b24DealId.value = sdkDealId;
-              await loadDealContextFromServer();
-            }
-
-            reportClientContext('bx24-init-callback', { placementInfo });
-            requestBitrixFrameFit();
-            resolve();
-          } catch (error) {
-            reject(error);
-          } finally {
-            window.clearTimeout(timeout);
-          }
-        });
+        reportClientContext('bx24-init-callback', { placementInfo });
+        requestBitrixFrameFit();
       });
     } catch (error) {
       reportClientContext('bx24-init-error', {
@@ -568,43 +555,6 @@ function buildDeadlineForB24(dateValue: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(dateValue)
     ? `${dateValue}T10:00:00+03:00`
     : dateValue;
-}
-
-async function createAiNextStepTodo(recommendation: {
-  title: string;
-  description: string;
-  deadline: string;
-  responsibleId: number;
-}): Promise<number | string> {
-  if (!b24DealId.value) {
-    throw new Error('Сделка не определена. Откройте вкладку из карточки сделки заново.');
-  }
-  if (!bx24Ready.value) {
-    throw new Error('Bitrix24 SDK ещё подключается к карточке сделки. Подождите несколько секунд.');
-  }
-
-  const BX24 = bx24Instance.value || (import.meta.client ? (window as any).BX24 : null);
-  if (!BX24?.callMethod) {
-    throw new Error('Bitrix24 SDK ещё не готов. Обновите вкладку сделки и повторите попытку.');
-  }
-
-  bx24Instance.value = BX24;
-  const result = await bx24Call<any>('crm.activity.todo.add', {
-    ownerTypeId: 2,
-    ownerId: b24DealId.value,
-    deadline: recommendation.deadline,
-    title: recommendation.title,
-    description: recommendation.description,
-    responsibleId: recommendation.responsibleId,
-    pingOffsets: [0, 15],
-    colorId: 'red'
-  });
-  const activityId = result?.id ?? result?.ID ?? result;
-  if (activityId === null || activityId === undefined || activityId === '') {
-    throw new Error('Bitrix24 не вернул ID созданного дела.');
-  }
-
-  return activityId;
 }
 
 async function createTodoViaBitrixSdk() {
@@ -1133,8 +1083,6 @@ onUnmounted(() => {
         :agent-name="agentName"
         :client-name="clientName"
         :loading-context="dealContextOverlayVisible"
-        :sdk-ready="bx24Ready"
-        :create-todo="createAiNextStepTodo"
       />
 
       <ObjectionNavigator
