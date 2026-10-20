@@ -7,7 +7,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:fs/promises';
 import 'node:url';
 
 const runtime_get = defineEventHandler(async (event) => {

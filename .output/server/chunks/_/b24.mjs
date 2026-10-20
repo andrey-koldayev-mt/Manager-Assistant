@@ -1,12 +1,12 @@
 import { j as getHeader, c as createError } from './nitro.mjs';
 
-var _a;
-const B24_API_KEY = (_a = process.env.VIBE_API_KEY) != null ? _a : "";
+var _a, _b;
+const B24_API_KEY = (_b = (_a = process.env.VIBE_APP_API_KEY) != null ? _a : process.env.VIBE_API_KEY) != null ? _b : "";
 function ensureVibeApiKey() {
   if (!B24_API_KEY) {
     throw createError({
       statusCode: 500,
-      statusMessage: "VIBE_API_KEY is not configured"
+      statusMessage: "VIBE_APP_API_KEY is not configured"
     });
   }
 }
@@ -22,10 +22,7 @@ function firstString(...values) {
   return "";
 }
 function getVibeAuthorizationHeader(event) {
-  return firstString(
-    getHeader(event, "x-vibe-authorization"),
-    getHeader(event, "authorization")
-  );
+  return firstString(getHeader(event, "x-vibe-authorization"));
 }
 function buildActivityDeadline(dateValue) {
   const trimmed = dateValue.trim();

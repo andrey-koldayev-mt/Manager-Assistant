@@ -43,11 +43,14 @@ type ChatMessage = {
   content: string;
 };
 
+type TodoRecommendation = AnalyzeResult['recommendation'];
+
 const props = defineProps<{
   dealId: number | null;
   agentName: string;
   clientName: string;
   loadingContext?: boolean;
+  createTodo: (recommendation: TodoRecommendation) => Promise<number | string>;
 }>();
 
 const toast = useToast();
@@ -207,18 +210,16 @@ async function createActivity() {
   errorMessage.value = '';
 
   try {
-    const response = await $fetch('/api/b24/analyze-next-step', {
-      method: 'POST',
-      credentials: 'same-origin',
-      body: {
-        dealId: props.dealId,
-        mode: 'live',
-        recommendation: result.value.recommendation
-      }
-    }) as { success: boolean; data: AnalyzeResult };
-
-    result.value = response.data;
-    const createdId = response.data.createdActivityId;
+    // Universal CRM todos are created through the Bitrix24 placement SDK.
+    // The generic VibeCode activities endpoint maps typeId: 3 to a Task,
+    // which Bitrix24 rejects in this CRM timeline context.
+    const createdId = await props.createTodo(result.value.recommendation);
+    result.value = {
+      ...result.value,
+      mode: 'live',
+      createdActivityId: createdId,
+      createdEntityType: 'activity'
+    };
     toast.add({
       title: 'Дело создано',
       description: createdId ? `ID: ${createdId}` : 'Откройте карточку сделки для проверки.',

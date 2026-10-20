@@ -1,4 +1,4 @@
-import { a as defineEventHandler, z as readBody, c as createError } from '../../../_/nitro.mjs';
+import { a as defineEventHandler, y as readBody, c as createError } from '../../../_/nitro.mjs';
 import { d as getVibeAuthorizationHeader, e as ensureVibeApiKey, b as buildActivityDeadline, B as B24_API_KEY } from '../../../_/b24.mjs';
 import 'node:http';
 import 'node:https';
@@ -7,7 +7,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:fs/promises';
 import 'node:url';
 
 const createCallActivity_post = defineEventHandler(async (event) => {

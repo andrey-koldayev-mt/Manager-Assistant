@@ -1,12 +1,11 @@
 import process from 'node:process';globalThis._importMeta_={url:import.meta.url,env:process.env};import { Server as Server$1 } from 'node:http';
 import { Server } from 'node:https';
-import { Q as toNodeListener, g as destr, U as useRuntimeConfig, R as trapUnhandledNodeErrors, J as setupGracefulShutdown, T as useNitroApp } from './chunks/_/nitro.mjs';
+import { E as toNodeListener, g as destr, H as useRuntimeConfig, F as trapUnhandledNodeErrors, B as setupGracefulShutdown, G as useNitroApp } from './chunks/_/nitro.mjs';
 import 'node:events';
 import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:fs/promises';
 import 'node:url';
 
 const cert = process.env.NITRO_SSL_CERT;

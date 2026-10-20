@@ -3,9 +3,8 @@ import https from 'node:https';
 import { EventEmitter } from 'node:events';
 import { Buffer as Buffer$1 } from 'node:buffer';
 import { promises, existsSync } from 'node:fs';
-import path, { resolve as resolve$1, dirname as dirname$1, join } from 'node:path';
+import { resolve as resolve$1, dirname as dirname$1, join } from 'node:path';
 import { createHash } from 'node:crypto';
-import fs, { readFile as readFile$1, mkdir, writeFile as writeFile$1 } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 const suspectProtoRx = /"(?:_|\\u0{2}5[Ff]){2}(?:p|\\u0{2}70)(?:r|\\u0{2}72)(?:o|\\u0{2}6[Ff])(?:t|\\u0{2}74)(?:o|\\u0{2}6[Ff])(?:_|\\u0{2}5[Ff]){2}"\s*:/;
@@ -626,7 +625,7 @@ function _routerNodeToTable(initialPath, initialNode) {
   return table;
 }
 
-function isPlainObject$1(value) {
+function isPlainObject(value) {
   if (value === null || typeof value !== "object") {
     return false;
   }
@@ -644,7 +643,7 @@ function isPlainObject$1(value) {
 }
 
 function _defu(baseObject, defaults, namespace = ".", merger) {
-  if (!isPlainObject$1(defaults)) {
+  if (!isPlainObject(defaults)) {
     return _defu(baseObject, {}, namespace, merger);
   }
   const object = { ...defaults };
@@ -661,7 +660,7 @@ function _defu(baseObject, defaults, namespace = ".", merger) {
     }
     if (Array.isArray(value) && Array.isArray(object[key])) {
       object[key] = [...value, ...object[key]];
-    } else if (isPlainObject$1(value) && isPlainObject$1(object[key])) {
+    } else if (isPlainObject(value) && isPlainObject(object[key])) {
       object[key] = _defu(
         value,
         object[key],
@@ -2593,10 +2592,10 @@ function createNodeFetch() {
     return l(input, { ...nodeFetchOptions, ...init });
   };
 }
-const fetch$1 = globalThis.fetch ? (...args) => globalThis.fetch(...args) : createNodeFetch();
+const fetch = globalThis.fetch ? (...args) => globalThis.fetch(...args) : createNodeFetch();
 const Headers$1 = globalThis.Headers || s$1;
 const AbortController = globalThis.AbortController || i;
-const ofetch = createFetch({ fetch: fetch$1, Headers: Headers$1, AbortController });
+const ofetch = createFetch({ fetch, Headers: Headers$1, AbortController });
 const $fetch = ofetch;
 
 function wrapToPromise(value) {
@@ -4107,7 +4106,7 @@ function _expandFromEnv(value) {
 const _inlineRuntimeConfig = {
   "app": {
     "baseURL": "/",
-    "buildId": "643da432-6590-4b17-bf10-c23f096cb51f",
+    "buildId": "58009865-f83e-4a41-9574-470b90c83506",
     "buildAssetsDir": "/_nuxt/",
     "cdnURL": ""
   },
@@ -4557,2555 +4556,11 @@ async function errorHandler(error, event) {
   // H3 will handle fallback
 }
 
-function defineNitroPlugin(def) {
-  return def;
-}
-
-const storePath = path.resolve(process.cwd(), "data", "sla-auto-control.json");
-const MOSCOW_OFFSET_MINUTES$1 = 3 * 60;
-const DEFAULT_SLA_AUTO_CONTROL_CONFIG = {
-  enabled: true,
-  startDate: "2026-06-06",
-  time: "00:00",
-  intervalDays: 1,
-  lastRunAt: null
-};
-const DATE_PATTERN$1 = /^\d{4}-\d{2}-\d{2}$/;
-const TIME_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/;
-function validateConfig(config) {
-  if (!DATE_PATTERN$1.test(config.startDate)) throw new Error("\u041D\u0435\u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u0430\u044F \u0434\u0430\u0442\u0430 \u043F\u0435\u0440\u0432\u043E\u0433\u043E \u0437\u0430\u043F\u0443\u0441\u043A\u0430");
-  if (!TIME_PATTERN.test(config.time)) throw new Error("\u041D\u0435\u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u043E\u0435 \u0432\u0440\u0435\u043C\u044F \u0437\u0430\u043F\u0443\u0441\u043A\u0430");
-  if (!Number.isInteger(config.intervalDays) || config.intervalDays < 1 || config.intervalDays > 365) {
-    throw new Error("\u041F\u0435\u0440\u0438\u043E\u0434\u0438\u0447\u043D\u043E\u0441\u0442\u044C \u0434\u043E\u043B\u0436\u043D\u0430 \u0431\u044B\u0442\u044C \u043E\u0442 1 \u0434\u043E 365 \u0434\u043D\u0435\u0439");
-  }
-  return config;
-}
-function toMoscowDateString(date) {
-  const local = new Date(date.getTime() + MOSCOW_OFFSET_MINUTES$1 * 60 * 1e3);
-  const pad = (value) => String(value).padStart(2, "0");
-  return `${local.getUTCFullYear()}-${pad(local.getUTCMonth() + 1)}-${pad(local.getUTCDate())}`;
-}
-function addDays(dateString, days) {
-  const date = /* @__PURE__ */ new Date(`${dateString}T00:00:00.000Z`);
-  date.setUTCDate(date.getUTCDate() + days);
-  return date.toISOString().slice(0, 10);
-}
-function moscowDateTimeToUtcIso(dateString, time) {
-  return (/* @__PURE__ */ new Date(`${dateString}T${time}:00.000+03:00`)).toISOString();
-}
-function getMoscowDayRange(daysBeforeNow, now = /* @__PURE__ */ new Date()) {
-  const date = addDays(toMoscowDateString(now), -2);
-  return {
-    createdFrom: moscowDateTimeToUtcIso(date, "00:00"),
-    createdTo: (/* @__PURE__ */ new Date(`${date}T23:59:59.999+03:00`)).toISOString()
-  };
-}
-function getDayBeforePreviousMoscowDayRange(now = /* @__PURE__ */ new Date()) {
-  return getMoscowDayRange(2, now);
-}
-function getNextSlaAutoRunAt(config, now = /* @__PURE__ */ new Date()) {
-  if (!config.enabled) return null;
-  let candidateDate = config.startDate;
-  let candidate = new Date(moscowDateTimeToUtcIso(candidateDate, config.time));
-  while (candidate.getTime() <= now.getTime()) {
-    candidateDate = addDays(candidateDate, config.intervalDays);
-    candidate = new Date(moscowDateTimeToUtcIso(candidateDate, config.time));
-  }
-  return candidate.toISOString();
-}
-async function readSlaAutoControlConfig() {
-  try {
-    const raw = await fs.readFile(storePath, "utf8");
-    return validateConfig({ ...DEFAULT_SLA_AUTO_CONTROL_CONFIG, ...JSON.parse(raw) });
-  } catch (error) {
-    if (error.code !== "ENOENT") throw error;
-    await writeSlaAutoControlConfig(DEFAULT_SLA_AUTO_CONTROL_CONFIG);
-    return DEFAULT_SLA_AUTO_CONTROL_CONFIG;
-  }
-}
-async function writeSlaAutoControlConfig(config) {
-  const normalized = validateConfig(config);
-  await fs.mkdir(path.dirname(storePath), { recursive: true });
-  await fs.writeFile(storePath, JSON.stringify(normalized, null, 2), "utf8");
-  return normalized;
-}
-function toSlaAutoControlState(config, now = /* @__PURE__ */ new Date()) {
-  return {
-    ...config,
-    nextRunAt: getNextSlaAutoRunAt(config, now)
-  };
-}
-
-const TRASH_PATTERNS = ["test", "\u0442\u0435\u0441\u0442", "demo", "example", "qwerty", "asdf", "unknown", "\u043D\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043D\u043E", "\u043D\u0435\u0442 \u0434\u0430\u043D\u043D\u044B\u0445"];
-const TRASH_PATTERN_SET = new Set(TRASH_PATTERNS);
-const TRASH_EMAIL_DOMAINS = /* @__PURE__ */ new Set(["example.com", "test.ru", "mailinator.com"]);
-function normalizeText$2(value) {
-  return value.trim().replace(/\s+/g, " ");
-}
-function normalizeForSearch(value) {
-  return normalizeText$2(value).toLowerCase();
-}
-function hasEmoji(value) {
-  return /[\p{Extended_Pictographic}\u{1f1e6}-\u{1f1ff}]/u.test(value);
-}
-function hasTrashText(value) {
-  const normalized = normalizeForSearch(value);
-  const tokens = normalized.split(/[\s._@+-]+/).filter(Boolean);
-  if (normalized.includes("\u043D\u0435\u0442 \u0434\u0430\u043D\u043D\u044B\u0445")) return true;
-  return tokens.some((token) => TRASH_PATTERN_SET.has(token));
-}
-function isCyrillicName(value) {
-  return /^[А-ЯЁа-яё][А-ЯЁа-яё\s'-]*$/.test(value);
-}
-function hasCorrectNameCase(value) {
-  return normalizeText$2(value).split(/\s+/).filter(Boolean).every((part) => {
-    var _a;
-    const clean = part.replace(/^[-']+|[-']+$/g, "");
-    if (!clean) return true;
-    const firstLetter = (_a = clean[0]) != null ? _a : "";
-    return firstLetter === firstLetter.toLocaleUpperCase("ru-RU") && clean.slice(1) === clean.slice(1).toLocaleLowerCase("ru-RU");
-  });
-}
-function isPlaceholderContact(contact) {
-  const fullName = getContactName(contact);
-  return /^Контакт\s+#\d+\s*-\s*$/i.test(fullName);
-}
-function getFirstMultiFieldValue(value) {
-  var _a, _b;
-  if (typeof value === "string") return normalizeText$2(value) || null;
-  if (!Array.isArray(value)) return null;
-  for (const item of value) {
-    const raw = (_b = (_a = item.value) != null ? _a : item.VALUE) != null ? _b : null;
-    if (raw && normalizeText$2(raw)) return normalizeText$2(raw);
-  }
-  return null;
-}
-function normalizePhone(value) {
-  if (!value) return null;
-  const hasPlus = value.trim().startsWith("+");
-  let digits = value.replace(/\D/g, "");
-  if (/^(\d)\1+$/.test(digits)) return null;
-  if (digits.length === 11 && digits.startsWith("8")) digits = `7${digits.slice(1)}`;
-  if (digits.length === 10) digits = `7${digits}`;
-  if (digits.length < 10 || digits.length > 15) return null;
-  if (/^(\d)\1+$/.test(digits)) return null;
-  return `${hasPlus || digits.startsWith("7") ? "+" : ""}${digits}`;
-}
-function normalizeEmail(value) {
-  var _a;
-  if (!value) return null;
-  const email = normalizeText$2(value).toLowerCase();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
-  const domain = (_a = email.split("@")[1]) != null ? _a : "";
-  if (TRASH_EMAIL_DOMAINS.has(domain)) return null;
-  return email;
-}
-function getResponsibleId$2(contact) {
-  const value = contact.assignedById;
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string" && value.trim()) {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  return null;
-}
-function getResponsibleName$2(contact, users) {
-  const id = getResponsibleId$2(contact);
-  if (id == null) return "\u041D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D";
-  const user = users.get(id);
-  if (!user) return `ID ${id}`;
-  return [user.name, user.lastName].filter(Boolean).join(" ").trim() || `ID ${id}`;
-}
-function getContactName(contact) {
-  var _a;
-  const parts = [contact.lastName, contact.name, contact.secondName].filter((part) => Boolean(part == null ? void 0 : part.trim()));
-  if (parts.length > 0) return parts.map(normalizeText$2).join(" ");
-  return normalizeText$2((_a = contact.title) != null ? _a : "") || `\u041A\u043E\u043D\u0442\u0430\u043A\u0442 ${contact.id}`;
-}
-function shouldAnalyzeContact(contact) {
-  return !isPlaceholderContact(contact);
-}
-function buildDataQualityRow(params) {
-  var _a, _b, _c, _d, _e, _f;
-  const { contact, users, checkedAt } = params;
-  const errors = [];
-  const warnings = [];
-  const firstName = normalizeText$2((_a = contact.name) != null ? _a : "");
-  const lastName = normalizeText$2((_b = contact.lastName) != null ? _b : "");
-  const contactName = getContactName(contact);
-  const rawPhone = getFirstMultiFieldValue((_c = contact.phone) != null ? _c : contact.PHONE);
-  const rawEmail = getFirstMultiFieldValue((_d = contact.email) != null ? _d : contact.EMAIL);
-  const normalizedPhone = normalizePhone(rawPhone);
-  const normalizedEmail = normalizeEmail(rawEmail);
-  if (!firstName && !lastName) {
-    errors.push("\u041D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D\u044B \u0438\u043C\u044F \u0438 \u0444\u0430\u043C\u0438\u043B\u0438\u044F");
-  } else {
-    for (const [label, value] of [
-      ["\u0418\u043C\u044F", firstName],
-      ["\u0424\u0430\u043C\u0438\u043B\u0438\u044F", lastName]
-    ]) {
-      if (!value) {
-        if (label === "\u0418\u043C\u044F") warnings.push(`${label} \u043D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D\u043E`);
-        continue;
-      }
-      if (value.length <= 1 || !/\p{L}/u.test(value)) errors.push(`${label} \u0441\u043E\u0434\u0435\u0440\u0436\u0438\u0442 \u043C\u0443\u0441\u043E\u0440\u043D\u043E\u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435`);
-      if (hasEmoji(value)) errors.push(`${label} \u0441\u043E\u0434\u0435\u0440\u0436\u0438\u0442 \u044D\u043C\u043E\u0434\u0437\u0438`);
-      if (!isCyrillicName(value)) errors.push(`${label} \u0434\u043E\u043B\u0436\u043D\u043E \u0431\u044B\u0442\u044C \u043D\u0430\u043F\u0438\u0441\u0430\u043D\u043E \u043A\u0438\u0440\u0438\u043B\u043B\u0438\u0446\u0435\u0439`);
-      if (!hasCorrectNameCase(value)) warnings.push(`${label} \u0434\u043E\u043B\u0436\u043D\u043E \u043D\u0430\u0447\u0438\u043D\u0430\u0442\u044C\u0441\u044F \u0441 \u0431\u043E\u043B\u044C\u0448\u043E\u0439 \u0431\u0443\u043A\u0432\u044B`);
-      if (hasTrashText(value)) errors.push(`${label} \u0441\u043E\u0434\u0435\u0440\u0436\u0438\u0442 \u0442\u0435\u0441\u0442\u043E\u0432\u043E\u0435 \u0438\u043B\u0438 \u043C\u0443\u0441\u043E\u0440\u043D\u043E\u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435`);
-    }
-  }
-  if (!rawPhone && !rawEmail) {
-    errors.push("\u041D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D \u0442\u0435\u043B\u0435\u0444\u043E\u043D \u0438\u043B\u0438 email");
-  }
-  if (rawPhone && !normalizedPhone) errors.push("\u0422\u0435\u043B\u0435\u0444\u043E\u043D \u043D\u0435\u0432\u0430\u043B\u0438\u0434\u0435\u043D");
-  if (rawEmail && !normalizedEmail) errors.push("Email \u043D\u0435\u0432\u0430\u043B\u0438\u0434\u0435\u043D");
-  if (rawPhone && hasTrashText(rawPhone)) errors.push("\u0422\u0435\u043B\u0435\u0444\u043E\u043D \u0441\u043E\u0434\u0435\u0440\u0436\u0438\u0442 \u0442\u0435\u0441\u0442\u043E\u0432\u043E\u0435 \u0438\u043B\u0438 \u043C\u0443\u0441\u043E\u0440\u043D\u043E\u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435");
-  if (!normalizedPhone && !normalizedEmail) errors.push("\u041D\u0435\u0442 \u0440\u0430\u0431\u043E\u0447\u0435\u0433\u043E \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0430 \u0438\u043B\u0438 email");
-  const score = 100 - errors.length * 20 - warnings.length * 7;
-  const status = errors.length > 0 ? "\u041E\u0448\u0438\u0431\u043A\u0430" : warnings.length > 0 ? "\u041F\u0440\u0435\u0434\u0443\u043F\u0440\u0435\u0436\u0434\u0435\u043D\u0438\u0435" : "\u0411\u0435\u0437 \u043E\u0448\u0438\u0431\u043E\u043A";
-  const violationFlag = status === "\u0411\u0435\u0437 \u043E\u0448\u0438\u0431\u043E\u043A" ? "\u041D\u0435\u0442" : "\u0414\u0430";
-  return {
-    id: `${contact.id}-${checkedAt}`,
-    contactId: contact.id,
-    contactName,
-    checkedAt,
-    contactCreatedAt: (_f = (_e = contact.createdAt) != null ? _e : contact.createdTime) != null ? _f : checkedAt,
-    qualityScore: Math.max(0, Math.min(100, score)),
-    qualityErrors: [...errors, ...warnings],
-    normalizedPhone,
-    normalizedEmail,
-    status,
-    responsibleId: getResponsibleId$2(contact),
-    responsibleName: getResponsibleName$2(contact, users),
-    violationFlag
-  };
-}
-
-const REACTIVATION_DEPARTMENT_ID = 10;
-const EXCLUDED_REACTIVATION_USER_ID = 572;
-const REACTIVATION_CATEGORY_ID = 12;
-const REACTIVATION_WEEKLY_PLAN = 25;
-const REACTIVATION_WON_STAGE = "C12:WON";
-const REACTIVATION_LOSE_STAGE = "C12:LOSE";
-const MOSCOW_OFFSET_MS = 3 * 60 * 60 * 1e3;
-const DAY_MS$1 = 24 * 60 * 60 * 1e3;
-function pad(value) {
-  return String(value).padStart(2, "0");
-}
-function toMoscowDate(value) {
-  const time = typeof value === "string" ? new Date(value).getTime() : value.getTime();
-  return new Date(time + MOSCOW_OFFSET_MS);
-}
-function toMoscowIsoDate(date) {
-  return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`;
-}
-function formatMoscowIso(date, endOfDay = false) {
-  const time = endOfDay ? "23:59:59.999" : "00:00:00.000";
-  return `${toMoscowIsoDate(date)}T${time}+03:00`;
-}
-function parseTime(value) {
-  if (!value) return Number.NaN;
-  const time = new Date(value).getTime();
-  return Number.isFinite(time) ? time : Number.NaN;
-}
-function isInsideRange(value, week) {
-  const time = parseTime(value);
-  return Number.isFinite(time) && time >= week.startedAtMs && time <= week.finishedAtMs;
-}
-function normalizeId$1(value) {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string" && value.trim() !== "") {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  return null;
-}
-function stripHtml$1(value) {
-  return value.replace(/<[^>]*>/g, " ").replace(/&nbsp;/gi, " ").replace(/\s+/g, " ").trim();
-}
-function isCompletedValue$1(value) {
-  if (value === true) return true;
-  if (typeof value === "number") return value === 1;
-  if (typeof value !== "string") return false;
-  return ["1", "true", "y", "yes"].includes(value.trim().toLowerCase());
-}
-function isCompletedStatus$1(value) {
-  return String(value != null ? value : "").trim() === "2";
-}
-function isCompletedActivity(activity) {
-  return isCompletedValue$1(activity.completed) || isCompletedStatus$1(activity.STATUS) || isCompletedStatus$1(activity.status);
-}
-function getActivityDeadline$1(activity) {
-  var _a, _b;
-  return (_b = (_a = activity.deadline) != null ? _a : activity.endTime) != null ? _b : activity.END_TIME;
-}
-function getMoscowMonthKey(value) {
-  const moscowDate = toMoscowDate(value);
-  return `${moscowDate.getUTCFullYear()}-${pad(moscowDate.getUTCMonth() + 1)}`;
-}
-function getMoscowWeekRange(value) {
-  const moscowDate = toMoscowDate(value);
-  const dayOfWeek = moscowDate.getUTCDay();
-  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-  const currentMoscowMidnightUtc = Date.UTC(
-    moscowDate.getUTCFullYear(),
-    moscowDate.getUTCMonth(),
-    moscowDate.getUTCDate()
-  );
-  const startedAtMoscowLocalMs = currentMoscowMidnightUtc + mondayOffset * DAY_MS$1;
-  const finishedAtMoscowLocalMs = startedAtMoscowLocalMs + 7 * DAY_MS$1 - 1;
-  const startedAtMs = startedAtMoscowLocalMs - MOSCOW_OFFSET_MS;
-  const finishedAtMs = finishedAtMoscowLocalMs - MOSCOW_OFFSET_MS;
-  const startedAtMoscow = new Date(startedAtMoscowLocalMs);
-  const finishedAtMoscow = new Date(finishedAtMoscowLocalMs);
-  return {
-    key: toMoscowIsoDate(startedAtMoscow),
-    monthKey: getMoscowMonthKey(value),
-    startedAt: formatMoscowIso(startedAtMoscow),
-    finishedAt: formatMoscowIso(finishedAtMoscow, true),
-    startedAtMs,
-    finishedAtMs
-  };
-}
-function isSuccessfulPlanningActivity(activity, week, checkedAt) {
-  var _a, _b;
-  if (normalizeId$1(activity.ownerTypeId) !== 2) return false;
-  if (isCompletedActivity(activity)) return false;
-  if (!isInsideRange((_a = activity.createdAt) != null ? _a : activity.CREATED, week)) return false;
-  const deadline = parseTime(getActivityDeadline$1(activity));
-  const checkedTime = new Date(checkedAt).getTime();
-  if (!Number.isFinite(deadline) || !Number.isFinite(checkedTime) || deadline <= checkedTime) return false;
-  return stripHtml$1((_b = activity.description) != null ? _b : "").length > 0;
-}
-function isSuccessfulReactivationDeal(params) {
-  const { deal, activities, week, checkedAt } = params;
-  const reasons = [];
-  const dealUpdatedThisWeek = isInsideRange(deal.updatedAt, week);
-  if (activities.some((activity) => isSuccessfulPlanningActivity(activity, week, checkedAt))) reasons.push("activity");
-  if (dealUpdatedThisWeek && deal.stageId === REACTIVATION_WON_STAGE) reasons.push("won");
-  if (dealUpdatedThisWeek && deal.stageId === REACTIVATION_LOSE_STAGE) reasons.push("lose");
-  return { success: reasons.length > 0, reasons };
-}
-function shouldAnalyzeReactivationDeal(deal, employeeIds, week) {
-  const categoryId = normalizeId$1(deal.categoryId);
-  const assignedById = normalizeId$1(deal.assignedById);
-  return categoryId === REACTIVATION_CATEGORY_ID && assignedById != null && employeeIds.has(assignedById) && isInsideRange(deal.updatedAt, week);
-}
-function buildReactivationRows(params) {
-  var _a, _b, _c, _d, _e;
-  const { employees, deals, activitiesByDeal, previousMonthlyRating, week, checkedAt } = params;
-  const employeeIds = new Set(employees.map((employee) => employee.id));
-  const successfulDealsByEmployee = /* @__PURE__ */ new Map();
-  for (const deal of deals) {
-    if (!shouldAnalyzeReactivationDeal(deal, employeeIds, week)) continue;
-    const assignedById = normalizeId$1(deal.assignedById);
-    if (assignedById == null) continue;
-    const result = isSuccessfulReactivationDeal({
-      deal,
-      activities: (_a = activitiesByDeal.get(deal.id)) != null ? _a : [],
-      week,
-      checkedAt
-    });
-    if (!result.success) continue;
-    const successfulDeal = {
-      dealId: deal.id,
-      title: ((_b = deal.title) == null ? void 0 : _b.trim()) || `\u0421\u0434\u0435\u043B\u043A\u0430 ${deal.id}`,
-      stageId: (_c = deal.stageId) != null ? _c : null,
-      responsibleId: assignedById,
-      reasons: result.reasons,
-      updatedAt: (_d = deal.updatedAt) != null ? _d : checkedAt
-    };
-    const employeeDeals = (_e = successfulDealsByEmployee.get(assignedById)) != null ? _e : [];
-    employeeDeals.push(successfulDeal);
-    successfulDealsByEmployee.set(assignedById, employeeDeals);
-  }
-  return employees.map((employee) => {
-    var _a2, _b2;
-    const successfulDeals = (_a2 = successfulDealsByEmployee.get(employee.id)) != null ? _a2 : [];
-    return {
-      employeeId: employee.id,
-      name: employee.name,
-      lastName: employee.lastName,
-      photoUrl: employee.photoUrl,
-      weeklyCount: successfulDeals.length,
-      weeklyPlan: REACTIVATION_WEEKLY_PLAN,
-      monthlyRating: (_b2 = previousMonthlyRating[String(employee.id)]) != null ? _b2 : 0,
-      successfulDeals
-    };
-  }).sort(
-    (left, right) => right.weeklyCount - left.weeklyCount || right.monthlyRating - left.monthlyRating || left.lastName.localeCompare(right.lastName, "ru")
-  );
-}
-function emptyReactivationLog() {
-  return {
-    generatedAt: null,
-    weekKey: null,
-    monthKey: null,
-    weekStartedAt: null,
-    weekFinishedAt: null,
-    monthlyRating: {},
-    finalizedWeeks: [],
-    rows: []
-  };
-}
-function rollupPreviousWeekIntoRating(saved, currentMonthKey, checkedAt) {
-  var _a;
-  if (!saved.monthKey || saved.monthKey !== currentMonthKey) {
-    return {
-      ...saved,
-      monthlyRating: {},
-      finalizedWeeks: []
-    };
-  }
-  const currentWeekKey = getMoscowWeekRange(checkedAt).key;
-  if (!saved.weekKey || saved.weekKey === currentWeekKey || saved.finalizedWeeks.some((finalizedWeek) => finalizedWeek.weekKey === saved.weekKey)) {
-    return saved;
-  }
-  const employeeResults = {};
-  const monthlyRating = { ...saved.monthlyRating };
-  for (const row of saved.rows) {
-    const employeeId = String(row.employeeId);
-    employeeResults[employeeId] = row.weeklyCount;
-    monthlyRating[employeeId] = ((_a = monthlyRating[employeeId]) != null ? _a : 0) + row.weeklyCount;
-  }
-  return {
-    ...saved,
-    monthlyRating,
-    finalizedWeeks: [
-      ...saved.finalizedWeeks,
-      {
-        weekKey: saved.weekKey,
-        monthKey: saved.monthKey,
-        finalizedAt: checkedAt,
-        employeeResults
-      }
-    ]
-  };
-}
-
-const logPath = path.resolve(process.cwd(), "data", "sla-log.json");
-const dataQualityLogPath = path.resolve(process.cwd(), "data", "data-quality-log.json");
-const reactivationLogPath = path.resolve(process.cwd(), "data", "reactivation-log.json");
-const nextStepLogPath = path.resolve(process.cwd(), "data", "next-step-log.json");
-const REPORT_START_DATE = new Date(2026, 0, 1, 0, 0, 0, 0).getTime();
-function getTodayEndTime() {
-  const now = /* @__PURE__ */ new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).getTime();
-}
-function isRowInsideReportRange(row) {
-  const createdAtTime = new Date(row.leadCreatedAt).getTime();
-  return Number.isFinite(createdAtTime) && createdAtTime >= REPORT_START_DATE && createdAtTime <= getTodayEndTime();
-}
-async function readSlaLog() {
-  var _a;
-  try {
-    const raw = await readFile$1(logPath, "utf8");
-    const parsed = JSON.parse(raw);
-    const generatedAt = (_a = parsed.generatedAt) != null ? _a : null;
-    return {
-      generatedAt,
-      rows: Array.isArray(parsed.rows) ? parsed.rows.filter(isRowInsideReportRange) : []
-    };
-  } catch {
-    return { generatedAt: null, rows: [] };
-  }
-}
-async function writeSlaLog(rows, generatedAt) {
-  await mkdir(path.dirname(logPath), { recursive: true });
-  const payload = { generatedAt, rows };
-  await writeFile$1(logPath, `${JSON.stringify(payload, null, 2)}
-`, "utf8");
-  return payload;
-}
-function isDataQualityRowInsideReportRange(row) {
-  const createdAtTime = new Date(row.contactCreatedAt).getTime();
-  return Number.isFinite(createdAtTime) && createdAtTime >= REPORT_START_DATE && createdAtTime <= getTodayEndTime();
-}
-async function readDataQualityLog() {
-  var _a;
-  try {
-    const raw = await readFile$1(dataQualityLogPath, "utf8");
-    const parsed = JSON.parse(raw);
-    const generatedAt = (_a = parsed.generatedAt) != null ? _a : null;
-    return {
-      generatedAt,
-      rows: Array.isArray(parsed.rows) ? parsed.rows.filter(isDataQualityRowInsideReportRange) : []
-    };
-  } catch {
-    return { generatedAt: null, rows: [] };
-  }
-}
-async function writeDataQualityLog(rows, generatedAt) {
-  await mkdir(path.dirname(dataQualityLogPath), { recursive: true });
-  const payload = { generatedAt, rows };
-  await writeFile$1(dataQualityLogPath, `${JSON.stringify(payload, null, 2)}
-`, "utf8");
-  return payload;
-}
-async function readNextStepLog() {
-  var _a;
-  try {
-    const raw = await readFile$1(nextStepLogPath, "utf8");
-    const parsed = JSON.parse(raw);
-    return {
-      generatedAt: (_a = parsed.generatedAt) != null ? _a : null,
-      rows: Array.isArray(parsed.rows) ? parsed.rows : []
-    };
-  } catch {
-    return { generatedAt: null, rows: [] };
-  }
-}
-async function writeNextStepLog(rows, generatedAt) {
-  await mkdir(path.dirname(nextStepLogPath), { recursive: true });
-  const payload = { generatedAt, rows };
-  await writeFile$1(nextStepLogPath, `${JSON.stringify(payload, null, 2)}
-`, "utf8");
-  return payload;
-}
-function isPlainObject(value) {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-async function readReactivationLog() {
-  const empty = emptyReactivationLog();
-  try {
-    const raw = await readFile$1(reactivationLogPath, "utf8");
-    const parsed = JSON.parse(raw);
-    return {
-      ...empty,
-      ...parsed,
-      monthlyRating: isPlainObject(parsed.monthlyRating) ? parsed.monthlyRating : {},
-      finalizedWeeks: Array.isArray(parsed.finalizedWeeks) ? parsed.finalizedWeeks : [],
-      rows: Array.isArray(parsed.rows) ? parsed.rows : []
-    };
-  } catch {
-    return empty;
-  }
-}
-async function writeReactivationLog(payload) {
-  await mkdir(path.dirname(reactivationLogPath), { recursive: true });
-  await writeFile$1(reactivationLogPath, `${JSON.stringify(payload, null, 2)}
-`, "utf8");
-  return payload;
-}
-
-const NEXT_STEP_CATEGORY_ID = 14;
-const NEXT_STEP_STAGE_NAMES = {
-  "C14:EXECUTING": "\u041F\u0440\u0435\u0434\u043B\u043E\u0436\u0435\u043D\u0438\u0435 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u043E",
-  "C14:FINAL_INVOICE": "\u041E\u0436\u0438\u0434\u0430\u043D\u0438\u0435"
-};
-const NEXT_STEP_STAGE_IDS = Object.keys(NEXT_STEP_STAGE_NAMES);
-const ACTION_WORDS = [
-  "\u043F\u043E\u0437\u0432\u043E\u043D",
-  "\u043D\u0430\u043F\u0438\u0448",
-  "\u043E\u0442\u043F\u0440\u0430\u0432",
-  "\u0441\u043E\u0433\u043B\u0430\u0441",
-  "\u0443\u0442\u043E\u0447\u043D",
-  "\u043E\u0431\u0441\u0443\u0434",
-  "\u043F\u0440\u0435\u0434\u043B\u043E\u0436",
-  "\u043F\u0440\u043E\u0434",
-  "\u0437\u0430\u043A\u0440\u044B",
-  "\u0432\u0441\u0442\u0440\u0435\u0447",
-  "\u0441\u0432\u044F\u0437"
-];
-const CHANNEL_WORDS = [
-  "\u0442\u0435\u043B\u0435\u0444\u043E\u043D",
-  "\u0437\u0432\u043E\u043D",
-  "whatsapp",
-  "\u0432\u0430\u0442\u0441\u0430\u043F",
-  "wazzup",
-  "telegram",
-  "\u0442\u0435\u043B\u0435\u0433\u0440\u0430\u043C",
-  "\u043F\u043E\u0447\u0442",
-  "email",
-  "e-mail",
-  "\u043C\u0435\u0441\u0441\u0435\u043D\u0434\u0436",
-  "\u0447\u0430\u0442",
-  "\u0441\u043C\u0441",
-  "sms"
-];
-const TIME_WORDS = ["\u0441\u0435\u0433\u043E\u0434\u043D\u044F", "\u0437\u0430\u0432\u0442\u0440\u0430", "\u043F\u043E\u0441\u043B\u0435\u0437\u0430\u0432\u0442\u0440\u0430", "\u0443\u0442\u0440\u043E\u043C", "\u0434\u043D\u0435\u043C", "\u0434\u043D\u0451\u043C", "\u0432\u0435\u0447\u0435\u0440\u043E\u043C", "\u0447\u0430\u0441", "\u043C\u0438\u043D\u0443\u0442", "\u043D\u0435\u0434\u0435\u043B"];
-const PLANNING_PROVIDER_IDS = /* @__PURE__ */ new Set(["crm_todo", "crm_tasks_task"]);
-const PLANNING_PROVIDER_TYPE_IDS = /* @__PURE__ */ new Set(["todo", "tasks_task"]);
-function normalizeText$1(value) {
-  return value.replace(/<[^>]*>/g, " ").replace(/&nbsp;/gi, " ").replace(/\s+/g, " ").trim();
-}
-function normalizeId(value) {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string" && value.trim()) {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  return null;
-}
-function parseDateTime(value) {
-  if (!value) return Number.NaN;
-  const direct = new Date(value).getTime();
-  if (Number.isFinite(direct)) return direct;
-  const match = value.trim().match(/^(\d{2})\.(\d{2})\.(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
-  if (!match) return Number.NaN;
-  const [, day, month, year, hour = "0", minute = "0", second = "0"] = match;
-  return new Date(
-    Number(year),
-    Number(month) - 1,
-    Number(day),
-    Number(hour),
-    Number(minute),
-    Number(second)
-  ).getTime();
-}
-function toIsoOrRaw(value, fallback) {
-  const time = parseDateTime(value);
-  return Number.isFinite(time) ? new Date(time).toISOString() : value || fallback;
-}
-function isCompletedValue(value) {
-  if (value === true) return true;
-  if (typeof value === "number") return value === 1;
-  if (typeof value !== "string") return false;
-  return ["1", "true", "y", "yes"].includes(value.trim().toLowerCase());
-}
-function isCompletedStatus(value) {
-  return String(value != null ? value : "").trim() === "2";
-}
-function isOpenDealActivity(activity) {
-  return normalizeId(activity.ownerTypeId) === 2 && !isCompletedValue(activity.completed) && !isCompletedStatus(activity.STATUS) && !isCompletedStatus(activity.status);
-}
-function isNextStepPlanningActivity(activity) {
-  var _a, _b, _c, _d;
-  const providerId = String((_b = (_a = activity.PROVIDER_ID) != null ? _a : activity.providerId) != null ? _b : "").trim().toLowerCase();
-  const providerTypeId = String((_d = (_c = activity.PROVIDER_TYPE_ID) != null ? _c : activity.providerTypeId) != null ? _d : "").trim().toLowerCase();
-  return isOpenDealActivity(activity) && (PLANNING_PROVIDER_IDS.has(providerId) || PLANNING_PROVIDER_TYPE_IDS.has(providerTypeId));
-}
-function getActivityDeadline(activity) {
-  var _a, _b;
-  return (_b = (_a = activity.deadline) != null ? _a : activity.endTime) != null ? _b : activity.END_TIME;
-}
-function hasAnyWord(text, words) {
-  return words.some((word) => text.includes(word));
-}
-function hasDateOrTimeMarker(text) {
-  return /\b\d{1,2}[:.]\d{2}\b/.test(text) || /\b\d{1,2}[./-]\d{1,2}\b/.test(text) || hasAnyWord(text, TIME_WORDS);
-}
-function hasQualityDescription(description) {
-  const text = normalizeText$1(description).toLowerCase();
-  if (text.length < 20) return false;
-  return hasAnyWord(text, ACTION_WORDS) && hasAnyWord(text, CHANNEL_WORDS) && hasDateOrTimeMarker(text);
-}
-function getResponsibleId$1(deal) {
-  return normalizeId(deal.assignedById);
-}
-function getResponsibleName$1(deal, users) {
-  const id = getResponsibleId$1(deal);
-  if (id == null) return "\u041D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D";
-  const user = users.get(id);
-  if (!user) return `ID ${id}`;
-  return [user.name, user.lastName].filter(Boolean).join(" ").trim() || `ID ${id}`;
-}
-function shouldAnalyzeNextStepDeal(deal) {
-  return normalizeId(deal.categoryId) === NEXT_STEP_CATEGORY_ID && Boolean(deal.stageId && NEXT_STEP_STAGE_NAMES[deal.stageId]);
-}
-function evaluateNextStepActivity(activity, checkedAt) {
-  var _a;
-  const errors = [];
-  const deadline = parseDateTime(getActivityDeadline(activity));
-  const checkedTime = parseDateTime(checkedAt);
-  if (!Number.isFinite(deadline)) {
-    errors.push("\u041D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D\u0430 \u0434\u0430\u0442\u0430 \u0434\u0435\u043B\u0430");
-  } else if (!Number.isFinite(checkedTime) || deadline <= checkedTime) {
-    errors.push("\u0414\u0430\u0442\u0430 \u0434\u0435\u043B\u0430 \u043D\u0435 \u0432 \u0431\u0443\u0434\u0443\u0449\u0435\u043C");
-  }
-  if (!hasQualityDescription((_a = activity.description) != null ? _a : "")) {
-    errors.push("\u0412 \u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0438 \u043D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D\u043E \u0447\u0442\u043E, \u0433\u0434\u0435 \u0438 \u043A\u043E\u0433\u0434\u0430 \u043C\u0435\u043D\u0435\u0434\u0436\u0435\u0440 \u043F\u043B\u0430\u043D\u0438\u0440\u0443\u0435\u0442 \u0441\u0434\u0435\u043B\u0430\u0442\u044C \u0434\u043B\u044F \u043F\u0440\u043E\u0434\u0430\u0436\u0438");
-  }
-  return errors;
-}
-function statusByErrors(errors, hasActivity) {
-  if (!hasActivity || errors.length >= 2) return "ERROR";
-  if (errors.length === 1) return "WARNING";
-  return "OK";
-}
-function buildNextStepRow(params) {
-  var _a, _b, _c, _d, _e, _f;
-  const { deal, activities, users, checkedAt } = params;
-  const openActivities = activities.filter(isNextStepPlanningActivity);
-  const bestActivity = openActivities.map((activity) => ({ activity, errors: evaluateNextStepActivity(activity, checkedAt) })).sort((left, right) => left.errors.length - right.errors.length)[0];
-  const errors = (_a = bestActivity == null ? void 0 : bestActivity.errors) != null ? _a : ["\u041D\u0435\u0442 \u0437\u0430\u043F\u043B\u0430\u043D\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u043E\u0433\u043E \u0434\u0435\u043B\u0430"];
-  const status = statusByErrors(errors, Boolean(bestActivity));
-  const violationFlag = status === "OK" ? "\u041D\u0435\u0442" : "\u0414\u0430";
-  return {
-    id: `${deal.id}-${checkedAt}`,
-    dealId: deal.id,
-    dealTitle: ((_b = deal.title) == null ? void 0 : _b.trim()) || `\u0421\u0434\u0435\u043B\u043A\u0430 ${deal.id}`,
-    checkedAt,
-    dealCreatedAt: toIsoOrRaw(deal.createdAt, checkedAt),
-    dealUpdatedAt: toIsoOrRaw(deal.updatedAt, checkedAt),
-    stageId: (_c = deal.stageId) != null ? _c : null,
-    stageName: deal.stageId ? (_d = NEXT_STEP_STAGE_NAMES[deal.stageId]) != null ? _d : deal.stageId : "\u041D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D\u0430",
-    activityId: (_e = bestActivity == null ? void 0 : bestActivity.activity.id) != null ? _e : null,
-    activityDeadline: bestActivity ? toIsoOrRaw(getActivityDeadline(bestActivity.activity), checkedAt) : null,
-    activityDescription: bestActivity ? normalizeText$1((_f = bestActivity.activity.description) != null ? _f : "") || null : null,
-    nextStepErrors: errors,
-    status,
-    responsibleId: getResponsibleId$1(deal),
-    responsibleName: getResponsibleName$1(deal, users),
-    violationFlag
-  };
-}
-function buildNextStepRows(params) {
-  const { deals, activitiesByDeal, users, checkedAt } = params;
-  return deals.filter(shouldAnalyzeNextStepDeal).map((deal) => {
-    var _a;
-    return buildNextStepRow({ deal, activities: (_a = activitiesByDeal.get(deal.id)) != null ? _a : [], users, checkedAt });
-  }).sort((left, right) => {
-    const statusOrder = { ERROR: 0, WARNING: 1, OK: 2 };
-    return statusOrder[left.status] - statusOrder[right.status] || parseDateTime(right.dealUpdatedAt) - parseDateTime(left.dealUpdatedAt);
-  });
-}
-
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField = (obj, key, value) => __defNormalProp(obj, key + "" , value);
-const API_BASE = "https://vibecode.bitrix24.tech/v1";
-const RETRY_DELAYS_MS = [600, 1400, 3e3];
-const LEAD_PAGE_SIZE = 50;
-const CONTACT_PAGE_SIZE = 50;
-const DEAL_PAGE_SIZE = 50;
-const SLA_LEAD_REJECTION_FIELD = "ufCrm_1638180783";
-const SLA_LEAD_FIRST_REACTION_FIELD = "ufCrm_1715933850";
-const SLA_LEAD_ONLINE_CHAT_OUTGOING_FIELD = "ufCrm_1716370242690";
-const SLA_LEAD_MISSED_CALL_FIELD = "ufCrm_1724510334936";
-const SLA_LEAD_SELECT = [
-  "id",
-  "title",
-  "createdAt",
-  "createdTime",
-  "stageId",
-  "statusId",
-  "stageSemanticId",
-  "assignedById",
-  "contactId",
-  "contactIds",
-  "sourceId",
-  "sourceDescription",
-  "comments",
-  "isReturnCustomer",
-  "searchContent",
-  "ufCrm_1717431064812",
-  SLA_LEAD_FIRST_REACTION_FIELD,
-  SLA_LEAD_ONLINE_CHAT_OUTGOING_FIELD,
-  SLA_LEAD_MISSED_CALL_FIELD,
-  SLA_LEAD_REJECTION_FIELD,
-  "UF_CRM_1638180783"
-];
-const SLA_ACTIVITY_SELECT = [
-  "ID",
-  "TYPE_ID",
-  "OWNER_TYPE_ID",
-  "OWNER_ID",
-  "SUBJECT",
-  "DIRECTION",
-  "COMPLETED",
-  "STATUS",
-  "START_TIME",
-  "END_TIME",
-  "CREATED",
-  "LAST_UPDATED",
-  "RESPONSIBLE_ID",
-  "PROVIDER_ID",
-  "PROVIDER_TYPE_ID",
-  "PROVIDER_GROUP_ID",
-  "RESULT_STATUS",
-  "RESULT_MARK",
-  "RESULT_STREAM",
-  "SETTINGS",
-  "DESCRIPTION"
-];
-const SLA_TIMELINE_SELECT = ["ID", "ENTITY_ID", "ENTITY_TYPE", "CREATED", "AUTHOR_ID", "COMMENT"];
-class VibeCodeClient {
-  constructor(apiKey) {
-    __publicField(this, "apiKey", apiKey);
-  }
-  delay(ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-  }
-  isRetryableError(error) {
-    const message = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
-    return message.includes("too many requests") || message.includes("internal server error") || message.includes("overload") || message.includes("queue_timeout") || message.includes("queue timeout") || message.includes("504");
-  }
-  async request(path, init = {}) {
-    var _a;
-    const response = await fetch(`${API_BASE}${path}`, {
-      ...init,
-      headers: {
-        "Content-Type": "application/json",
-        "X-Api-Key": this.apiKey,
-        ...init.headers
-      }
-    });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok || payload.success === false) {
-      throw new Error(((_a = payload.error) == null ? void 0 : _a.message) || `VibeCode request failed: ${response.status} ${response.statusText}`);
-    }
-    return payload.data;
-  }
-  async requestWithRetry(path, init = {}) {
-    var _a, _b;
-    let lastError;
-    for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt += 1) {
-      try {
-        return await this.request(path, init);
-      } catch (error) {
-        lastError = error;
-        if (!this.isRetryableError(error) || attempt === RETRY_DELAYS_MS.length) break;
-        await this.delay((_b = (_a = RETRY_DELAYS_MS[attempt]) != null ? _a : RETRY_DELAYS_MS[RETRY_DELAYS_MS.length - 1]) != null ? _b : 1e3);
-      }
-    }
-    throw lastError;
-  }
-  async searchLeads(createdFromIso, createdToIso) {
-    var _a, _b;
-    const createdFromTime = new Date(createdFromIso).getTime();
-    const createdToTime = new Date(createdToIso).getTime();
-    const result = [];
-    const seenIds = /* @__PURE__ */ new Set();
-    const seenPageIds = /* @__PURE__ */ new Set();
-    let offset = 0;
-    while (true) {
-      const data = await this.requestWithRetry("/leads/search", {
-        method: "POST",
-        body: JSON.stringify({
-          filter: {
-            createdAt: {
-              $gte: createdFromIso,
-              $lte: createdToIso
-            }
-          },
-          autoWindow: false,
-          select: SLA_LEAD_SELECT,
-          limit: LEAD_PAGE_SIZE,
-          offset
-        })
-      });
-      const leads = Array.isArray(data) ? data : [];
-      if (leads.length === 0) break;
-      let inRangeCount = 0;
-      let olderThanRangeCount = 0;
-      let newerThanRangeCount = 0;
-      let newPageIdCount = 0;
-      for (const lead of leads) {
-        if (!seenPageIds.has(lead.id)) {
-          seenPageIds.add(lead.id);
-          newPageIdCount += 1;
-        }
-        const createdAt = (_b = (_a = lead.createdAt) != null ? _a : lead.createdTime) != null ? _b : null;
-        const createdTime = createdAt ? new Date(createdAt).getTime() : Number.NaN;
-        if (!Number.isFinite(createdTime)) continue;
-        if (createdTime > createdToTime) {
-          newerThanRangeCount += 1;
-          continue;
-        }
-        if (createdTime < createdFromTime) {
-          olderThanRangeCount += 1;
-          continue;
-        }
-        inRangeCount += 1;
-        if (!seenIds.has(lead.id)) {
-          seenIds.add(lead.id);
-          result.push(lead);
-        }
-      }
-      if (leads.length < LEAD_PAGE_SIZE || newPageIdCount === 0) break;
-      if (inRangeCount === 0 && olderThanRangeCount > 0 && newerThanRangeCount === 0) break;
-      offset += LEAD_PAGE_SIZE;
-    }
-    return result;
-  }
-  async listUsers() {
-    const data = await this.requestWithRetry("/users?limit=5000&select=id,name,lastName,active,email");
-    return Array.isArray(data) ? data : [];
-  }
-  async listLeadStatusNames() {
-    var _a, _b, _c, _d;
-    const data = await this.requestWithRetry("/statuses?limit=5000");
-    const result = /* @__PURE__ */ new Map();
-    for (const status of Array.isArray(data) ? data : []) {
-      if (String((_a = status.entityId) != null ? _a : "").toUpperCase() !== "STATUS") continue;
-      const id = String((_b = status.statusId) != null ? _b : "").trim();
-      const name = ((_d = (_c = status.name) != null ? _c : status.nameInit) != null ? _d : "").trim();
-      if (id && name) result.set(id, name);
-    }
-    return result;
-  }
-  async listLeadSourceNames() {
-    var _a, _b, _c, _d;
-    const data = await this.requestWithRetry("/statuses?limit=5000");
-    const result = /* @__PURE__ */ new Map();
-    for (const status of Array.isArray(data) ? data : []) {
-      if (String((_a = status.entityId) != null ? _a : "").toUpperCase() !== "SOURCE") continue;
-      const id = String((_b = status.statusId) != null ? _b : "").trim();
-      const name = ((_d = (_c = status.name) != null ? _c : status.nameInit) != null ? _d : "").trim();
-      if (id && name) result.set(id, name);
-    }
-    return result;
-  }
-  async listLeadRejectionReasonNames() {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
-    const data = await this.requestWithRetry("/leads/fields");
-    const field = (_c = (_a = data == null ? void 0 : data.fields) == null ? void 0 : _a[SLA_LEAD_REJECTION_FIELD]) != null ? _c : (_b = data == null ? void 0 : data.fields) == null ? void 0 : _b.UF_CRM_1638180783;
-    const result = /* @__PURE__ */ new Map();
-    for (const item of (_d = field == null ? void 0 : field.items) != null ? _d : []) {
-      const id = String((_f = (_e = item.ID) != null ? _e : item.id) != null ? _f : "").trim();
-      const value = String((_h = (_g = item.VALUE) != null ? _g : item.value) != null ? _h : "").trim();
-      if (id && value) result.set(id, value);
-    }
-    return result;
-  }
-  async updateLeadsSlaFields(updates) {
-    for (const update of updates) {
-      await this.requestWithRetry(`/leads/${update.leadId}`, {
-        method: "PATCH",
-        body: JSON.stringify(update.fields)
-      });
-    }
-  }
-  async listDepartmentUsers(departmentId, excludedUserIds = /* @__PURE__ */ new Set()) {
-    const data = await this.requestWithRetry("/users/search", {
-      method: "POST",
-      body: JSON.stringify({
-        filter: {
-          departmentId,
-          active: true
-        },
-        select: ["id", "name", "lastName", "active", "personalPhoto", "PERSONAL_PHOTO"],
-        limit: 500
-      })
-    });
-    return (Array.isArray(data) ? data : []).map((user) => {
-      var _a, _b, _c, _d, _e, _f;
-      return {
-        id: user.id,
-        name: (_b = (_a = user.name) == null ? void 0 : _a.trim()) != null ? _b : "",
-        lastName: (_d = (_c = user.lastName) == null ? void 0 : _c.trim()) != null ? _d : "",
-        photoUrl: (_f = (_e = user.personalPhoto) != null ? _e : user.PERSONAL_PHOTO) != null ? _f : null
-      };
-    }).filter((user) => !excludedUserIds.has(user.id) && `${user.lastName}${user.name}`.trim().length > 0).sort(
-      (left, right) => left.lastName.localeCompare(right.lastName, "ru") || left.name.localeCompare(right.name, "ru")
-    );
-  }
-  async searchContacts(createdFromIso, createdToIso, onProgress) {
-    var _a, _b;
-    const createdFromTime = new Date(createdFromIso).getTime();
-    const createdToTime = new Date(createdToIso).getTime();
-    const result = [];
-    const seenIds = /* @__PURE__ */ new Set();
-    const seenPageIds = /* @__PURE__ */ new Set();
-    let offset = 0;
-    while (true) {
-      const data = await this.requestWithRetry("/contacts/search", {
-        method: "POST",
-        body: JSON.stringify({
-          filter: {
-            createdAt: {
-              $gte: createdFromIso,
-              $lte: createdToIso
-            }
-          },
-          autoWindow: false,
-          limit: CONTACT_PAGE_SIZE,
-          offset
-        })
-      });
-      const contacts = Array.isArray(data) ? data : [];
-      if (contacts.length === 0) break;
-      let inRangeCount = 0;
-      let olderThanRangeCount = 0;
-      let newerThanRangeCount = 0;
-      let newPageIdCount = 0;
-      for (const contact of contacts) {
-        if (!seenPageIds.has(contact.id)) {
-          seenPageIds.add(contact.id);
-          newPageIdCount += 1;
-        }
-        const createdAt = (_b = (_a = contact.createdAt) != null ? _a : contact.createdTime) != null ? _b : null;
-        const createdTime = createdAt ? new Date(createdAt).getTime() : Number.NaN;
-        if (!Number.isFinite(createdTime)) continue;
-        if (createdTime > createdToTime) {
-          newerThanRangeCount += 1;
-          continue;
-        }
-        if (createdTime < createdFromTime) {
-          olderThanRangeCount += 1;
-          continue;
-        }
-        inRangeCount += 1;
-        if (!seenIds.has(contact.id)) {
-          seenIds.add(contact.id);
-          result.push(contact);
-        }
-      }
-      onProgress == null ? void 0 : onProgress(contacts.length);
-      if (contacts.length < CONTACT_PAGE_SIZE || newPageIdCount === 0) break;
-      if (inRangeCount === 0 && olderThanRangeCount > 0 && newerThanRangeCount === 0) break;
-      offset += CONTACT_PAGE_SIZE;
-    }
-    return result;
-  }
-  async searchReactivationDeals(updatedFromIso, updatedToIso, onProgress) {
-    const result = [];
-    const seenIds = /* @__PURE__ */ new Set();
-    const seenPageIds = /* @__PURE__ */ new Set();
-    let offset = 0;
-    while (true) {
-      const data = await this.requestWithRetry("/deals/search", {
-        method: "POST",
-        body: JSON.stringify({
-          filter: {
-            categoryId: 12,
-            updatedAt: {
-              $gte: updatedFromIso,
-              $lte: updatedToIso
-            }
-          },
-          autoWindow: false,
-          select: ["id", "title", "categoryId", "stageId", "assignedById", "createdAt", "updatedAt", "closed", "closedAt"],
-          limit: DEAL_PAGE_SIZE,
-          offset
-        })
-      });
-      const deals = Array.isArray(data) ? data : [];
-      if (deals.length === 0) break;
-      let newPageIdCount = 0;
-      for (const deal of deals) {
-        if (!seenPageIds.has(deal.id)) {
-          seenPageIds.add(deal.id);
-          newPageIdCount += 1;
-        }
-        if (seenIds.has(deal.id)) continue;
-        seenIds.add(deal.id);
-        result.push(deal);
-      }
-      onProgress == null ? void 0 : onProgress(deals.length);
-      if (deals.length < DEAL_PAGE_SIZE || newPageIdCount === 0) break;
-      offset += DEAL_PAGE_SIZE;
-    }
-    return result;
-  }
-  async searchNextStepDeals(onProgress) {
-    const result = [];
-    const seenIds = /* @__PURE__ */ new Set();
-    const seenPageIds = /* @__PURE__ */ new Set();
-    let offset = 0;
-    while (true) {
-      const data = await this.requestWithRetry("/deals/search", {
-        method: "POST",
-        body: JSON.stringify({
-          filter: {
-            categoryId: NEXT_STEP_CATEGORY_ID,
-            stageId: NEXT_STEP_STAGE_IDS
-          },
-          autoWindow: false,
-          select: ["id", "title", "categoryId", "stageId", "assignedById", "createdAt", "updatedAt", "closed", "closedAt"],
-          limit: DEAL_PAGE_SIZE,
-          offset
-        })
-      });
-      const deals = Array.isArray(data) ? data : [];
-      if (deals.length === 0) break;
-      let newPageIdCount = 0;
-      for (const deal of deals) {
-        if (!seenPageIds.has(deal.id)) {
-          seenPageIds.add(deal.id);
-          newPageIdCount += 1;
-        }
-        if (seenIds.has(deal.id)) continue;
-        seenIds.add(deal.id);
-        result.push(deal);
-      }
-      onProgress == null ? void 0 : onProgress(deals.length);
-      if (deals.length < DEAL_PAGE_SIZE || newPageIdCount === 0) break;
-      offset += DEAL_PAGE_SIZE;
-    }
-    return result;
-  }
-  async listAbsenceIntervalsForUser(userId, fromIso, toIso) {
-    const params = new URLSearchParams({
-      type: "user",
-      ownerId: String(userId),
-      from: fromIso,
-      to: toIso
-    });
-    const data = await this.requestWithRetry(`/calendar-events?${params.toString()}`);
-    return (Array.isArray(data) ? data : []).map((event) => {
-      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
-      const accessibility = String((_b = (_a = event.accessibility) != null ? _a : event.ACCESSIBILITY) != null ? _b : "").toLowerCase();
-      const start = (_f = (_e = (_d = (_c = event.dateFrom) != null ? _c : event.DATE_FROM) != null ? _d : event.from) != null ? _e : event.start) != null ? _f : null;
-      const end = (_j = (_i = (_h = (_g = event.dateTo) != null ? _g : event.DATE_TO) != null ? _h : event.to) != null ? _i : event.end) != null ? _j : null;
-      return { accessibility, start, end };
-    }).filter(
-      (event) => event.accessibility === "absent" && Boolean(event.start) && Boolean(event.end)
-    ).map((event) => ({ userId, start: event.start, end: event.end }));
-  }
-  async listActivitiesForLeads(leadIds, onProgress) {
-    var _a, _b;
-    const result = /* @__PURE__ */ new Map();
-    for (let index = 0; index < leadIds.length; index += 50) {
-      const chunk = leadIds.slice(index, index + 50);
-      const batch = await this.requestWithRetry("/batch", {
-        method: "POST",
-        body: JSON.stringify({
-          calls: chunk.map((leadId) => ({
-            id: `lead_${leadId}`,
-            entity: "activities",
-            action: "list",
-            params: {
-              filter: {
-                ownerTypeId: 1,
-                ownerId: leadId
-              },
-              select: SLA_ACTIVITY_SELECT,
-              limit: 200
-            }
-          }))
-        })
-      });
-      for (const leadId of chunk) {
-        result.set(leadId, (_b = (_a = batch.results) == null ? void 0 : _a[`lead_${leadId}`]) != null ? _b : []);
-      }
-      onProgress == null ? void 0 : onProgress(chunk.length);
-    }
-    return result;
-  }
-  async listActivitiesForContacts(contactIds, onProgress) {
-    var _a, _b, _c, _d;
-    const result = /* @__PURE__ */ new Map();
-    for (let index = 0; index < contactIds.length; index += 50) {
-      const chunk = contactIds.slice(index, index + 50);
-      const batch = await this.requestWithRetry("/batch", {
-        method: "POST",
-        body: JSON.stringify({
-          calls: chunk.map((contactId) => ({
-            id: `contact_${contactId}`,
-            entity: "activities",
-            action: "list",
-            params: {
-              filter: {
-                ownerTypeId: 3,
-                ownerId: contactId
-              },
-              select: SLA_ACTIVITY_SELECT,
-              limit: 200
-            }
-          }))
-        })
-      });
-      for (const contactId of chunk) {
-        const key = `contact_${contactId}`;
-        const error = (_a = batch.errors) == null ? void 0 : _a[key];
-        if (error) {
-          console.warn(`Could not load activities for contact ${contactId}:`, (_b = error.message) != null ? _b : error);
-        }
-        result.set(contactId, (_d = (_c = batch.results) == null ? void 0 : _c[key]) != null ? _d : []);
-      }
-      onProgress == null ? void 0 : onProgress(chunk.length);
-    }
-    return result;
-  }
-  async listActivitiesForDeals(dealIds, onProgress) {
-    var _a, _b, _c, _d;
-    const result = /* @__PURE__ */ new Map();
-    for (let index = 0; index < dealIds.length; index += 50) {
-      const chunk = dealIds.slice(index, index + 50);
-      const batch = await this.requestWithRetry("/batch", {
-        method: "POST",
-        body: JSON.stringify({
-          calls: chunk.map((dealId) => ({
-            id: `deal_${dealId}`,
-            entity: "activities",
-            action: "list",
-            params: {
-              filter: {
-                ownerTypeId: 2,
-                ownerId: dealId
-              },
-              limit: 200
-            }
-          }))
-        })
-      });
-      for (const dealId of chunk) {
-        const key = `deal_${dealId}`;
-        const error = (_a = batch.errors) == null ? void 0 : _a[key];
-        if (error) {
-          console.warn(`Could not load activities for deal ${dealId}:`, (_b = error.message) != null ? _b : error);
-        }
-        result.set(dealId, (_d = (_c = batch.results) == null ? void 0 : _c[key]) != null ? _d : []);
-      }
-      onProgress == null ? void 0 : onProgress(chunk.length);
-    }
-    return result;
-  }
-  async listStageHistoryForLeads(leadIds, onProgress) {
-    const result = /* @__PURE__ */ new Map();
-    for (const leadId of leadIds) {
-      const params = new URLSearchParams({
-        entityType: "lead",
-        ownerId: String(leadId),
-        limit: "200"
-      });
-      try {
-        const data = await this.requestWithRetry(`/stage-history?${params.toString()}`);
-        result.set(leadId, Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.warn(`Could not load stage history for lead ${leadId}:`, error instanceof Error ? error.message : error);
-        result.set(leadId, []);
-      }
-      onProgress == null ? void 0 : onProgress(1);
-    }
-    return result;
-  }
-  async listTimelineCommentsForEntities(params) {
-    var _a, _b, _c, _d;
-    const { entityType, entityIds, sort, onProgress } = params;
-    const result = /* @__PURE__ */ new Map();
-    for (let index = 0; index < entityIds.length; index += 50) {
-      const chunk = entityIds.slice(index, index + 50);
-      const batch = await this.requestWithRetry("/batch", {
-        method: "POST",
-        body: JSON.stringify({
-          calls: chunk.map((entityId) => ({
-            id: `timeline_${entityType}_${entityId}`,
-            entity: "timelines",
-            action: "list",
-            params: {
-              filter: {
-                entityType,
-                entityId
-              },
-              select: SLA_TIMELINE_SELECT,
-              sort,
-              limit: 200
-            }
-          }))
-        })
-      });
-      for (const entityId of chunk) {
-        const key = `timeline_${entityType}_${entityId}`;
-        const error = (_a = batch.errors) == null ? void 0 : _a[key];
-        if (error) {
-          console.warn(`Could not load timeline comments for ${entityType} ${entityId}:`, (_b = error.message) != null ? _b : error);
-        }
-        result.set(entityId, (_d = (_c = batch.results) == null ? void 0 : _c[key]) != null ? _d : []);
-      }
-      onProgress == null ? void 0 : onProgress(chunk.length);
-    }
-    return result;
-  }
-  async listTimelineCommentsForLeads(leadIds, onProgress) {
-    return this.listTimelineCommentsForEntities({
-      entityType: "lead",
-      entityIds: leadIds,
-      sort: "createdAt",
-      onProgress
-    });
-  }
-  async listTimelineCommentsForContacts(contactIds, onProgress) {
-    return this.listTimelineCommentsForEntities({
-      entityType: "contact",
-      entityIds: contactIds,
-      sort: "-createdAt",
-      onProgress
-    });
-  }
-}
-
-function isCreatedAtInRange$1(value, range) {
-  const valueTime = value ? new Date(value).getTime() : Number.NaN;
-  const minTime = new Date(range.createdFrom).getTime();
-  const maxTime = new Date(range.createdTo).getTime();
-  return Number.isFinite(valueTime) && Number.isFinite(minTime) && Number.isFinite(maxTime) && valueTime >= minTime && valueTime <= maxTime;
-}
-async function runDataQualityCheckJob(apiKey, dateRange, reportProgress) {
-  reportProgress({ stage: "starting", message: "\u0413\u043E\u0442\u043E\u0432\u0438\u043C \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0443 \u043A\u0430\u0447\u0435\u0441\u0442\u0432\u0430 \u0434\u0430\u043D\u043D\u044B\u0445", current: 0, total: 1 });
-  const checkedAt = (/* @__PURE__ */ new Date()).toISOString();
-  const client = new VibeCodeClient(apiKey);
-  reportProgress({ stage: "loading_contacts", message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u043A\u043E\u043D\u0442\u0430\u043A\u0442\u044B \u0438 \u0441\u043E\u0442\u0440\u0443\u0434\u043D\u0438\u043A\u043E\u0432", current: 0, total: 1 });
-  let loadedContacts = 0;
-  const reportLoadedContacts = (processed) => {
-    loadedContacts += processed;
-    reportProgress({
-      stage: "loading_contacts",
-      message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u043A\u043E\u043D\u0442\u0430\u043A\u0442\u044B \u0438 \u0441\u043E\u0442\u0440\u0443\u0434\u043D\u0438\u043A\u043E\u0432",
-      current: loadedContacts,
-      total: Math.max(loadedContacts, 1)
-    });
-  };
-  const [contacts, users] = await Promise.all([
-    client.searchContacts(dateRange.createdFrom, dateRange.createdTo, reportLoadedContacts),
-    client.listUsers()
-  ]);
-  const filteredContacts = contacts.filter(
-    (contact) => {
-      var _a;
-      return shouldAnalyzeContact(contact) && isCreatedAtInRange$1((_a = contact.createdAt) != null ? _a : contact.createdTime, dateRange);
-    }
-  );
-  const usersMap = new Map(users.map((user) => [Number(user.id), user]));
-  reportProgress({ stage: "calculating", message: "\u0421\u0447\u0438\u0442\u0430\u0435\u043C \u043A\u0430\u0447\u0435\u0441\u0442\u0432\u043E \u0434\u0430\u043D\u043D\u044B\u0445", current: 0, total: filteredContacts.length });
-  const rows = filteredContacts.map((contact) => buildDataQualityRow({ contact, users: usersMap, checkedAt })).sort((a, b) => new Date(b.contactCreatedAt).getTime() - new Date(a.contactCreatedAt).getTime());
-  const payload = await writeDataQualityLog(rows, checkedAt);
-  reportProgress({ stage: "done", message: "\u041F\u0440\u043E\u0432\u0435\u0440\u043A\u0430 \u043A\u0430\u0447\u0435\u0441\u0442\u0432\u0430 \u0434\u0430\u043D\u043D\u044B\u0445 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0430", current: rows.length, total: rows.length });
-  return payload;
-}
-
-async function runNextStepCheckJob(apiKey, reportProgress) {
-  reportProgress({ stage: "starting", message: "\u0413\u043E\u0442\u043E\u0432\u0438\u043C \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0443 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0435\u0433\u043E \u0448\u0430\u0433\u0430", current: 0, total: 1 });
-  const checkedAt = (/* @__PURE__ */ new Date()).toISOString();
-  const client = new VibeCodeClient(apiKey);
-  reportProgress({ stage: "loading_contacts", message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0441\u0434\u0435\u043B\u043A\u0438 \u0438 \u0441\u043E\u0442\u0440\u0443\u0434\u043D\u0438\u043A\u043E\u0432", current: 0, total: 1 });
-  let loadedDeals = 0;
-  const reportLoadedDeals = (processed) => {
-    loadedDeals += processed;
-    reportProgress({
-      stage: "loading_contacts",
-      message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0441\u0434\u0435\u043B\u043A\u0438 \u0438 \u0441\u043E\u0442\u0440\u0443\u0434\u043D\u0438\u043A\u043E\u0432",
-      current: loadedDeals,
-      total: Math.max(loadedDeals, 1)
-    });
-  };
-  const [deals, users] = await Promise.all([client.searchNextStepDeals(reportLoadedDeals), client.listUsers()]);
-  const dealIds = deals.map((deal) => deal.id);
-  reportProgress({
-    stage: "loading_history",
-    message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0434\u0435\u043B\u0430 \u043F\u043E \u0441\u0434\u0435\u043B\u043A\u0430\u043C",
-    current: 0,
-    total: Math.max(1, dealIds.length)
-  });
-  let loadedActivities = 0;
-  const reportLoadedActivities = (processed) => {
-    loadedActivities += processed;
-    reportProgress({
-      stage: "loading_history",
-      message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0434\u0435\u043B\u0430 \u043F\u043E \u0441\u0434\u0435\u043B\u043A\u0430\u043C",
-      current: loadedActivities,
-      total: Math.max(1, dealIds.length)
-    });
-  };
-  const activitiesByDeal = await client.listActivitiesForDeals(dealIds, reportLoadedActivities);
-  const usersMap = new Map(users.map((user) => [Number(user.id), user]));
-  reportProgress({ stage: "calculating", message: "\u0421\u0447\u0438\u0442\u0430\u0435\u043C \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0439 \u0448\u0430\u0433", current: 0, total: deals.length });
-  const rows = buildNextStepRows({ deals, activitiesByDeal, users: usersMap, checkedAt });
-  const payload = await writeNextStepLog(rows, checkedAt);
-  reportProgress({ stage: "done", message: "\u041F\u0440\u043E\u0432\u0435\u0440\u043A\u0430 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0435\u0433\u043E \u0448\u0430\u0433\u0430 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0430", current: rows.length, total: rows.length });
-  return payload;
-}
-
-async function runReactivationCheckJob(apiKey, reportProgress) {
-  reportProgress({ stage: "starting", message: "\u0413\u043E\u0442\u043E\u0432\u0438\u043C \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0443 \u0440\u0435\u0430\u043A\u0442\u0438\u0432\u0430\u0446\u0438\u0438", current: 0, total: 1 });
-  const checkedAt = (/* @__PURE__ */ new Date()).toISOString();
-  const week = getMoscowWeekRange(checkedAt);
-  const client = new VibeCodeClient(apiKey);
-  reportProgress({ stage: "loading_history", message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u043D\u044B\u0439 \u043E\u0442\u0447\u0435\u0442", current: 0, total: 1 });
-  const saved = await readReactivationLog();
-  const rolled = rollupPreviousWeekIntoRating(saved, week.monthKey, checkedAt);
-  reportProgress({ stage: "loading_contacts", message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0441\u043E\u0442\u0440\u0443\u0434\u043D\u0438\u043A\u043E\u0432 \u0438 \u0441\u0434\u0435\u043B\u043A\u0438 \u0440\u0435\u0430\u043A\u0442\u0438\u0432\u0430\u0446\u0438\u0438", current: 0, total: 1 });
-  let loadedDeals = 0;
-  const reportLoadedDeals = (processed) => {
-    loadedDeals += processed;
-    reportProgress({
-      stage: "loading_contacts",
-      message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0441\u043E\u0442\u0440\u0443\u0434\u043D\u0438\u043A\u043E\u0432 \u0438 \u0441\u0434\u0435\u043B\u043A\u0438 \u0440\u0435\u0430\u043A\u0442\u0438\u0432\u0430\u0446\u0438\u0438",
-      current: loadedDeals,
-      total: Math.max(loadedDeals, 1)
-    });
-  };
-  const [employees, deals] = await Promise.all([
-    client.listDepartmentUsers(REACTIVATION_DEPARTMENT_ID, /* @__PURE__ */ new Set([EXCLUDED_REACTIVATION_USER_ID])),
-    client.searchReactivationDeals(week.startedAt, week.finishedAt, reportLoadedDeals)
-  ]);
-  const dealIds = deals.map((deal) => deal.id);
-  reportProgress({
-    stage: "loading_history",
-    message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0430\u043A\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0438 \u043F\u043E \u0441\u0434\u0435\u043B\u043A\u0430\u043C",
-    current: 0,
-    total: Math.max(1, dealIds.length)
-  });
-  let loadedActivities = 0;
-  const reportLoadedActivities = (processed) => {
-    loadedActivities += processed;
-    reportProgress({
-      stage: "loading_history",
-      message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0430\u043A\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0438 \u043F\u043E \u0441\u0434\u0435\u043B\u043A\u0430\u043C",
-      current: loadedActivities,
-      total: Math.max(1, dealIds.length)
-    });
-  };
-  const activitiesByDeal = await client.listActivitiesForDeals(dealIds, reportLoadedActivities);
-  reportProgress({ stage: "calculating", message: "\u0421\u0447\u0438\u0442\u0430\u0435\u043C \u0440\u0435\u0430\u043A\u0442\u0438\u0432\u0430\u0446\u0438\u044E", current: 0, total: employees.length });
-  const rows = buildReactivationRows({
-    employees,
-    deals,
-    activitiesByDeal,
-    previousMonthlyRating: rolled.monthlyRating,
-    week,
-    checkedAt
-  });
-  const payload = await writeReactivationLog({
-    generatedAt: checkedAt,
-    weekKey: week.key,
-    monthKey: week.monthKey,
-    weekStartedAt: week.startedAt,
-    weekFinishedAt: week.finishedAt,
-    monthlyRating: rolled.monthlyRating,
-    finalizedWeeks: rolled.finalizedWeeks,
-    rows
-  });
-  reportProgress({ stage: "done", message: "\u041F\u0440\u043E\u0432\u0435\u0440\u043A\u0430 \u0440\u0435\u0430\u043A\u0442\u0438\u0432\u0430\u0446\u0438\u0438 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0430", current: rows.length, total: rows.length });
-  return payload;
-}
-
-const SLA_STATUS_FIELD_VALUES = {
-  "\u0412 \u043F\u0440\u0435\u0434\u0435\u043B\u0430\u0445 15 \u043C\u0438\u043D\u0443\u0442": 3006,
-  "\u0411\u043E\u043B\u0435\u0435 15 \u043C\u0438\u043D\u0443\u0442": 3008,
-  "\u041A\u043E\u043D\u0442\u0430\u043A\u0442\u0430 \u043D\u0435 \u0431\u044B\u043B\u043E": 3010,
-  "\u0412\u0445\u043E\u0434\u044F\u0449\u0438\u0439 \u0437\u0432\u043E\u043D\u043E\u043A": 3140,
-  "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0440\u0443\u0447\u043D\u0430\u044F \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0430": 3146
-};
-function getSlaCrmUpdateFields(row) {
-  return {
-    leadId: row.leadId,
-    fields: {
-      ufCrm_1715933850: row.firstContactAt,
-      ufCrm_1716566007: row.minutesToFirstContact,
-      ufCrm_1716369534832: SLA_STATUS_FIELD_VALUES[row.status],
-      ufCrm_1777686837399: row.violationFlag === "\u0414\u0430" ? 1 : 0,
-      ufCrm_1777370132452: row.slaOverrunMinutes
-    }
-  };
-}
-
-const SLA_LIMIT_MINUTES = 15;
-const MISSED_CALL_STATUS_ID = "15";
-const NEEDS_IDENTIFICATION_STATUS_ID = "13";
-const TRANSFERRED_TO_MPT_STATUS_ID = "12";
-const CALL_LEAD_CREATION_GRACE_MINUTES = SLA_LIMIT_MINUTES;
-const EXCLUDED_SOURCE_NAMES = /* @__PURE__ */ new Set(["\u0440\u0443\u0441\u0441\u043A\u0438\u0439 \u044D\u043A\u0441\u043F\u0440\u0435\u0441\u0441"]);
-const NON_ERROR_REJECTION_REASONS = /* @__PURE__ */ new Set([
-  "\u043E\u0431\u0440\u0430\u0449\u0435\u043D\u0438\u0435 \u043F\u043E \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044E\u0449\u0435\u0439 \u0441\u0434\u0435\u043B\u043A\u0435 (\u0434\u043B\u044F \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044E\u0449\u0438\u0445 \u043A\u043E\u043D\u0442\u0430\u043A\u0442\u043E\u0432)",
-  "\u0432\u043D\u0443\u0442\u0440\u0435\u043D\u043D\u0438\u0439 \u0437\u0432\u043E\u043D\u043E\u043A \u0438\u043B\u0438 \u043F\u0435\u0440\u0435\u043F\u0438\u0441\u043A\u0430",
-  "\u0434\u0443\u0431\u043B\u0438\u043A\u0430\u0442",
-  "\u043E\u0440\u0433\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u044F",
-  "\u0440\u0435\u043A\u043B\u0430\u043C\u0430"
-]);
-const SUCCESS_STATUSES = /* @__PURE__ */ new Set(["2"]);
-const FINISHED_STATUSES = /* @__PURE__ */ new Set(["2", "3"]);
-const MOSCOW_OFFSET_MINUTES = 3 * 60;
-const MINUTE_MS = 60 * 1e3;
-const DAY_MS = 24 * 60 * MINUTE_MS;
-const TIMEZONE_DRIFT_TOLERANCE_MS = MINUTE_MS;
-const AUTO_WAZZUP_MESSAGE_PHRASES = [
-  "\u0441\u043F\u0430\u0441\u0438\u0431\u043E, \u0447\u0442\u043E \u043D\u0430\u043F\u0438\u0441\u0430\u043B\u0438",
-  "\u0431\u043B\u0430\u0433\u043E\u0434\u0430\u0440\u0438\u043C \u0432\u0430\u0441 \u0437\u0430 \u043E\u0431\u0440\u0430\u0449\u0435\u043D\u0438\u0435 \u0432 \u0440\u0443\u0441\u0441\u043A\u0438\u0439 \u044D\u043A\u0441\u043F\u0440\u0435\u0441\u0441",
-  "\u0441\u043F\u0430\u0441\u0438\u0431\u043E, \u0447\u0442\u043E \u043E\u0431\u0440\u0430\u0442\u0438\u043B\u0438\u0441\u044C \u0432 \u0440\u0443\u0441\u0441\u043A\u0438\u0439 \u044D\u043A\u0441\u043F\u0440\u0435\u0441\u0441",
-  "\u0441\u043F\u0430\u0441\u0438\u0431\u043E \u0437\u0430 \u043E\u0431\u0440\u0430\u0449\u0435\u043D\u0438\u0435 \u0432 \u0440\u0443\u0441\u0441\u043A\u0438\u0439 \u044D\u043A\u0441\u043F\u0440\u0435\u0441\u0441",
-  "\u043A \u0441\u043E\u0436\u0430\u043B\u0435\u043D\u0438\u044E, \u043C\u044B \u043D\u0435 \u0441\u043C\u043E\u0433\u043B\u0438 \u043F\u0440\u0438\u043D\u044F\u0442\u044C \u0432\u0430\u0448 \u0437\u0432\u043E\u043D\u043E\u043A",
-  "\u043A \u0441\u043E\u0436\u0430\u043B\u0435\u043D\u0438\u044E, \u043C\u044B \u043D\u0435 \u0443\u0441\u043F\u0435\u043B\u0438 \u043E\u0442\u0432\u0435\u0442\u0438\u0442\u044C \u043D\u0430 \u0432\u0430\u0448 \u0437\u0432\u043E\u043D\u043E\u043A"
-];
-const OUTGOING_LEAD_TITLE_WORD = "\u0438\u0441\u0445\u043E\u0434\u044F\u0449\u0438\u0439";
-const SYNC_ERROR_REJECTION_REASON_ID = "1140";
-const IT_DEPARTMENT_NAME = "\u043E\u0442\u0434\u0435\u043B \u0438\u0442";
-const DEFAULT_MANUAL_REVIEW_TITLE_PATTERN = /^лид_№\s*\d+/i;
-const RETURN_CUSTOMER_PHRASES = ["\u043F\u043E\u0441\u0442\u043E\u044F\u043D\u043D\u044B\u0439 \u043A\u043B\u0438\u0435\u043D\u0442", "\u043F\u043E\u0432\u0442\u043E\u0440\u043D\u044B\u0439 \u043B\u0438\u0434"];
-const EXCLUDED_REJECTION_REASONS = /* @__PURE__ */ new Set(["\u0430\u0433\u0435\u043D\u0442\u0441\u0442\u0432\u043E", "\u043A\u043B\u0438\u0435\u043D\u0442 \u0430\u0433\u0435\u043D\u0442\u0441\u0442\u0432\u0430"]);
-const EARLY_WORKDAY_USER_NAMES = /* @__PURE__ */ new Set(["\u0435\u043B\u0438\u0437\u0430\u0432\u0435\u0442\u0430 \u043A\u043E\u043F\u0435\u0439\u043A\u0438\u043D\u0430", "\u0435\u0432\u0433\u0435\u043D\u0438\u044F \u0432\u0435\u0440\u043D\u0435\u0440"]);
-const RU_MONTHS = {
-  \u044F\u043D\u0432\u0430\u0440\u044F: 1,
-  \u0444\u0435\u0432\u0440\u0430\u043B\u044F: 2,
-  \u043C\u0430\u0440\u0442\u0430: 3,
-  \u0430\u043F\u0440\u0435\u043B\u044F: 4,
-  \u043C\u0430\u044F: 5,
-  \u0438\u044E\u043D\u044F: 6,
-  \u0438\u044E\u043B\u044F: 7,
-  \u0430\u0432\u0433\u0443\u0441\u0442\u0430: 8,
-  \u0441\u0435\u043D\u0442\u044F\u0431\u0440\u044F: 9,
-  \u043E\u043A\u0442\u044F\u0431\u0440\u044F: 10,
-  \u043D\u043E\u044F\u0431\u0440\u044F: 11,
-  \u0434\u0435\u043A\u0430\u0431\u0440\u044F: 12
-};
-const EN_MONTHS = {
-  january: 1,
-  february: 2,
-  march: 3,
-  april: 4,
-  may: 5,
-  june: 6,
-  july: 7,
-  august: 8,
-  september: 9,
-  october: 10,
-  november: 11,
-  december: 12
-};
-function getLeadCreatedAt(lead) {
-  var _a, _b;
-  return (_b = (_a = lead.createdAt) != null ? _a : lead.createdTime) != null ? _b : null;
-}
-function isExcludedValue(value) {
-  if (value === false) return true;
-  if (typeof value === "string") {
-    const normalized = value.trim().toLowerCase();
-    return normalized === "n" || normalized === "\u043D\u0435\u0442" || normalized === "false" || normalized === "0";
-  }
-  if (value === 0) return true;
-  return value == null;
-}
-function isLeadMarkedAsMissedCall(lead) {
-  const value = lead.ufCrm_1724510334936;
-  if (value === true || value === 1) return true;
-  if (typeof value === "string") {
-    const normalized = value.trim().toLowerCase();
-    return normalized === "1" || normalized === "y" || normalized === "yes" || normalized === "true";
-  }
-  return false;
-}
-function shouldAnalyzeLead(lead) {
-  return isExcludedValue(lead.ufCrm_1717431064812) && !hasOutgoingInTitle(lead) && !hasDefaultNumberedLeadTitle(lead);
-}
-function getLeadContactIds(lead) {
-  const ids = /* @__PURE__ */ new Set();
-  for (const value of [...Array.isArray(lead.contactIds) ? lead.contactIds : [], lead.contactId]) {
-    const id = toNumber(value);
-    if (id && id > 0) ids.add(id);
-  }
-  return [...ids];
-}
-function toNumber(value) {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string" && value.trim() !== "") {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  return null;
-}
-function normalizeProvider(activity) {
-  return [
-    activity.PROVIDER_ID,
-    activity.PROVIDER_TYPE_ID,
-    activity.PROVIDER_GROUP_ID,
-    activity.providerId,
-    activity.providerTypeId,
-    activity.subject,
-    activity.description
-  ].filter(Boolean).join(" ").toLowerCase();
-}
-function getActivityDateRaw(activity) {
-  var _a, _b, _c, _d, _e, _f;
-  return (_f = (_e = (_d = (_c = (_b = (_a = activity.startTime) != null ? _a : activity.START_TIME) != null ? _b : activity.createdAt) != null ? _c : activity.CREATED) != null ? _d : activity.endTime) != null ? _e : activity.END_TIME) != null ? _f : null;
-}
-function getWallClockMs(value) {
-  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,3})?)?/);
-  if (!match) return null;
-  const [, year, month, day, hour, minute, second = "0"] = match;
-  return Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute), Number(second));
-}
-function retagUtcAsMoscow(value) {
-  return value.replace(/Z$/i, "+03:00");
-}
-function normalizeActivityDate(activityDate, leadCreatedAt) {
-  if (!/Z$/i.test(activityDate)) return activityDate;
-  const activityTime = new Date(activityDate).getTime();
-  const leadTime = new Date(leadCreatedAt).getTime();
-  const activityWallTime = getWallClockMs(activityDate);
-  const leadWallTime = getWallClockMs(leadCreatedAt);
-  if (!Number.isFinite(activityTime) || !Number.isFinite(leadTime) || activityWallTime == null || leadWallTime == null) {
-    return activityDate;
-  }
-  const absoluteDiff = activityTime - leadTime;
-  const wallClockDiff = activityWallTime - leadWallTime;
-  const timezoneDrift = absoluteDiff - wallClockDiff;
-  if (wallClockDiff >= 0 && Math.abs(timezoneDrift - MOSCOW_OFFSET_MINUTES * MINUTE_MS) <= TIMEZONE_DRIFT_TOLERANCE_MS || absoluteDiff < 0 && Math.abs(absoluteDiff + MOSCOW_OFFSET_MINUTES * MINUTE_MS) <= TIMEZONE_DRIFT_TOLERANCE_MS && Math.abs(wallClockDiff) <= TIMEZONE_DRIFT_TOLERANCE_MS) {
-    return retagUtcAsMoscow(activityDate);
-  }
-  return activityDate;
-}
-function getActivityDate(activity, leadCreatedAt) {
-  const activityDate = getActivityDateRaw(activity);
-  return activityDate && leadCreatedAt ? normalizeActivityDate(activityDate, leadCreatedAt) : activityDate;
-}
-function compareIsoDates(a, b) {
-  return new Date(a).getTime() - new Date(b).getTime();
-}
-function getEarliestDate(dates) {
-  var _a;
-  return (_a = dates.filter((date) => Number.isFinite(new Date(date).getTime())).sort(compareIsoDates)[0]) != null ? _a : null;
-}
-function getEffectiveLeadCreatedAt(lead, activities, fallback) {
-  var _a;
-  const leadCreatedAt = (_a = getLeadCreatedAt(lead)) != null ? _a : fallback;
-  if (getLeadSourceId(lead) !== "EMAIL") return leadCreatedAt;
-  const firstIncomingEmailAt = getEarliestDate(
-    activities.filter((activity) => isEmail(activity) && isIncoming(activity)).map((activity) => getActivityDate(activity, leadCreatedAt)).filter((date) => Boolean(date))
-  );
-  if (!firstIncomingEmailAt) return leadCreatedAt;
-  return compareIsoDates(firstIncomingEmailAt, leadCreatedAt) < 0 ? firstIncomingEmailAt : leadCreatedAt;
-}
-function stripHtml(value) {
-  return value.replace(/<br\s*\/?>/gi, "\n").replace(/<\/p>/gi, "\n").replace(/<[^>]*>/g, " ").replace(/&nbsp;/gi, " ").replace(/&quot;/gi, '"').replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/\s+/g, " ").trim();
-}
-function toOffsetIso(params) {
-  const { year, month, day, hour, minute, offset } = params;
-  if (month < 1 || month > 12 || day < 1 || day > 31 || hour > 23 || minute > 59) return null;
-  const pad = (value) => String(value).padStart(2, "0");
-  const iso = `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}:00${offset}`;
-  return Number.isFinite(new Date(iso).getTime()) ? iso : null;
-}
-function toUtcIsoFromEnglishAmPm(params) {
-  const { year, month, day, minute, meridiem } = params;
-  let hour = params.hour;
-  if (month < 1 || month > 12 || day < 1 || day > 31 || hour < 1 || hour > 12 || minute > 59) return null;
-  const marker = meridiem.toLowerCase();
-  if (marker === "pm" && hour !== 12) hour += 12;
-  if (marker === "am" && hour === 12) hour = 0;
-  const iso = new Date(Date.UTC(year, month - 1, day, hour, minute, 0)).toISOString();
-  return Number.isFinite(new Date(iso).getTime()) ? iso : null;
-}
-function getEmbeddedOutgoingEmailDates(activity) {
-  var _a;
-  if (!isEmail(activity)) return [];
-  const text = stripHtml((_a = activity.description) != null ? _a : "");
-  if (!text) return [];
-  const dates = [];
-  const replyDatePattern = /(\d{1,2})\s+(января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)\s+(\d{4})\s*г?\.?,?\s+(\d{1,2}):(\d{2})\s*([+-]\d{2}:\d{2})\s+от\s+Русский\s+Экспресс/giu;
-  for (const match of text.matchAll(replyDatePattern)) {
-    const [, day, monthName, year, hour, minute, offset] = match;
-    const month = monthName ? RU_MONTHS[monthName.toLowerCase()] : void 0;
-    if (!day || !year || !hour || !minute || !offset || month == null) continue;
-    const iso = toOffsetIso({
-      year: Number(year),
-      month,
-      day: Number(day),
-      hour: Number(hour),
-      minute: Number(minute),
-      offset
-    });
-    if (iso) dates.push(iso);
-  }
-  const englishReplyDatePattern = /From:\s*Русский\s+Экспресс[\s\S]{0,800}?Sent:\s*(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),\s+(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)/giu;
-  for (const match of text.matchAll(englishReplyDatePattern)) {
-    const [, monthName, day, year, hour, minute, meridiem] = match;
-    const month = monthName ? EN_MONTHS[monthName.toLowerCase()] : void 0;
-    if (!day || !year || !hour || !minute || !meridiem || month == null) continue;
-    const iso = toUtcIsoFromEnglishAmPm({
-      year: Number(year),
-      month,
-      day: Number(day),
-      hour: Number(hour),
-      minute: Number(minute),
-      meridiem
-    });
-    if (iso) dates.push(iso);
-  }
-  return dates;
-}
-function getIncomingCallContactDate(activity, leadCreatedAt) {
-  var _a, _b, _c, _d;
-  const startDate = getActivityDate(activity, leadCreatedAt);
-  if (!isProcessedIncomingCallContact(activity)) return startDate;
-  const leadTime = new Date(leadCreatedAt).getTime();
-  const startTime = startDate ? new Date(startDate).getTime() : Number.NaN;
-  if (Number.isFinite(startTime) && Number.isFinite(leadTime) && startTime >= leadTime) return startDate;
-  const endDateRaw = (_d = (_c = (_b = (_a = activity.endTime) != null ? _a : activity.END_TIME) != null ? _b : activity.updatedAt) != null ? _c : activity.LAST_UPDATED) != null ? _d : null;
-  const endDate = endDateRaw ? normalizeActivityDate(endDateRaw, leadCreatedAt) : null;
-  const endTime = endDate ? new Date(endDate).getTime() : Number.NaN;
-  if (Number.isFinite(endTime) && Number.isFinite(leadTime) && endTime >= leadTime) return endDate;
-  return startDate;
-}
-function isCompleted(activity) {
-  var _a, _b;
-  return activity.completed === true || activity.completed === "Y" || FINISHED_STATUSES.has(String((_b = (_a = activity.STATUS) != null ? _a : activity.status) != null ? _b : ""));
-}
-function isSuccessful(activity) {
-  var _a, _b;
-  const status = String((_b = (_a = activity.STATUS) != null ? _a : activity.status) != null ? _b : "");
-  if (SUCCESS_STATUSES.has(status)) return true;
-  const providerText = normalizeProvider(activity);
-  if (providerText.includes("crm_email") || providerText.includes("imol") || providerText.includes("openline")) {
-    return isCompleted(activity);
-  }
-  return isCompleted(activity) && !["4", "5", "6"].includes(status);
-}
-function isCall(activity) {
-  var _a;
-  const typeId = toNumber((_a = activity.typeId) != null ? _a : activity.TYPE_ID);
-  return typeId === 2 || normalizeProvider(activity).includes("call");
-}
-function isSuccessfulCall(activity) {
-  var _a, _b;
-  return String((_b = (_a = activity.STATUS) != null ? _a : activity.status) != null ? _b : "") === "2";
-}
-function isMissedCallActivity(activity) {
-  var _a, _b, _c;
-  const settings = (_a = activity.SETTINGS) != null ? _a : activity.settings;
-  const missedBySettings = Boolean(settings && !Array.isArray(settings) && settings.MISSED_CALL === true);
-  return missedBySettings || String((_c = (_b = activity.RESULT_STREAM) != null ? _b : activity.resultStream) != null ? _c : "") === "4";
-}
-function isEmail(activity) {
-  var _a;
-  const typeId = toNumber((_a = activity.typeId) != null ? _a : activity.TYPE_ID);
-  const providerText = normalizeProvider(activity);
-  return typeId === 4 || providerText.includes("email") || providerText.includes("mail");
-}
-function isAutomaticRegistrationEmail(activity) {
-  if (!isEmail(activity)) return false;
-  return normalizeProvider(activity).includes("\u043E\u0431\u0440\u0430\u0449\u0435\u043D\u0438\u0435 \u0437\u0430\u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043E");
-}
-function isOpenLine(activity) {
-  const providerText = normalizeProvider(activity);
-  return providerText.includes("imol") || providerText.includes("openline") || providerText.includes("open line") || providerText.includes("ol_");
-}
-function isOpenLineLead(lead, activities) {
-  const leadText = normalizeText([lead.sourceId, lead.sourceDescription, lead.title].filter(Boolean).join(" "));
-  return leadText.includes("telegram") || leadText.includes("openline") || leadText.includes("imol") || activities.some(isOpenLine);
-}
-function getLeadOnlineChatContactDate(lead, activities, leadCreatedAt) {
-  var _a, _b;
-  if (!isOpenLineLead(lead, activities)) return null;
-  const date = (_b = (_a = lead.ufCrm_1716370242690) != null ? _a : lead.ufCrm_1715933850) != null ? _b : null;
-  return date ? normalizeActivityDate(date, leadCreatedAt) : null;
-}
-function normalizeText(value) {
-  return value.replace(/\[img\][\s\S]*?\[\/img\]/gi, " ").replace(/<[^>]*>/g, " ").replace(/&nbsp;/gi, " ").replace(/&quot;/gi, '"').replace(/&amp;/gi, "&").replace(/\s+/g, " ").trim().toLowerCase();
-}
-function hasOutgoingInTitle(lead) {
-  var _a;
-  return normalizeText((_a = lead.title) != null ? _a : "").includes(OUTGOING_LEAD_TITLE_WORD);
-}
-function hasIncomingCallInTitle(lead) {
-  var _a;
-  return normalizeText((_a = lead.title) != null ? _a : "").includes("\u0432\u0445\u043E\u0434\u044F\u0449\u0438\u0439 \u0437\u0432\u043E\u043D\u043E\u043A");
-}
-function hasDefaultNumberedLeadTitle(lead) {
-  var _a;
-  return DEFAULT_MANUAL_REVIEW_TITLE_PATTERN.test(normalizeText((_a = lead.title) != null ? _a : ""));
-}
-function isReturnOrRepeatLead(lead) {
-  var _a;
-  const returnCustomer = String((_a = lead.isReturnCustomer) != null ? _a : "").trim().toUpperCase();
-  if (returnCustomer === "Y" || returnCustomer === "YES" || returnCustomer === "TRUE" || returnCustomer === "1") return true;
-  const text = normalizeText(
-    [lead.title, lead.sourceDescription, lead.comments, lead.searchContent].filter(Boolean).join(" ")
-  );
-  return RETURN_CUSTOMER_PHRASES.some((phrase) => text.includes(phrase));
-}
-function getTimelineCommentText(comment) {
-  var _a, _b;
-  return (_b = (_a = comment.comment) != null ? _a : comment.COMMENT) != null ? _b : "";
-}
-function getTimelineCommentDate(comment, leadCreatedAt) {
-  var _a, _b;
-  const date = (_b = (_a = comment.createdAt) != null ? _a : comment.CREATED) != null ? _b : null;
-  return date != null ? date : null;
-}
-function isWazzupComment(comment) {
-  return getTimelineCommentText(comment).toLowerCase().includes("wazzup24.com");
-}
-function isAutomaticWazzupMessage(comment) {
-  const text = normalizeText(getTimelineCommentText(comment));
-  return AUTO_WAZZUP_MESSAGE_PHRASES.some((phrase) => text.includes(phrase));
-}
-function getWazzupSenderName(comment) {
-  var _a, _b;
-  const text = getTimelineCommentText(comment).replace(/\[img\][\s\S]*?\[\/img\]/gi, " ").replace(/&nbsp;/gi, " ").trim();
-  const firstLine = (_a = text.split(/\r?\n/, 1)[0]) != null ? _a : "";
-  const sender = (_b = firstLine.split(":", 1)[0]) == null ? void 0 : _b.replace(/\s+/g, " ").trim();
-  return sender || null;
-}
-function getCrmUserNames(users) {
-  var _a, _b;
-  const names = /* @__PURE__ */ new Set();
-  for (const user of users.values()) {
-    const name = (_a = user.name) == null ? void 0 : _a.trim();
-    const lastName = (_b = user.lastName) == null ? void 0 : _b.trim();
-    const directName = [name, lastName].filter(Boolean).join(" ").trim();
-    const reverseName = [lastName, name].filter(Boolean).join(" ").trim();
-    if (directName) names.add(normalizeText(directName));
-    if (reverseName) names.add(normalizeText(reverseName));
-  }
-  return names;
-}
-function isQualifyingMessengerComment(comment, crmUserNames) {
-  if (!isWazzupComment(comment)) return false;
-  if (isAutomaticWazzupMessage(comment)) return false;
-  const senderName = getWazzupSenderName(comment);
-  return Boolean(senderName && crmUserNames.has(normalizeText(senderName)));
-}
-function isOutgoing(activity) {
-  var _a;
-  return toNumber((_a = activity.direction) != null ? _a : activity.DIRECTION) === 2;
-}
-function isIncoming(activity) {
-  var _a;
-  return toNumber((_a = activity.direction) != null ? _a : activity.DIRECTION) === 1;
-}
-function getLeadSourceId(lead) {
-  var _a;
-  return String((_a = lead.sourceId) != null ? _a : "").trim().toUpperCase();
-}
-function getIncomingCallEndDate(activity, leadCreatedAt) {
-  var _a, _b, _c, _d;
-  const endDateRaw = (_d = (_c = (_b = (_a = activity.endTime) != null ? _a : activity.END_TIME) != null ? _b : activity.updatedAt) != null ? _c : activity.LAST_UPDATED) != null ? _d : null;
-  return endDateRaw ? normalizeActivityDate(endDateRaw, leadCreatedAt) : null;
-}
-function isIncomingCallContact(activity) {
-  var _a, _b;
-  const resultStream = String((_b = (_a = activity.RESULT_STREAM) != null ? _a : activity.resultStream) != null ? _b : "");
-  return isCall(activity) && isIncoming(activity) && (isCompleted(activity) || resultStream === "1") && !isMissedCallActivity(activity);
-}
-function isProcessedIncomingCallContact(activity) {
-  var _a, _b, _c, _d, _e, _f;
-  if (!isIncomingCallContact(activity)) return false;
-  if (String((_b = (_a = activity.RESULT_STREAM) != null ? _a : activity.resultStream) != null ? _b : "") === "1") return true;
-  const startDate = getActivityDateRaw(activity);
-  const endDate = (_f = (_e = (_d = (_c = activity.endTime) != null ? _c : activity.END_TIME) != null ? _d : activity.updatedAt) != null ? _e : activity.LAST_UPDATED) != null ? _f : null;
-  if (!startDate || !endDate) return false;
-  const startTime = new Date(startDate).getTime();
-  const endTime = new Date(endDate).getTime();
-  return Number.isFinite(startTime) && Number.isFinite(endTime) && endTime > startTime;
-}
-function isIncomingCallNearLeadCreation(params) {
-  var _a;
-  const { lead, activity, contactDate, processed, leadCreatedAt } = params;
-  const contactTime = new Date(contactDate).getTime();
-  const leadTime = new Date(leadCreatedAt).getTime();
-  if (!Number.isFinite(contactTime) || !Number.isFinite(leadTime)) return false;
-  if (contactTime >= leadTime) return true;
-  if (!processed || getLeadSourceId(lead) !== "CALL") return false;
-  const callEndDate = (_a = getIncomingCallEndDate(activity, leadCreatedAt)) != null ? _a : contactDate;
-  const callEndTime = new Date(callEndDate).getTime();
-  if (!Number.isFinite(callEndTime) || callEndTime > leadTime) return false;
-  return leadTime - callEndTime <= CALL_LEAD_CREATION_GRACE_MINUTES * MINUTE_MS;
-}
-function isQualifyingOutgoingContact(activity) {
-  if (!isOutgoing(activity) || !isCompleted(activity) || !isSuccessful(activity)) return false;
-  if (isAutomaticRegistrationEmail(activity)) return false;
-  if (isCall(activity) && !isSuccessfulCall(activity)) return false;
-  if (isCall(activity) && isMissedCallActivity(activity)) return false;
-  return isCall(activity) || isEmail(activity) || isOpenLine(activity);
-}
-function isQualifyingOutgoingCallAttempt(activity) {
-  if (!isCall(activity) || !isOutgoing(activity) || isMissedCallActivity(activity)) return false;
-  return isCompleted(activity) && Boolean(getActivityDateRaw(activity));
-}
-function hasIncomingCallMarker(lead, activities) {
-  if (hasIncomingCallInTitle(lead)) return true;
-  const leadText = normalizeText([lead.sourceDescription, lead.searchContent, lead.comments].filter(Boolean).join(" "));
-  if (leadText.includes("\u043F\u043E\u0441\u0442\u0443\u043F\u0438\u043B \u0432\u0445\u043E\u0434\u044F\u0449\u0438\u0439 \u0437\u0432\u043E\u043D\u043E\u043A")) return true;
-  return activities.some((activity) => normalizeProvider(activity).includes("\u043F\u043E\u0441\u0442\u0443\u043F\u0438\u043B \u0432\u0445\u043E\u0434\u044F\u0449\u0438\u0439 \u0437\u0432\u043E\u043D\u043E\u043A"));
-}
-function toMoscowLocalMs(utcMs) {
-  return utcMs + MOSCOW_OFFSET_MINUTES * MINUTE_MS;
-}
-function fromMoscowLocalMs(localMs) {
-  return localMs - MOSCOW_OFFSET_MINUTES * MINUTE_MS;
-}
-function getMoscowDayStartMs(utcMs) {
-  const local = toMoscowLocalMs(utcMs);
-  const date = new Date(local);
-  return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-}
-function isEarlyWorkdayUser(user) {
-  const fullName = [user == null ? void 0 : user.name, user == null ? void 0 : user.lastName].filter(Boolean).join(" ").trim().toLowerCase();
-  return EARLY_WORKDAY_USER_NAMES.has(fullName);
-}
-function intervalsOverlap(startA, endA, startB, endB) {
-  return startA < endB && startB < endA;
-}
-function hasAbsenceDuringInterval(absenceIntervals, userId, startMs, endMs) {
-  if (userId == null) return false;
-  return absenceIntervals.some((absence) => {
-    if (absence.userId !== userId) return false;
-    const absenceStart = new Date(absence.start).getTime();
-    const absenceEnd = new Date(absence.end).getTime();
-    return Number.isFinite(absenceStart) && Number.isFinite(absenceEnd) && intervalsOverlap(startMs, endMs, absenceStart, absenceEnd);
-  });
-}
-function getWorkingIntervalsForMoscowDay(params) {
-  const { dayStartLocalMs, responsibleId, responsibleUser, absenceIntervals } = params;
-  const dayOfWeek = new Date(dayStartLocalMs).getUTCDay();
-  const intervals = [];
-  if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-    const earlyStartMs = fromMoscowLocalMs(dayStartLocalMs + 8 * 60 * MINUTE_MS);
-    const earlyEndMs = fromMoscowLocalMs(dayStartLocalMs + 10 * 60 * MINUTE_MS);
-    if (isEarlyWorkdayUser(responsibleUser) && !hasAbsenceDuringInterval(absenceIntervals, responsibleId, earlyStartMs, earlyEndMs)) {
-      intervals.push({ startMinute: 8 * 60, endMinute: 10 * 60 });
-    }
-    intervals.push({ startMinute: 10 * 60, endMinute: 20 * 60 });
-  } else if (dayOfWeek === 6) {
-    intervals.push({ startMinute: 11 * 60, endMinute: 19 * 60 });
-  }
-  return intervals.map((interval) => ({
-    startMs: fromMoscowLocalMs(dayStartLocalMs + interval.startMinute * MINUTE_MS),
-    endMs: fromMoscowLocalMs(dayStartLocalMs + interval.endMinute * MINUTE_MS)
-  }));
-}
-function workingMinutesBetween(params) {
-  const startMs = new Date(params.startIso).getTime();
-  const endMs = new Date(params.endIso).getTime();
-  if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) return 0;
-  let totalMs = 0;
-  for (let dayStartLocalMs = getMoscowDayStartMs(startMs); dayStartLocalMs <= getMoscowDayStartMs(endMs); dayStartLocalMs += DAY_MS) {
-    for (const interval of getWorkingIntervalsForMoscowDay({ ...params, dayStartLocalMs })) {
-      const overlapStart = Math.max(startMs, interval.startMs);
-      const overlapEnd = Math.min(endMs, interval.endMs);
-      if (overlapEnd > overlapStart) totalMs += overlapEnd - overlapStart;
-    }
-  }
-  return Math.floor(totalMs / MINUTE_MS);
-}
-function getResponsibleName(lead, users) {
-  const id = toNumber(lead.assignedById);
-  if (id == null) return "\u041D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D";
-  const user = users.get(id);
-  if (!user) return `ID ${id}`;
-  return [user.name, user.lastName].filter(Boolean).join(" ").trim() || `ID ${id}`;
-}
-function isItDepartmentResponsible(lead, users) {
-  return normalizeText(getResponsibleName(lead, users)) === IT_DEPARTMENT_NAME;
-}
-function getResponsibleId(lead) {
-  return toNumber(lead.assignedById);
-}
-function getLeadStatusId(lead) {
-  var _a, _b;
-  return String((_b = (_a = lead.statusId) != null ? _a : lead.stageId) != null ? _b : "").trim();
-}
-function getLeadStageName(lead, leadStatusNames) {
-  var _a;
-  const statusId = getLeadStatusId(lead);
-  return (_a = leadStatusNames.get(statusId)) != null ? _a : statusId || "\u041D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D";
-}
-function getPrintableFieldValue(value, dictionary) {
-  var _a;
-  if (Array.isArray(value)) {
-    const values = value.map((item) => getPrintableFieldValue(item, dictionary)).filter((item) => Boolean(item));
-    return values.length > 0 ? values.join(", ") : null;
-  }
-  if (value == null || value === "") return null;
-  const key = String(value).trim();
-  return (_a = dictionary.get(key)) != null ? _a : key;
-}
-function getLeadRejectionReason(lead, rejectionReasonNames) {
-  var _a;
-  if (getLeadStatusId(lead) !== "JUNK") return null;
-  return getPrintableFieldValue((_a = lead.ufCrm_1638180783) != null ? _a : lead.UF_CRM_1638180783, rejectionReasonNames);
-}
-function hasRejectionReasonId(lead, reasonId) {
-  var _a;
-  const value = (_a = lead.ufCrm_1638180783) != null ? _a : lead.UF_CRM_1638180783;
-  if (Array.isArray(value)) return value.some((item) => String(item).trim() === reasonId);
-  return String(value != null ? value : "").trim() === reasonId;
-}
-function shouldExcludeRejectedLeadByReason(lead, rejectionReasonNames) {
-  const reason = getLeadRejectionReason(lead, rejectionReasonNames);
-  return Boolean(
-    reason && EXCLUDED_REJECTION_REASONS.has(normalizeText(reason)) || getLeadStatusId(lead) === "JUNK" && hasIncomingCallInTitle(lead) && hasRejectionReasonId(lead, SYNC_ERROR_REJECTION_REASON_ID)
-  );
-}
-function shouldExcludeLeadBySource(lead, leadSourceNames) {
-  var _a, _b;
-  const sourceId = String((_a = lead.sourceId) != null ? _a : "").trim();
-  const sourceName = (_b = leadSourceNames.get(sourceId)) != null ? _b : sourceId;
-  return EXCLUDED_SOURCE_NAMES.has(normalizeText(sourceName));
-}
-function hasNonErrorRejectionReason(rejectionReason) {
-  return Boolean(rejectionReason && NON_ERROR_REJECTION_REASONS.has(normalizeText(rejectionReason)));
-}
-function getViolationFlag(status, slaOverrunMinutes) {
-  if (status === "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0440\u0443\u0447\u043D\u0430\u044F \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0430") return "\u041D\u0435\u0442";
-  return slaOverrunMinutes > 0 ? "\u0414\u0430" : "\u041D\u0435\u0442";
-}
-function buildSlaRow(params) {
-  var _a, _b;
-  const {
-    lead,
-    activities,
-    timelineComments = [],
-    users,
-    checkedAt,
-    hadMissedCallStage = false,
-    hadNeedsIdentificationStage = false,
-    transferredToMptAt = null,
-    absenceIntervals = [],
-    leadStatusNames = /* @__PURE__ */ new Map(),
-    rejectionReasonNames = /* @__PURE__ */ new Map()
-  } = params;
-  const leadCreatedAt = getEffectiveLeadCreatedAt(lead, activities, checkedAt);
-  const responsibleId = getResponsibleId(lead);
-  const responsibleUser = responsibleId == null ? void 0 : users.get(responsibleId);
-  const crmUserNames = getCrmUserNames(users);
-  const getSlaMinutes = (endIso) => workingMinutesBetween({ startIso: leadCreatedAt, endIso, responsibleId, responsibleUser, absenceIntervals });
-  const isMissedCallLead = hadMissedCallStage || isLeadMarkedAsMissedCall(lead);
-  const incomingCalls = activities.filter(isIncomingCallContact).map((activity) => ({ activity, date: getIncomingCallContactDate(activity, leadCreatedAt), processed: isProcessedIncomingCallContact(activity) })).filter((item) => Boolean(item.date)).filter(
-    (item) => isIncomingCallNearLeadCreation({
-      lead,
-      activity: item.activity,
-      contactDate: item.date,
-      processed: item.processed,
-      leadCreatedAt
-    })
-  ).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  const incomingCall = (_a = incomingCalls.find((item) => item.processed)) != null ? _a : !isMissedCallLead ? incomingCalls[0] : null;
-  let firstContactAt = null;
-  let minutesToFirstContact = null;
-  let slaOverrunMinutes = 0;
-  let status;
-  if (getLeadStatusId(lead) === TRANSFERRED_TO_MPT_STATUS_ID && transferredToMptAt) {
-    firstContactAt = transferredToMptAt;
-    minutesToFirstContact = getSlaMinutes(transferredToMptAt);
-    slaOverrunMinutes = Math.max(0, minutesToFirstContact - SLA_LIMIT_MINUTES);
-    status = minutesToFirstContact <= SLA_LIMIT_MINUTES ? "\u0412 \u043F\u0440\u0435\u0434\u0435\u043B\u0430\u0445 15 \u043C\u0438\u043D\u0443\u0442" : "\u0411\u043E\u043B\u0435\u0435 15 \u043C\u0438\u043D\u0443\u0442";
-  } else if (isItDepartmentResponsible(lead, users) && !hasOutgoingInTitle(lead)) {
-    status = "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0440\u0443\u0447\u043D\u0430\u044F \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0430";
-  } else if (incomingCall) {
-    firstContactAt = incomingCall.date;
-    minutesToFirstContact = firstContactAt ? getSlaMinutes(firstContactAt) : null;
-    status = "\u0412\u0445\u043E\u0434\u044F\u0449\u0438\u0439 \u0437\u0432\u043E\u043D\u043E\u043A";
-  } else if (!isMissedCallLead && hasIncomingCallInTitle(lead) && hasIncomingCallMarker(lead, activities)) {
-    firstContactAt = leadCreatedAt;
-    minutesToFirstContact = 0;
-    status = "\u0412\u0445\u043E\u0434\u044F\u0449\u0438\u0439 \u0437\u0432\u043E\u043D\u043E\u043A";
-  } else {
-    const activityContacts = activities.flatMap((activity) => {
-      const contacts2 = [];
-      if (isQualifyingOutgoingContact(activity) || isQualifyingOutgoingCallAttempt(activity)) {
-        contacts2.push({ date: getActivityDate(activity, leadCreatedAt) });
-      }
-      for (const date of getEmbeddedOutgoingEmailDates(activity)) contacts2.push({ date });
-      return contacts2;
-    }).filter((item) => Boolean(item.date)).filter((item) => new Date(item.date).getTime() >= new Date(leadCreatedAt).getTime());
-    const onlineChatDate = getLeadOnlineChatContactDate(lead, activities, leadCreatedAt);
-    const onlineChatContacts = onlineChatDate ? [{ date: onlineChatDate }] : [];
-    const messengerContacts = timelineComments.filter((comment) => isQualifyingMessengerComment(comment, crmUserNames)).map((comment) => ({ date: getTimelineCommentDate(comment) })).filter((item) => Boolean(item.date)).filter((item) => new Date(item.date).getTime() >= new Date(leadCreatedAt).getTime()).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    const contacts = [...activityContacts, ...onlineChatContacts, ...messengerContacts].filter((item) => new Date(item.date).getTime() >= new Date(leadCreatedAt).getTime()).sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-    if (contacts.length === 0) {
-      status = "\u041A\u043E\u043D\u0442\u0430\u043A\u0442\u0430 \u043D\u0435 \u0431\u044B\u043B\u043E";
-      const elapsedWorkingMinutes = getSlaMinutes(checkedAt);
-      slaOverrunMinutes = Math.max(0, elapsedWorkingMinutes - SLA_LIMIT_MINUTES);
-    } else {
-      const firstContact = contacts[0];
-      if (!firstContact) {
-        status = "\u041A\u043E\u043D\u0442\u0430\u043A\u0442\u0430 \u043D\u0435 \u0431\u044B\u043B\u043E";
-        const elapsedWorkingMinutes = getSlaMinutes(checkedAt);
-        slaOverrunMinutes = Math.max(0, elapsedWorkingMinutes - SLA_LIMIT_MINUTES);
-      } else {
-        firstContactAt = firstContact.date;
-        minutesToFirstContact = getSlaMinutes(firstContactAt);
-        slaOverrunMinutes = Math.max(0, minutesToFirstContact - SLA_LIMIT_MINUTES);
-        status = minutesToFirstContact <= SLA_LIMIT_MINUTES ? "\u0412 \u043F\u0440\u0435\u0434\u0435\u043B\u0430\u0445 15 \u043C\u0438\u043D\u0443\u0442" : "\u0411\u043E\u043B\u0435\u0435 15 \u043C\u0438\u043D\u0443\u0442";
-      }
-    }
-  }
-  const rejectionReason = getLeadRejectionReason(lead, rejectionReasonNames);
-  const violationFlag = hasNonErrorRejectionReason(rejectionReason) ? "\u041D\u0435\u0442" : getViolationFlag(status, slaOverrunMinutes);
-  return {
-    id: `${lead.id}-${checkedAt}`,
-    leadId: lead.id,
-    leadTitle: ((_b = lead.title) == null ? void 0 : _b.trim()) || `\u041B\u0438\u0434 ${lead.id}`,
-    leadStageName: getLeadStageName(lead, leadStatusNames),
-    rejectionReason,
-    checkedAt,
-    leadCreatedAt,
-    firstContactAt,
-    minutesToFirstContact,
-    slaOverrunMinutes,
-    status,
-    responsibleId,
-    responsibleName: getResponsibleName(lead, users),
-    violationFlag
-  };
-}
-function hasMissedCallStage(history) {
-  return history.some((item) => {
-    var _a;
-    return String((_a = item.statusId) != null ? _a : "") === MISSED_CALL_STATUS_ID;
-  });
-}
-function hasNeedsIdentificationStage(history) {
-  return history.some((item) => {
-    var _a;
-    const status = normalizeText(String((_a = item.statusId) != null ? _a : ""));
-    return status === NEEDS_IDENTIFICATION_STATUS_ID || status.includes("\u0432\u044B\u044F\u0432\u043B\u0435\u043D\u0438\u0435 \u043F\u043E\u0442\u0440\u0435\u0431\u043D\u043E\u0441\u0442\u0435\u0439");
-  });
-}
-function isTransferredToMptLead(lead) {
-  return getLeadStatusId(lead) === TRANSFERRED_TO_MPT_STATUS_ID;
-}
-function getTransferredToMptAt(history) {
-  var _a;
-  return (_a = history.filter((item) => {
-    var _a2;
-    return String((_a2 = item.statusId) != null ? _a2 : "") === TRANSFERRED_TO_MPT_STATUS_ID;
-  }).map((item) => {
-    var _a2;
-    return (_a2 = item.createdAt) != null ? _a2 : null;
-  }).filter((date) => Boolean(date && Number.isFinite(new Date(date).getTime()))).sort(compareIsoDates)[0]) != null ? _a : null;
-}
-
-function isCreatedAtInRange(value, range) {
-  const valueTime = value ? new Date(value).getTime() : Number.NaN;
-  const minTime = new Date(range.createdFrom).getTime();
-  const maxTime = new Date(range.createdTo).getTime();
-  return Number.isFinite(valueTime) && Number.isFinite(minTime) && Number.isFinite(maxTime) && valueTime >= minTime && valueTime <= maxTime;
-}
-function getLeadResponsibleId(lead) {
-  const value = lead.assignedById;
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string" && value.trim() !== "") {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  return null;
-}
-function isUserActive(user) {
-  if (!user) return true;
-  if (user.active === false) return false;
-  if (typeof user.active === "string") {
-    const normalized = user.active.trim().toLowerCase();
-    return normalized !== "n" && normalized !== "false" && normalized !== "0";
-  }
-  return true;
-}
-function isLeadAssignedToActiveUser(lead, users) {
-  const responsibleId = getLeadResponsibleId(lead);
-  if (responsibleId == null) return true;
-  return isUserActive(users.get(responsibleId));
-}
-async function runSlaCheckJob(apiKey, dateRange, reportProgress, options = {}) {
-  var _a, _b, _c, _d;
-  reportProgress({ stage: "starting", message: "\u0413\u043E\u0442\u043E\u0432\u0438\u043C \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0443", current: 0, total: 1 });
-  const checkedAt = (/* @__PURE__ */ new Date()).toISOString();
-  const client = new VibeCodeClient(apiKey);
-  reportProgress({ stage: "loading_leads", message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u043B\u0438\u0434\u044B \u0438 \u0441\u043E\u0442\u0440\u0443\u0434\u043D\u0438\u043A\u043E\u0432", current: 0, total: 1 });
-  const [leads, users, leadStatusNames, rejectionReasonNames, leadSourceNames] = await Promise.all([
-    client.searchLeads(dateRange.createdFrom, dateRange.createdTo),
-    client.listUsers(),
-    client.listLeadStatusNames(),
-    client.listLeadRejectionReasonNames(),
-    client.listLeadSourceNames()
-  ]);
-  const usersMap = new Map(users.map((user) => [Number(user.id), user]));
-  const filteredLeads = leads.filter(
-    (lead) => {
-      var _a2;
-      return shouldAnalyzeLead(lead) && isCreatedAtInRange((_a2 = lead.createdAt) != null ? _a2 : lead.createdTime, dateRange) && !shouldExcludeLeadBySource(lead, leadSourceNames) && !shouldExcludeRejectedLeadByReason(lead, rejectionReasonNames) && isLeadAssignedToActiveUser(lead, usersMap);
-    }
-  );
-  const earlyShiftUsers = users.filter(isEarlyWorkdayUser);
-  const leadIds = filteredLeads.map((lead) => lead.id);
-  let loadedActivityItems = 0;
-  const reportLoadedActivities = (processed) => {
-    loadedActivityItems += processed;
-    reportProgress({
-      stage: "loading_contacts",
-      message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0430\u043A\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0438",
-      current: Math.min(loadedActivityItems, Math.max(1, leadIds.length)),
-      total: Math.max(1, leadIds.length)
-    });
-  };
-  reportProgress({ stage: "loading_contacts", message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0430\u043A\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0438", current: 0, total: Math.max(1, leadIds.length) });
-  const leadActivitiesByLead = await client.listActivitiesForLeads(leadIds, reportLoadedActivities);
-  const contactIdsByLead = /* @__PURE__ */ new Map();
-  const contactIds = /* @__PURE__ */ new Set();
-  for (const lead of filteredLeads) {
-    const ids = isReturnOrRepeatLead(lead) ? getLeadContactIds(lead) : [];
-    contactIdsByLead.set(lead.id, ids);
-    for (const id of ids) contactIds.add(id);
-  }
-  let loadedContactActivityItems = 0;
-  const reportLoadedContactActivities = (processed) => {
-    loadedContactActivityItems += processed;
-    reportProgress({
-      stage: "loading_contacts",
-      message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0430\u043A\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0438 \u0441\u0432\u044F\u0437\u0430\u043D\u043D\u044B\u0445 \u043A\u043E\u043D\u0442\u0430\u043A\u0442\u043E\u0432",
-      current: Math.min(loadedContactActivityItems, Math.max(1, contactIds.size)),
-      total: Math.max(1, contactIds.size)
-    });
-  };
-  const contactActivitiesByContact = contactIds.size > 0 ? await client.listActivitiesForContacts([...contactIds], reportLoadedContactActivities) : /* @__PURE__ */ new Map();
-  const activitiesByLead = /* @__PURE__ */ new Map();
-  for (const lead of filteredLeads) {
-    const activities = [...(_a = leadActivitiesByLead.get(lead.id)) != null ? _a : []];
-    for (const contactId of (_b = contactIdsByLead.get(lead.id)) != null ? _b : []) {
-      activities.push(...(_c = contactActivitiesByContact.get(contactId)) != null ? _c : []);
-    }
-    activitiesByLead.set(lead.id, activities);
-  }
-  const stageHistoryLeadIds = [
-    ...new Set(
-      filteredLeads.filter((lead) => isTransferredToMptLead(lead)).map((lead) => lead.id)
-    )
-  ];
-  reportProgress({
-    stage: "loading_history",
-    message: "\u0423\u0442\u043E\u0447\u043D\u044F\u0435\u043C \u0438\u0441\u0442\u043E\u0440\u0438\u044E \u043F\u0440\u043E\u043F\u0443\u0449\u0435\u043D\u043D\u044B\u0445 \u0437\u0432\u043E\u043D\u043A\u043E\u0432",
-    current: 0,
-    total: Math.max(1, stageHistoryLeadIds.length)
-  });
-  let loadedHistoryItems = 0;
-  const reportLoadedHistory = (processed) => {
-    loadedHistoryItems += processed;
-    reportProgress({
-      stage: "loading_history",
-      message: "\u0423\u0442\u043E\u0447\u043D\u044F\u0435\u043C \u0438\u0441\u0442\u043E\u0440\u0438\u044E \u043F\u0440\u043E\u043F\u0443\u0449\u0435\u043D\u043D\u044B\u0445 \u0437\u0432\u043E\u043D\u043A\u043E\u0432",
-      current: loadedHistoryItems,
-      total: Math.max(1, stageHistoryLeadIds.length)
-    });
-  };
-  const [stageHistoryByLead, earlyShiftAbsenceIntervals] = await Promise.all([
-    client.listStageHistoryForLeads(stageHistoryLeadIds, reportLoadedHistory),
-    Promise.all(
-      earlyShiftUsers.map(
-        (user) => client.listAbsenceIntervalsForUser(Number(user.id), dateRange.createdFrom, checkedAt).catch((error) => {
-          console.warn(`Failed to load absence intervals for early-shift user ${user.id}:`, error);
-          return [];
-        })
-      )
-    ).then((intervals) => intervals.flat())
-  ]);
-  const provisionalRows = new Map(
-    filteredLeads.map((lead) => {
-      var _a2, _b2, _c2, _d2;
-      return [
-        lead.id,
-        buildSlaRow({
-          lead,
-          activities: (_a2 = activitiesByLead.get(lead.id)) != null ? _a2 : [],
-          users: usersMap,
-          checkedAt,
-          hadMissedCallStage: hasMissedCallStage((_b2 = stageHistoryByLead.get(lead.id)) != null ? _b2 : []),
-          hadNeedsIdentificationStage: hasNeedsIdentificationStage((_c2 = stageHistoryByLead.get(lead.id)) != null ? _c2 : []),
-          transferredToMptAt: getTransferredToMptAt((_d2 = stageHistoryByLead.get(lead.id)) != null ? _d2 : []),
-          absenceIntervals: earlyShiftAbsenceIntervals,
-          leadStatusNames,
-          rejectionReasonNames
-        })
-      ];
-    })
-  );
-  const timelineLeadIds = filteredLeads.filter((lead) => {
-    var _a2;
-    const status = (_a2 = provisionalRows.get(lead.id)) == null ? void 0 : _a2.status;
-    return status !== "\u0412\u0445\u043E\u0434\u044F\u0449\u0438\u0439 \u0437\u0432\u043E\u043D\u043E\u043A" && status !== "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0440\u0443\u0447\u043D\u0430\u044F \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0430";
-  }).map((lead) => lead.id);
-  const timelineLeadIdSet = new Set(timelineLeadIds);
-  const timelineContactIds = /* @__PURE__ */ new Set();
-  for (const lead of filteredLeads) {
-    if (!timelineLeadIdSet.has(lead.id)) continue;
-    for (const contactId of (_d = contactIdsByLead.get(lead.id)) != null ? _d : []) timelineContactIds.add(contactId);
-  }
-  let loadedTimelineItems = 0;
-  const reportLoadedTimeline = (processed) => {
-    loadedTimelineItems += processed;
-    reportProgress({
-      stage: "loading_contacts",
-      message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0441\u043E\u043E\u0431\u0449\u0435\u043D\u0438\u044F Wazzup",
-      current: Math.min(loadedTimelineItems, Math.max(1, timelineLeadIds.length)),
-      total: Math.max(1, timelineLeadIds.length)
-    });
-  };
-  let loadedContactTimelineItems = 0;
-  const reportLoadedContactTimeline = (processed) => {
-    loadedContactTimelineItems += processed;
-    reportProgress({
-      stage: "loading_contacts",
-      message: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0441\u043E\u043E\u0431\u0449\u0435\u043D\u0438\u044F Wazzup \u0441\u0432\u044F\u0437\u0430\u043D\u043D\u044B\u0445 \u043A\u043E\u043D\u0442\u0430\u043A\u0442\u043E\u0432",
-      current: Math.min(loadedContactTimelineItems, Math.max(1, timelineContactIds.size)),
-      total: Math.max(1, timelineContactIds.size)
-    });
-  };
-  reportProgress({
-    stage: "loading_contacts",
-    message: timelineLeadIds.length > 0 ? "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0441\u043E\u043E\u0431\u0449\u0435\u043D\u0438\u044F Wazzup" : "\u0421\u043E\u043E\u0431\u0449\u0435\u043D\u0438\u044F Wazzup \u043D\u0435 \u0442\u0440\u0435\u0431\u0443\u044E\u0442\u0441\u044F",
-    current: 0,
-    total: Math.max(1, timelineLeadIds.length)
-  });
-  const timelineCommentsByLead = timelineLeadIds.length > 0 ? await client.listTimelineCommentsForLeads(timelineLeadIds, reportLoadedTimeline) : /* @__PURE__ */ new Map();
-  reportProgress({
-    stage: "loading_contacts",
-    message: timelineContactIds.size > 0 ? "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u0441\u043E\u043E\u0431\u0449\u0435\u043D\u0438\u044F Wazzup \u0441\u0432\u044F\u0437\u0430\u043D\u043D\u044B\u0445 \u043A\u043E\u043D\u0442\u0430\u043A\u0442\u043E\u0432" : "\u0421\u043E\u043E\u0431\u0449\u0435\u043D\u0438\u044F Wazzup \u043A\u043E\u043D\u0442\u0430\u043A\u0442\u043E\u0432 \u043D\u0435 \u0442\u0440\u0435\u0431\u0443\u044E\u0442\u0441\u044F",
-    current: 0,
-    total: Math.max(1, timelineContactIds.size)
-  });
-  const timelineCommentsByContact = timelineContactIds.size > 0 ? await client.listTimelineCommentsForContacts([...timelineContactIds], reportLoadedContactTimeline) : /* @__PURE__ */ new Map();
-  reportProgress({ stage: "calculating", message: "\u0421\u0447\u0438\u0442\u0430\u0435\u043C SLA", current: 0, total: filteredLeads.length });
-  const rows = filteredLeads.map(
-    (lead) => {
-      var _a2, _b2, _c2, _d2, _e, _f;
-      return buildSlaRow({
-        lead,
-        activities: (_a2 = activitiesByLead.get(lead.id)) != null ? _a2 : [],
-        timelineComments: [
-          ...(_b2 = timelineCommentsByLead.get(lead.id)) != null ? _b2 : [],
-          ...((_c2 = contactIdsByLead.get(lead.id)) != null ? _c2 : []).flatMap((contactId) => {
-            var _a3;
-            return (_a3 = timelineCommentsByContact.get(contactId)) != null ? _a3 : [];
-          })
-        ],
-        users: usersMap,
-        checkedAt,
-        hadMissedCallStage: hasMissedCallStage((_d2 = stageHistoryByLead.get(lead.id)) != null ? _d2 : []),
-        hadNeedsIdentificationStage: hasNeedsIdentificationStage((_e = stageHistoryByLead.get(lead.id)) != null ? _e : []),
-        transferredToMptAt: getTransferredToMptAt((_f = stageHistoryByLead.get(lead.id)) != null ? _f : []),
-        absenceIntervals: earlyShiftAbsenceIntervals,
-        leadStatusNames,
-        rejectionReasonNames
-      });
-    }
-  ).sort((a, b) => new Date(b.leadCreatedAt).getTime() - new Date(a.leadCreatedAt).getTime());
-  if (options.updateCrm) {
-    reportProgress({
-      stage: "updating_crm",
-      message: "\u0417\u0430\u043F\u043E\u043B\u043D\u044F\u0435\u043C \u043F\u043E\u043B\u044F SLA \u0432 CRM",
-      current: 0,
-      total: Math.max(1, rows.length)
-    });
-    await client.updateLeadsSlaFields(rows.map(getSlaCrmUpdateFields));
-    reportProgress({
-      stage: "updating_crm",
-      message: "\u041F\u043E\u043B\u044F SLA \u0432 CRM \u0437\u0430\u043F\u043E\u043B\u043D\u0435\u043D\u044B",
-      current: rows.length,
-      total: Math.max(1, rows.length)
-    });
-  }
-  const payload = await writeSlaLog(rows, checkedAt);
-  reportProgress({ stage: "done", message: "\u041F\u0440\u043E\u0432\u0435\u0440\u043A\u0430 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0430", current: rows.length, total: rows.length });
-  return payload;
-}
-
-var _a;
-const MOSCOW_OFFSET = "+03:00";
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-const DATETIME_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
-function createInitialJob(message = "\u041F\u0440\u043E\u0432\u0435\u0440\u043A\u0430 \u043D\u0435 \u0437\u0430\u043F\u0443\u0449\u0435\u043D\u0430") {
-  return {
-    id: null,
-    status: "idle",
-    startedAt: null,
-    finishedAt: null,
-    error: null,
-    progress: { stage: "starting", message, current: 0, total: 1 }
-  };
-}
-const state = globalThis;
-const reportJobs = (_a = state.__managerAssistantReportJobs) != null ? _a : state.__managerAssistantReportJobs = {
-  sla: createInitialJob(),
-  dataQuality: createInitialJob(),
-  reactivation: createInitialJob(),
-  nextStep: createInitialJob()
-};
-function parseMoscowDateRange(body) {
-  const { dateFrom, dateTo } = body;
-  if (!dateFrom || !dateTo) {
-    throw new Error("\u041D\u0435\u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u044B\u0439 \u043F\u0435\u0440\u0438\u043E\u0434 \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0438");
-  }
-  const createdFrom = DATE_PATTERN.test(dateFrom) ? /* @__PURE__ */ new Date(`${dateFrom}T00:00:00.000${MOSCOW_OFFSET}`) : DATETIME_PATTERN.test(dateFrom) ? /* @__PURE__ */ new Date(`${dateFrom}:00.000${MOSCOW_OFFSET}`) : new Date(Number.NaN);
-  const createdTo = DATE_PATTERN.test(dateTo) ? /* @__PURE__ */ new Date(`${dateTo}T23:59:59.999${MOSCOW_OFFSET}`) : DATETIME_PATTERN.test(dateTo) ? /* @__PURE__ */ new Date(`${dateTo}:59.999${MOSCOW_OFFSET}`) : new Date(Number.NaN);
-  if (!Number.isFinite(createdFrom.getTime()) || !Number.isFinite(createdTo.getTime()) || createdFrom > createdTo) {
-    throw new Error("\u041D\u0435\u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u044B\u0439 \u043F\u0435\u0440\u0438\u043E\u0434 \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0438");
-  }
-  return {
-    createdFrom: createdFrom.toISOString(),
-    createdTo: createdTo.toISOString()
-  };
-}
-function getApiKey() {
-  var _a2;
-  const apiKey = (_a2 = process.env.VIBE_API_KEY) != null ? _a2 : "";
-  if (!apiKey) {
-    throw new Error("VIBE_API_KEY is not configured");
-  }
-  return apiKey;
-}
-function startJob(kind, startMessage, runner) {
-  const job = reportJobs[kind];
-  if (job.status === "running") {
-    return job;
-  }
-  const jobId = `${Date.now()}`;
-  job.id = jobId;
-  job.status = "running";
-  job.startedAt = (/* @__PURE__ */ new Date()).toISOString();
-  job.finishedAt = null;
-  job.error = null;
-  job.progress = { stage: "starting", message: startMessage, current: 0, total: 1 };
-  void runner(getApiKey(), (progress) => {
-    if (job.id === jobId) {
-      job.progress = progress;
-    }
-  }).then(() => {
-    if (job.id !== jobId) return;
-    job.status = "completed";
-    job.finishedAt = (/* @__PURE__ */ new Date()).toISOString();
-  }).catch((error) => {
-    if (job.id !== jobId) return;
-    console.error(error);
-    job.status = "failed";
-    job.finishedAt = (/* @__PURE__ */ new Date()).toISOString();
-    job.error = error.message || "Unexpected server error";
-  });
-  return job;
-}
-function startSlaJob(params) {
-  const job = reportJobs.sla;
-  if (job.status === "running") {
-    return job;
-  }
-  const jobId = `${Date.now()}`;
-  job.id = jobId;
-  job.status = "running";
-  job.startedAt = (/* @__PURE__ */ new Date()).toISOString();
-  job.finishedAt = null;
-  job.error = null;
-  job.progress = {
-    stage: "starting",
-    message: params.updateCrm ? "\u041F\u0440\u043E\u0432\u0435\u0440\u043A\u0430 SLA \u0441 \u0437\u0430\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u0435\u043C CRM \u0437\u0430\u043F\u0443\u0441\u043A\u0430\u0435\u0442\u0441\u044F" : "\u041F\u0440\u043E\u0432\u0435\u0440\u043A\u0430 SLA \u0437\u0430\u043F\u0443\u0441\u043A\u0430\u0435\u0442\u0441\u044F",
-    current: 0,
-    total: 1
-  };
-  void runSlaCheckJob(
-    getApiKey(),
-    params.dateRange,
-    (progress) => {
-      if (job.id === jobId) {
-        job.progress = progress;
-      }
-    },
-    { updateCrm: params.updateCrm }
-  ).then(async () => {
-    if (job.id !== jobId) return;
-    job.status = "completed";
-    job.finishedAt = (/* @__PURE__ */ new Date()).toISOString();
-    if (params.source === "auto") {
-      const config = await readSlaAutoControlConfig();
-      await writeSlaAutoControlConfig({ ...config, lastRunAt: job.finishedAt });
-    }
-  }).catch((error) => {
-    if (job.id !== jobId) return;
-    console.error(error);
-    job.status = "failed";
-    job.finishedAt = (/* @__PURE__ */ new Date()).toISOString();
-    job.error = error.message || "Unexpected server error";
-  }).finally(() => {
-    if (params.source === "auto") {
-      void scheduleSlaAutoControl();
-    }
-  });
-  return job;
-}
-function startDataQualityJob(dateRange) {
-  return startJob(
-    "dataQuality",
-    "\u041F\u0440\u043E\u0432\u0435\u0440\u043A\u0430 \u043A\u0430\u0447\u0435\u0441\u0442\u0432\u0430 \u0434\u0430\u043D\u043D\u044B\u0445 \u0437\u0430\u043F\u0443\u0441\u043A\u0430\u0435\u0442\u0441\u044F",
-    (apiKey, progress) => runDataQualityCheckJob(apiKey, dateRange, progress)
-  );
-}
-function startReactivationJob() {
-  return startJob(
-    "reactivation",
-    "\u041F\u0440\u043E\u0432\u0435\u0440\u043A\u0430 \u0440\u0435\u0430\u043A\u0442\u0438\u0432\u0430\u0446\u0438\u0438 \u0437\u0430\u043F\u0443\u0441\u043A\u0430\u0435\u0442\u0441\u044F",
-    (apiKey, progress) => runReactivationCheckJob(apiKey, progress)
-  );
-}
-function startNextStepJob() {
-  return startJob(
-    "nextStep",
-    "\u041F\u0440\u043E\u0432\u0435\u0440\u043A\u0430 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0435\u0433\u043E \u0448\u0430\u0433\u0430 \u0437\u0430\u043F\u0443\u0441\u043A\u0430\u0435\u0442\u0441\u044F",
-    (apiKey, progress) => runNextStepCheckJob(apiKey, progress)
-  );
-}
-async function readSlaAutoControlState() {
-  return toSlaAutoControlState(await readSlaAutoControlConfig());
-}
-async function updateSlaAutoControlConfig(body) {
-  var _a2, _b, _c;
-  const current = await readSlaAutoControlConfig();
-  const updated = await writeSlaAutoControlConfig({
-    ...current,
-    enabled: typeof body.enabled === "boolean" ? body.enabled : current.enabled,
-    startDate: (_a2 = body.startDate) != null ? _a2 : current.startDate,
-    time: (_b = body.time) != null ? _b : current.time,
-    intervalDays: (_c = body.intervalDays) != null ? _c : current.intervalDays
-  });
-  await scheduleSlaAutoControl();
-  return toSlaAutoControlState(updated);
-}
-async function scheduleSlaAutoControl() {
-  var _a2, _b;
-  if (state.__managerAssistantSlaAutoTimer) {
-    clearTimeout(state.__managerAssistantSlaAutoTimer);
-    state.__managerAssistantSlaAutoTimer = null;
-  }
-  const config = await readSlaAutoControlConfig();
-  const nextRunAt = getNextSlaAutoRunAt(config);
-  if (!nextRunAt) {
-    return;
-  }
-  const delayMs = Math.max(0, new Date(nextRunAt).getTime() - Date.now());
-  state.__managerAssistantSlaAutoTimer = setTimeout(() => {
-    if (!process.env.VIBE_API_KEY) {
-      console.error("VIBE_API_KEY is not configured; scheduled SLA control skipped");
-      void scheduleSlaAutoControl();
-      return;
-    }
-    startSlaJob({
-      dateRange: getDayBeforePreviousMoscowDayRange(/* @__PURE__ */ new Date()),
-      updateCrm: true,
-      source: "auto"
-    });
-  }, delayMs);
-  (_b = (_a2 = state.__managerAssistantSlaAutoTimer).unref) == null ? void 0 : _b.call(_a2);
-}
-function ensureSlaAutoControlScheduled() {
-  if (state.__managerAssistantSlaAutoScheduled) {
-    return;
-  }
-  state.__managerAssistantSlaAutoScheduled = true;
-  void scheduleSlaAutoControl();
-}
-
-const _ZcSr2BelLEckXKsfEBmtTu9g4zAe4rsbEXbZK9DD9kE = defineNitroPlugin(() => {
-  ensureSlaAutoControlScheduled();
-});
-
 const plugins = [
-  _ZcSr2BelLEckXKsfEBmtTu9g4zAe4rsbEXbZK9DD9kE
+  
 ];
 
 const assets = {
-  "/favicon.png": {
-    "type": "image/png",
-    "etag": "\"3aa4-wd3HBggW0W0xjkfM9YjjoSjnHC0\"",
-    "mtime": "2024-09-03T13:05:22.661Z",
-    "size": 15012,
-    "path": "../public/favicon.png"
-  },
-  "/_nuxt/4BooG2AJ.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"d98-RZkGzISWnYXyUy6eHz4Vj2sXTAg\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 3480,
-    "path": "../public/_nuxt/4BooG2AJ.js"
-  },
-  "/_nuxt/B2WpdShI.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"4d2-la7/8AmQL9CBE5xwVqlL/qsf3ic\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 1234,
-    "path": "../public/_nuxt/B2WpdShI.js"
-  },
   "/favicon.ico": {
     "type": "image/vnd.microsoft.icon",
     "etag": "\"4acc-CIjhuSjvvpj+EvdIcUND35WFkCw\"",
@@ -7113,397 +4568,411 @@ const assets = {
     "size": 19148,
     "path": "../public/favicon.ico"
   },
-  "/_nuxt/B3-O_O2Y.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"3ef-sKTOTNnKEmXkT57pFZz7VL3oNPM\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 1007,
-    "path": "../public/_nuxt/B3-O_O2Y.js"
+  "/favicon.png": {
+    "type": "image/png",
+    "etag": "\"3aa4-wd3HBggW0W0xjkfM9YjjoSjnHC0\"",
+    "mtime": "2024-09-03T13:05:22.661Z",
+    "size": 15012,
+    "path": "../public/favicon.png"
   },
-  "/_nuxt/BAbScZE8.js": {
+  "/_nuxt/B-XgMNMF.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"135-Vfw6PpnA3KsIjMglS4UaZlaUSWA\"",
-    "mtime": "2026-06-30T10:38:54.083Z",
-    "size": 309,
-    "path": "../public/_nuxt/BAbScZE8.js"
+    "etag": "\"1ff-awVHLEgViNKjKE8P4iveLWZjlvQ\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 511,
+    "path": "../public/_nuxt/B-XgMNMF.js"
   },
-  "/_nuxt/B3G8Fmc4.js": {
+  "/_nuxt/4u3OlWNc.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"8b2-76ne1VudkayLya4kL1tpACdTgoE\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 2226,
-    "path": "../public/_nuxt/B3G8Fmc4.js"
+    "etag": "\"3d3-Ef6qUIVL83m3DupWOY4k7q1VpTc\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 979,
+    "path": "../public/_nuxt/4u3OlWNc.js"
   },
-  "/_nuxt/1smZIsUQ.js": {
+  "/_nuxt/B1FHOmmD.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"5aa-bSuvXKsCImrh3jTBIIXK4h9qiB4\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 1450,
-    "path": "../public/_nuxt/1smZIsUQ.js"
+    "etag": "\"aa0-tW9/FAyBVO++ejHeisLYd07AwQI\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 2720,
+    "path": "../public/_nuxt/B1FHOmmD.js"
   },
-  "/_nuxt/BggTf3rO.js": {
+  "/_nuxt/B5Twc5fS.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"20f-SVdteNFXOlWlTSF86FtiFHatOHI\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 527,
-    "path": "../public/_nuxt/BggTf3rO.js"
-  },
-  "/_nuxt/BeiFhJL7.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"f26a-Nfl7x2v/KG5x/m+SRVIgATPKjlQ\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 62058,
-    "path": "../public/_nuxt/BeiFhJL7.js"
-  },
-  "/_nuxt/Bh8F3Zyx.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"dac-bfZ3k1a0E5KvKZLTfYR2iG4O4N8\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 3500,
-    "path": "../public/_nuxt/Bh8F3Zyx.js"
-  },
-  "/_nuxt/BJwtGAG8.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"301-iFxk/R198z+/Sc70g7yxbUVA85k\"",
-    "mtime": "2026-06-30T10:38:54.083Z",
-    "size": 769,
-    "path": "../public/_nuxt/BJwtGAG8.js"
-  },
-  "/_nuxt/BAmapntu.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"b92-lnZ64b14dr2M9TVdxiY6n0Ay1WE\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 2962,
-    "path": "../public/_nuxt/BAmapntu.js"
-  },
-  "/_nuxt/BaXAm7If.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"269-fB+MfvfQK4xU+2FxWPo6KTHM/Q4\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 617,
-    "path": "../public/_nuxt/BaXAm7If.js"
-  },
-  "/_nuxt/BNsxAyFD.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"3ef-Z4NnBKVz44zyMEzRrjTzrSptbxE\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 1007,
-    "path": "../public/_nuxt/BNsxAyFD.js"
-  },
-  "/_nuxt/BMU650Ac.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"b1c-uFjs8wn+hm/k4v5E/tUM3kf71yU\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 2844,
-    "path": "../public/_nuxt/BMU650Ac.js"
-  },
-  "/_nuxt/BV-GrxlL.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"258-3KtLM2fAAku8iwM6zR2C+bkGL5Y\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 600,
-    "path": "../public/_nuxt/BV-GrxlL.js"
-  },
-  "/_nuxt/C-oELQBC.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"1df-DfxMpM8SnxmLscLBWAdUuHS2eqA\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 479,
-    "path": "../public/_nuxt/C-oELQBC.js"
-  },
-  "/_nuxt/CFpEK4X1.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"1f4-XYZFlw1Jgt0u5/2oFPJUwSsy+mc\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 500,
-    "path": "../public/_nuxt/CFpEK4X1.js"
-  },
-  "/_nuxt/B_rxW57i.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"1ca-hKr5ucsnJy3ivb5vUgM1zv7iBhE\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 458,
-    "path": "../public/_nuxt/B_rxW57i.js"
-  },
-  "/_nuxt/CCatqwdD.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"88c-2PvgCDFqL2FnWESi/1Faa1UxjDI\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 2188,
-    "path": "../public/_nuxt/CCatqwdD.js"
-  },
-  "/_nuxt/Cgg-gUSh.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"2499-ixtYzlNuHrY2O6ntUjLhX8XRbOM\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 9369,
-    "path": "../public/_nuxt/Cgg-gUSh.js"
-  },
-  "/_nuxt/BrW_Mhbx.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"1db-xFenCA2sgPkF/bAkm1nVGgb5bHw\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 475,
-    "path": "../public/_nuxt/BrW_Mhbx.js"
-  },
-  "/_nuxt/CmJSyuzq.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"207-4SvFoHOY0y1SsA13zlHxz4OCF6I\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 519,
-    "path": "../public/_nuxt/CmJSyuzq.js"
-  },
-  "/_nuxt/Cnb6hNvb.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"1d7-tXNovhTBjZSZenG8icNDVNdeIqw\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 471,
-    "path": "../public/_nuxt/Cnb6hNvb.js"
-  },
-  "/_nuxt/Cua5UWXf.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"211-BsKshWOPEKLQvICjTRkQ7gkv4+A\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 529,
-    "path": "../public/_nuxt/Cua5UWXf.js"
-  },
-  "/_nuxt/Chx5pfCh.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"1fdd0-d1LNjZYdomiK73OK3FeQnocedSA\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 130512,
-    "path": "../public/_nuxt/Chx5pfCh.js"
-  },
-  "/_nuxt/CPUhAVxW.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"c8d-I6eJ23lMHEoOebquS9Mq+s9VvLo\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 3213,
-    "path": "../public/_nuxt/CPUhAVxW.js"
-  },
-  "/_nuxt/Cwmd4S_k.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"d14-yYV6HUWIF7yu3UKT6Zg7AMaFmD0\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 3348,
-    "path": "../public/_nuxt/Cwmd4S_k.js"
-  },
-  "/_nuxt/D2MVvzgR.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"21bb-6c5fe5qNzBU6lZKmPSLXZRt0lkI\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 8635,
-    "path": "../public/_nuxt/D2MVvzgR.js"
-  },
-  "/_nuxt/D1ZOF1zK.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"8b1-VkLA+e3Tuf0mN1RWFh2bph/ynSI\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 2225,
-    "path": "../public/_nuxt/D1ZOF1zK.js"
-  },
-  "/_nuxt/DAoxj7Jc.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"135-Pt9G5mQ5FY3tH7Zg6qOlB6UVvi4\"",
-    "mtime": "2026-06-30T10:38:54.083Z",
-    "size": 309,
-    "path": "../public/_nuxt/DAoxj7Jc.js"
-  },
-  "/_nuxt/D5CFoqjP.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"9ab-9DlQMvWspo6VQUU82jiLe2+UWmw\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 2475,
-    "path": "../public/_nuxt/D5CFoqjP.js"
-  },
-  "/_nuxt/D8GHEwaY.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"232-xeUASH7U2YVquepYAnzgS1PdpOg\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 562,
-    "path": "../public/_nuxt/D8GHEwaY.js"
-  },
-  "/_nuxt/dawS0Dri.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"1cf-HbP0z72CxlrHDepeTSvdxR1TYvc\"",
-    "mtime": "2026-06-30T10:38:54.083Z",
-    "size": 463,
-    "path": "../public/_nuxt/dawS0Dri.js"
-  },
-  "/_nuxt/DBivRgaR.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"75b-0P/KgM+gaHBcPCZQP83JwrrYg/o\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
+    "etag": "\"75b-W0Pic520kAJNETnwyP//McPB/5c\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
     "size": 1883,
-    "path": "../public/_nuxt/DBivRgaR.js"
+    "path": "../public/_nuxt/B5Twc5fS.js"
   },
-  "/_nuxt/DhwHSJFt.js": {
+  "/_nuxt/B7W6IKW6.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"429-a4sGHq/s7quP7gtoQWT6cqcQ2G8\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
+    "etag": "\"b77-Lfa2T4Cp8/AGGGacVo2a95l7yaE\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 2935,
+    "path": "../public/_nuxt/B7W6IKW6.js"
+  },
+  "/_nuxt/B7A74fib.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"249a-Lug5uOzAMpWoiskwM+k2P2K2/fE\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 9370,
+    "path": "../public/_nuxt/B7A74fib.js"
+  },
+  "/_nuxt/Bg5dWQfy.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"135-UK9x03OlOrHMqiZNPDPzTNY2nAs\"",
+    "mtime": "2026-10-20T14:51:43.469Z",
+    "size": 309,
+    "path": "../public/_nuxt/Bg5dWQfy.js"
+  },
+  "/_nuxt/BGtqHaho.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"9b0-UG5by7nG6VUVVyQA495+1/K/0OI\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 2480,
+    "path": "../public/_nuxt/BGtqHaho.js"
+  },
+  "/_nuxt/BIWq2D57.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"20a-cgKvuNN7aNg6B6jBFcCvnsfjBCg\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 522,
+    "path": "../public/_nuxt/BIWq2D57.js"
+  },
+  "/_nuxt/BVDiXuzG.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"1e5-49ObFHvFlo2unp6jl3qY3sEn/dc\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 485,
+    "path": "../public/_nuxt/BVDiXuzG.js"
+  },
+  "/_nuxt/BO3LWyYu.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"10e1-wEBO/8FPp7Hn307EAOfnWt5AeLs\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 4321,
+    "path": "../public/_nuxt/BO3LWyYu.js"
+  },
+  "/_nuxt/Bs5MI73B.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"284-gmed58fwI3DKbvHTElbmlnhNkq0\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 644,
+    "path": "../public/_nuxt/Bs5MI73B.js"
+  },
+  "/_nuxt/BVLKcigL.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"20c-J6/6V5dnXvJlRauiiBoKYyLbee4\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 524,
+    "path": "../public/_nuxt/BVLKcigL.js"
+  },
+  "/_nuxt/Bweoe5oR.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"3ef-anzlWL3vb95LOm2YF4bO82Ob6zw\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 1007,
+    "path": "../public/_nuxt/Bweoe5oR.js"
+  },
+  "/_nuxt/BvhgpGM1.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"4d2-iI8iNBW2v/YwBB1nxrB+A614d0Q\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 1234,
+    "path": "../public/_nuxt/BvhgpGM1.js"
+  },
+  "/_nuxt/BVMFQ2bX.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"d98-jOuudrLzEqkxaqaybVdf/OpbBiU\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 3480,
+    "path": "../public/_nuxt/BVMFQ2bX.js"
+  },
+  "/_nuxt/C0bfTItj.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"8b1-SLWxmk7mNUdZAtyQd58HGGjvJ98\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 2225,
+    "path": "../public/_nuxt/C0bfTItj.js"
+  },
+  "/_nuxt/BxjfsIUR.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"1f4-C3OYgfr3OYrfUnqAvwTJ+bWuMcw\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 500,
+    "path": "../public/_nuxt/BxjfsIUR.js"
+  },
+  "/_nuxt/BOuPCaZF.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"1fdd1-EQvLZ3oonntRg7k+SLWsXAwMI6Q\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 130513,
+    "path": "../public/_nuxt/BOuPCaZF.js"
+  },
+  "/_nuxt/CE6YM8yM.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"1cf-UwDGHnVnKXwPc6tClaMNniKRi9Y\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 463,
+    "path": "../public/_nuxt/CE6YM8yM.js"
+  },
+  "/_nuxt/CfzC1nQS.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"429-Ki83UehRr5SZN1XGcr3fl7VWILE\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
     "size": 1065,
-    "path": "../public/_nuxt/DhwHSJFt.js"
+    "path": "../public/_nuxt/CfzC1nQS.js"
   },
-  "/_nuxt/DhrlYejp.js": {
+  "/_nuxt/BCS9zOrG.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"269-K0BmqGGdB5g/hr29u3DU7XWUbuQ\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 617,
-    "path": "../public/_nuxt/DhrlYejp.js"
+    "etag": "\"8f897-GG+XpydOfck0t1kiIAM9oU/qzHU\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 587927,
+    "path": "../public/_nuxt/BCS9zOrG.js"
+  },
+  "/_nuxt/C8rAyRQD.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"f265-RHxtkvtx3tBgSzAUdOQfFjnzIQU\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 62053,
+    "path": "../public/_nuxt/C8rAyRQD.js"
+  },
+  "/_nuxt/CiCFUrE0.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"3c1-cVdirrR/wxa+1x2tAqZAskLozAE\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 961,
+    "path": "../public/_nuxt/CiCFUrE0.js"
+  },
+  "/_nuxt/CQcYppwW.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"12d-gY9f0sxvzao4EBTdtJAuAl18O60\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 301,
+    "path": "../public/_nuxt/CQcYppwW.js"
+  },
+  "/_nuxt/ClC3MLuH.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"db1-DrVXHzfpk3W1Ts/u5d8n0Q2C6iI\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 3505,
+    "path": "../public/_nuxt/ClC3MLuH.js"
+  },
+  "/_nuxt/CUq1sbe2.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"8b3-+1LVcdPg4ZvkYLA3tgIxjcfQFR4\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 2227,
+    "path": "../public/_nuxt/CUq1sbe2.js"
+  },
+  "/_nuxt/CuVK5HAs.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"1da-mXrD5u7MfcKsn4DgRpWdxmq55qA\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 474,
+    "path": "../public/_nuxt/CuVK5HAs.js"
+  },
+  "/_nuxt/D8zTixFD.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"53b-LHgz+JBTJOJurFOVNaDwr6JzZ/M\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 1339,
+    "path": "../public/_nuxt/D8zTixFD.js"
+  },
+  "/_nuxt/CWEkbuAk.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"88c-r528YDwjV0qglTdbN7cTX1HPNOA\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 2188,
+    "path": "../public/_nuxt/CWEkbuAk.js"
+  },
+  "/_nuxt/DaVpeoyP.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"130-RGldnjoYcWykVZLVIj2Jg9jRfsk\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 304,
+    "path": "../public/_nuxt/DaVpeoyP.js"
   },
   "/_nuxt/DlAUqK2U.js": {
     "type": "text/javascript; charset=utf-8",
     "etag": "\"5b-eFCz/UrraTh721pgAl0VxBNR1es\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
+    "mtime": "2026-10-20T14:51:43.482Z",
     "size": 91,
     "path": "../public/_nuxt/DlAUqK2U.js"
   },
-  "/_nuxt/DGgRJGFy.js": {
+  "/_nuxt/DaxAsVc5.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"aa0-LwJcjxButfjkgq3ACMs5aVMVlRA\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 2720,
-    "path": "../public/_nuxt/DGgRJGFy.js"
+    "etag": "\"301-v+pab66YPNTS+pg6vLRgIEOn1Is\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 769,
+    "path": "../public/_nuxt/DaxAsVc5.js"
   },
-  "/_nuxt/DMKQgn8U.js": {
+  "/_nuxt/DLIwpjsS.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"3d3-MQYRKxIOL6vDniFc6mEP68KqKoc\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 979,
-    "path": "../public/_nuxt/DMKQgn8U.js"
+    "etag": "\"237-wBV/3IUsfMuVejSwSwPr/H6MIxg\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 567,
+    "path": "../public/_nuxt/DLIwpjsS.js"
   },
-  "/_nuxt/Dm_udhuJ.js": {
+  "/_nuxt/DJ9T6bDQ.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"12d-G0C4ziGOBacaXkX2VZaHjutOhis\"",
-    "mtime": "2026-06-30T10:38:54.083Z",
-    "size": 301,
-    "path": "../public/_nuxt/Dm_udhuJ.js"
+    "etag": "\"c93-mxzSf2bbDy/8ihQHpqUKmOVxtzQ\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 3219,
+    "path": "../public/_nuxt/DJ9T6bDQ.js"
   },
-  "/_nuxt/DPtuqZnF.js": {
+  "/_nuxt/DOfIOhge.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"204-+5kY2ik2y2i/TAJb/NGYrV2FMbE\"",
-    "mtime": "2026-06-30T10:38:54.083Z",
-    "size": 516,
-    "path": "../public/_nuxt/DPtuqZnF.js"
+    "etag": "\"253-JUroXVmzVX0FoH/vv6ndviwCTdQ\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 595,
+    "path": "../public/_nuxt/DOfIOhge.js"
   },
-  "/_nuxt/DtgZSoLf.js": {
+  "/_nuxt/DQdukrnM.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"129-yW5vWtHaawAOKSrCyxai90Kye28\"",
-    "mtime": "2026-06-30T10:38:54.083Z",
-    "size": 297,
-    "path": "../public/_nuxt/DtgZSoLf.js"
+    "etag": "\"207-F68B8E0q5h91PWHeKtfpVIU8M9E\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 519,
+    "path": "../public/_nuxt/DQdukrnM.js"
   },
-  "/_nuxt/CWhIcGkA.js": {
+  "/_nuxt/DnwGcCpu.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"87e1e-8JnpaOCx6JrZ1Z7LNtTu5e+onaY\"",
-    "mtime": "2026-06-30T10:38:54.083Z",
-    "size": 556574,
-    "path": "../public/_nuxt/CWhIcGkA.js"
-  },
-  "/_nuxt/Dus-9SqD.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"536-1JprvhJqwfGLka5nfTOloOXOckM\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 1334,
-    "path": "../public/_nuxt/Dus-9SqD.js"
-  },
-  "/_nuxt/DXjoSxr0.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"10e0-CFF2z8cE0kmh/0IhmRm82t5ouH8\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 4320,
-    "path": "../public/_nuxt/DXjoSxr0.js"
-  },
-  "/_nuxt/DyId9qsG.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"2c2f-8wMdVsLWailbof/t8HY0EywuQUI\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 11311,
-    "path": "../public/_nuxt/DyId9qsG.js"
-  },
-  "/_nuxt/dyykIPj5.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"8a9-BQwerrGz+EQrkYKDa01U3f5OnM4\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
+    "etag": "\"8a9-4r8ke6sfE2x4gdVlfsUoxsd/HDk\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
     "size": 2217,
-    "path": "../public/_nuxt/dyykIPj5.js"
+    "path": "../public/_nuxt/DnwGcCpu.js"
+  },
+  "/_nuxt/DqfZ_j7R.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"8b2-PuJty8/PEjnPJH0uhUEqdyOOM9Y\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 2226,
+    "path": "../public/_nuxt/DqfZ_j7R.js"
   },
   "/_nuxt/error-404.BBhU_iaz.css": {
     "type": "text/css; charset=utf-8",
     "etag": "\"97e-eCOlDpp0jm/5BdOYfmSvByotCe4\"",
-    "mtime": "2026-06-30T10:38:54.081Z",
+    "mtime": "2026-10-20T14:51:43.482Z",
     "size": 2430,
     "path": "../public/_nuxt/error-404.BBhU_iaz.css"
+  },
+  "/_nuxt/eE0hHlbB.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"264-Opn6oLFNRZuYKMw/ICZ0pXS37r4\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 612,
+    "path": "../public/_nuxt/eE0hHlbB.js"
+  },
+  "/_nuxt/DQHPU3gp.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"129-YnHB0xMjcTwNsENJ3sEYMC9aw/I\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 297,
+    "path": "../public/_nuxt/DQHPU3gp.js"
+  },
+  "/_nuxt/DvEhJU_9.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"269-iDI7yhS+GbK5NVnXwaxCxQkYH70\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 617,
+    "path": "../public/_nuxt/DvEhJU_9.js"
+  },
+  "/_nuxt/entry.DvAGfMSn.css": {
+    "type": "text/css; charset=utf-8",
+    "etag": "\"826e0-z149oLptxaK2DelUZP2RTxzbJ8E\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 534240,
+    "path": "../public/_nuxt/entry.DvAGfMSn.css"
   },
   "/_nuxt/error-500.Da-Z0YA7.css": {
     "type": "text/css; charset=utf-8",
     "etag": "\"773-YzukniqV1OgCg4eTbl4RF+M08kk\"",
-    "mtime": "2026-06-30T10:38:54.081Z",
+    "mtime": "2026-10-20T14:51:43.482Z",
     "size": 1907,
     "path": "../public/_nuxt/error-500.Da-Z0YA7.css"
   },
-  "/_nuxt/DzfRqOqy.js": {
+  "/_nuxt/h-B-krV5.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"229-/z+SMHB/zcGPl+Wj+fBurdjvIhE\"",
-    "mtime": "2026-06-30T10:38:54.083Z",
-    "size": 553,
-    "path": "../public/_nuxt/DzfRqOqy.js"
+    "etag": "\"1dc-9a/QbmOk+oHHvHGCjnpnKXdscOw\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 476,
+    "path": "../public/_nuxt/h-B-krV5.js"
   },
-  "/_nuxt/fzwZhJK-.js": {
+  "/_nuxt/I5lqZ3B7.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"1e5-89LBM/5ALJhQiiScXrdmxZxMAmM\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 485,
-    "path": "../public/_nuxt/fzwZhJK-.js"
+    "etag": "\"5aa-KtVAHV0MXZrUh1ruwYvn1KPrG8Y\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 1450,
+    "path": "../public/_nuxt/I5lqZ3B7.js"
   },
-  "/_nuxt/jChUu9Ku.js": {
+  "/_nuxt/jAs41KTu.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"ebc-XJMFC/ma2JllGvmyLRZthWriDqg\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
+    "etag": "\"1db-zdad7V43lTvu4FjHUnVhyTpWuWQ\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 475,
+    "path": "../public/_nuxt/jAs41KTu.js"
+  },
+  "/_nuxt/NzLQwEYy.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"ebc-SNRON8tYA+o19Jur58HRy8oIykw\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
     "size": 3772,
-    "path": "../public/_nuxt/jChUu9Ku.js"
+    "path": "../public/_nuxt/NzLQwEYy.js"
+  },
+  "/_nuxt/oktW8QTp.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"1ca-wCQ3GfzGgQNaUnbHCeKvL0S0XNU\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 458,
+    "path": "../public/_nuxt/oktW8QTp.js"
+  },
+  "/_nuxt/ojApV52m.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"21bb-AnKNMNwcXTWd3g5pI1OKLrL2bcU\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 8635,
+    "path": "../public/_nuxt/ojApV52m.js"
+  },
+  "/_nuxt/Nz4sRuLv.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"1d5e-K/burFi/xbXPesVvE4po7YzJn30\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 7518,
+    "path": "../public/_nuxt/Nz4sRuLv.js"
   },
   "/_nuxt/builds/latest.json": {
     "type": "application/json",
-    "etag": "\"47-jTUgyUeR0u93QHOL6K1RvE5BQGs\"",
-    "mtime": "2026-06-30T10:38:59.299Z",
+    "etag": "\"47-u0zANWrsyMVRsDJPi22jBuOiuLU\"",
+    "mtime": "2026-10-20T14:51:49.020Z",
     "size": 71,
     "path": "../public/_nuxt/builds/latest.json"
   },
-  "/_nuxt/LLJR-3ME.js": {
+  "/_nuxt/r0LI5Whb.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"1d5d-uZbhUR4KS3+243Ci9X90kk0jpQk\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 7517,
-    "path": "../public/_nuxt/LLJR-3ME.js"
+    "etag": "\"3ef-6Mqos6Vi/i4034duIXiIShUHmaI\"",
+    "mtime": "2026-10-20T14:51:43.482Z",
+    "size": 1007,
+    "path": "../public/_nuxt/r0LI5Whb.js"
   },
-  "/_nuxt/TjNCYigU.js": {
+  "/_nuxt/wstlD7iF.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"8b3-SsMXAPlWXI/CwUKnuNuTWfvfx9w\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 2227,
-    "path": "../public/_nuxt/TjNCYigU.js"
+    "etag": "\"229-zmgQ9TUpfT1YI9Fb9/mabsLSmCo\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 553,
+    "path": "../public/_nuxt/wstlD7iF.js"
   },
-  "/_nuxt/uTFgMrvX.js": {
+  "/_nuxt/QqxuJP05.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"284-5gbAGI0PnvKej0uDX+5eZxSW2fk\"",
-    "mtime": "2026-06-30T10:38:54.082Z",
-    "size": 644,
-    "path": "../public/_nuxt/uTFgMrvX.js"
+    "etag": "\"b21-oR40RPSM1fQQU9/M+YZr35yDmU8\"",
+    "mtime": "2026-10-20T14:51:43.483Z",
+    "size": 2849,
+    "path": "../public/_nuxt/QqxuJP05.js"
   },
-  "/_nuxt/builds/meta/643da432-6590-4b17-bf10-c23f096cb51f.json": {
+  "/_nuxt/builds/meta/58009865-f83e-4a41-9574-470b90c83506.json": {
     "type": "application/json",
-    "etag": "\"58-iTcsVP5UIR3wV6VmK8aJjK+1M94\"",
-    "mtime": "2026-06-30T10:38:59.300Z",
+    "etag": "\"58-sBM9NJU/DMdr5j2KEmkRpRqtoOA\"",
+    "mtime": "2026-10-20T14:51:49.021Z",
     "size": 88,
-    "path": "../public/_nuxt/builds/meta/643da432-6590-4b17-bf10-c23f096cb51f.json"
-  },
-  "/_nuxt/entry.auapqx2q.css": {
-    "type": "text/css; charset=utf-8",
-    "etag": "\"80e0e-WQ4/OHsUymSkkwH9HER9URQOu50\"",
-    "mtime": "2026-06-30T10:38:54.070Z",
-    "size": 527886,
-    "path": "../public/_nuxt/entry.auapqx2q.css"
+    "path": "../public/_nuxt/builds/meta/58009865-f83e-4a41-9574-470b90c83506.json"
   }
 };
 
@@ -7699,50 +5168,28 @@ const _9bL1_g = eventHandler((event) => {
 
 const _SxA8c9 = defineEventHandler(() => {});
 
-const _lazy_Gn_rRV = () => import('../routes/api/access/current.get.mjs');
 const _lazy_DOqkNG = () => import('../routes/api/b24/analyze-next-step.post.mjs');
+const _lazy_tm34TG = () => import('../routes/api/b24/ask-next-step-ai.post.mjs');
 const _lazy_JjO4vH = () => import('../routes/api/b24/create-call-activity.post.mjs');
 const _lazy_IWDYCf = () => import('../routes/api/b24/load-deal-context.get.mjs');
-const _lazy_o334Xy = () => import('../routes/api/check-data-quality.post.mjs');
-const _lazy_JnK9_H = () => import('../routes/api/check-data-quality/status.get.mjs');
-const _lazy_Q8ze7T = () => import('../routes/api/check-next-step.post.mjs');
-const _lazy_v_gUQ3 = () => import('../routes/api/check-next-step/status.get.mjs');
-const _lazy_0uxmge = () => import('../routes/api/check-reactivation.post.mjs');
-const _lazy_kXbHCq = () => import('../routes/api/check-reactivation/status.get.mjs');
-const _lazy_enfnby = () => import('../routes/api/check-sla.post.mjs');
-const _lazy_DcPzAC = () => import('../routes/api/check-sla/status.get.mjs');
-const _lazy_hd2fpC = () => import('../routes/api/data-quality-log.get.mjs');
+const _lazy_Bv6vDO = () => import('../routes/api/b24/load-navigator-context.get.mjs');
+const _lazy_mSL0bL = () => import('../routes/api/b24/recommend-objection.post.mjs');
+const _lazy_VWPcSI = () => import('../routes/api/b24/session.get.mjs');
 const _lazy_ozBfjM = () => import('../routes/api/debug/client-context.post.mjs');
 const _lazy_JQTpWs = () => import('../routes/api/debug/runtime.get.mjs');
-const _lazy_PUzixM = () => import('../routes/api/next-step-log.get.mjs');
-const _lazy_aK2m5N = () => import('../routes/api/reactivation-log.get.mjs');
-const _lazy_zTyULi = () => import('../routes/api/sla-auto-control.get.mjs');
-const _lazy_zbF6oM = () => import('../routes/api/sla-auto-control.patch.mjs');
-const _lazy_78Igsf = () => import('../routes/api/sla-log.get.mjs');
 const _lazy_XrfEnA = () => import('../routes/renderer.mjs').then(function (n) { return n.r; });
 
 const handlers = [
   { route: '', handler: _9bL1_g, lazy: false, middleware: true, method: undefined },
-  { route: '/api/access/current', handler: _lazy_Gn_rRV, lazy: true, middleware: false, method: "get" },
   { route: '/api/b24/analyze-next-step', handler: _lazy_DOqkNG, lazy: true, middleware: false, method: "post" },
+  { route: '/api/b24/ask-next-step-ai', handler: _lazy_tm34TG, lazy: true, middleware: false, method: "post" },
   { route: '/api/b24/create-call-activity', handler: _lazy_JjO4vH, lazy: true, middleware: false, method: "post" },
   { route: '/api/b24/load-deal-context', handler: _lazy_IWDYCf, lazy: true, middleware: false, method: "get" },
-  { route: '/api/check-data-quality', handler: _lazy_o334Xy, lazy: true, middleware: false, method: "post" },
-  { route: '/api/check-data-quality/status', handler: _lazy_JnK9_H, lazy: true, middleware: false, method: "get" },
-  { route: '/api/check-next-step', handler: _lazy_Q8ze7T, lazy: true, middleware: false, method: "post" },
-  { route: '/api/check-next-step/status', handler: _lazy_v_gUQ3, lazy: true, middleware: false, method: "get" },
-  { route: '/api/check-reactivation', handler: _lazy_0uxmge, lazy: true, middleware: false, method: "post" },
-  { route: '/api/check-reactivation/status', handler: _lazy_kXbHCq, lazy: true, middleware: false, method: "get" },
-  { route: '/api/check-sla', handler: _lazy_enfnby, lazy: true, middleware: false, method: "post" },
-  { route: '/api/check-sla/status', handler: _lazy_DcPzAC, lazy: true, middleware: false, method: "get" },
-  { route: '/api/data-quality-log', handler: _lazy_hd2fpC, lazy: true, middleware: false, method: "get" },
+  { route: '/api/b24/load-navigator-context', handler: _lazy_Bv6vDO, lazy: true, middleware: false, method: "get" },
+  { route: '/api/b24/recommend-objection', handler: _lazy_mSL0bL, lazy: true, middleware: false, method: "post" },
+  { route: '/api/b24/session', handler: _lazy_VWPcSI, lazy: true, middleware: false, method: "get" },
   { route: '/api/debug/client-context', handler: _lazy_ozBfjM, lazy: true, middleware: false, method: "post" },
   { route: '/api/debug/runtime', handler: _lazy_JQTpWs, lazy: true, middleware: false, method: "get" },
-  { route: '/api/next-step-log', handler: _lazy_PUzixM, lazy: true, middleware: false, method: "get" },
-  { route: '/api/reactivation-log', handler: _lazy_aK2m5N, lazy: true, middleware: false, method: "get" },
-  { route: '/api/sla-auto-control', handler: _lazy_zTyULi, lazy: true, middleware: false, method: "get" },
-  { route: '/api/sla-auto-control', handler: _lazy_zbF6oM, lazy: true, middleware: false, method: "patch" },
-  { route: '/api/sla-log', handler: _lazy_78Igsf, lazy: true, middleware: false, method: "get" },
   { route: '/__nuxt_error', handler: _lazy_XrfEnA, lazy: true, middleware: false, method: undefined },
   { route: '/__nuxt_island/**', handler: _SxA8c9, lazy: false, middleware: false, method: undefined },
   { route: '/**', handler: _lazy_XrfEnA, lazy: true, middleware: false, method: undefined }
@@ -8174,5 +5621,5 @@ function setupGracefulShutdown(listener, nitroApp) {
   });
 }
 
-export { $fetch as $, readDataQualityLog as A, readNextStepLog as B, readReactivationLog as C, readSlaAutoControlState as D, readSlaLog as E, reportJobs as F, sanitizeStatusCode as G, serialize$1 as H, setResponseStatus as I, setupGracefulShutdown as J, startDataQualityJob as K, startNextStepJob as L, startReactivationJob as M, startSlaJob as N, stringifyParsedURL as O, stringifyQuery as P, toNodeListener as Q, trapUnhandledNodeErrors as R, updateSlaAutoControlConfig as S, useNitroApp as T, useRuntimeConfig as U, withLeadingSlash as V, withQuery as W, withTrailingSlash as X, withoutTrailingSlash as Y, defineEventHandler as a, defineRenderHandler as b, createError$1 as c, decodePath as d, defu as e, defuFn as f, destr as g, encodePath as h, getContext as i, getHeader as j, getQuery as k, getRequestHeader as l, getResponseStatus as m, getResponseStatusText as n, getRouteRules as o, hasProtocol as p, isEqual as q, isEqual$1 as r, isScriptProtocol as s, joinRelativeURL as t, joinURL as u, klona as v, parseMoscowDateRange as w, parseQuery as x, parseURL as y, readBody as z };
+export { $fetch as $, serialize$1 as A, setupGracefulShutdown as B, stringifyParsedURL as C, stringifyQuery as D, toNodeListener as E, trapUnhandledNodeErrors as F, useNitroApp as G, useRuntimeConfig as H, withLeadingSlash as I, withQuery as J, withTrailingSlash as K, withoutTrailingSlash as L, defineEventHandler as a, defineRenderHandler as b, createError$1 as c, decodePath as d, defu as e, defuFn as f, destr as g, encodePath as h, getContext as i, getHeader as j, getQuery as k, getRequestHeader as l, getResponseStatus as m, getResponseStatusText as n, getRouteRules as o, hasProtocol as p, isEqual as q, isEqual$1 as r, isScriptProtocol as s, joinRelativeURL as t, joinURL as u, klona as v, parseQuery as w, parseURL as x, readBody as y, sanitizeStatusCode as z };
 //# sourceMappingURL=nitro.mjs.map

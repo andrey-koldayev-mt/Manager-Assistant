@@ -1,9 +1,9 @@
 import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import * as vue from 'vue';
-import { defineComponent, toRefs, ref, getCurrentInstance, h, unref, openBlock, createBlock, Teleport, renderSlot, createCommentVNode, computed, mergeProps, withCtx, useSlots, createVNode, resolveDynamicComponent, toDisplayString, withModifiers, inject, watch, provide, isRef, toRef, nextTick, Fragment, shallowRef, resolveComponent, Comment, cloneVNode, hasInjectionContext, camelize, toValue, useModel, mergeModels, watchEffect, markRaw, toHandlerKey, defineAsyncComponent, useSSRContext, createApp, renderList, useId as useId$1, useTemplateRef, reactive, withDirectives, vModelSelect, createTextVNode, onErrorCaptured, onServerPrefetch, shallowReactive, effectScope, normalizeProps, guardReactiveProps, normalizeStyle, toHandlers, getCurrentScope, withKeys, createElementVNode, createElementBlock, watchPostEffect, onScopeDispose, mergeDefaults, isReadonly, isShallow, isReactive, toRaw } from 'vue';
-import { H as serialize, e as defu, p as hasProtocol, V as withLeadingSlash, X as withTrailingSlash, u as joinURL, v as klona, x as parseQuery, q as isEqual, f as defuFn, y as parseURL, h as encodePath, d as decodePath, W as withQuery, s as isScriptProtocol, i as getContext, Y as withoutTrailingSlash, G as sanitizeStatusCode, $ as $fetch$1, c as createError$1, r as isEqual$1, O as stringifyParsedURL, P as stringifyQuery, l as getRequestHeader } from '../_/nitro.mjs';
+import { defineComponent, ref, computed, watch, nextTick, openBlock, createBlock, unref, withCtx, createVNode, mergeProps, renderSlot, createCommentVNode, toRefs, getCurrentInstance, h, Teleport, useSlots, resolveDynamicComponent, createTextVNode, toDisplayString, Fragment, renderList, withModifiers, inject, provide, isRef, toRef, shallowRef, resolveComponent, Comment, cloneVNode, hasInjectionContext, camelize, withKeys, toValue, useModel, mergeModels, watchEffect, markRaw, toHandlerKey, defineAsyncComponent, useSSRContext, createApp, useId as useId$1, useTemplateRef, onErrorCaptured, onServerPrefetch, shallowReactive, reactive, effectScope, normalizeProps, guardReactiveProps, normalizeStyle, toHandlers, getCurrentScope, createElementVNode, createElementBlock, watchPostEffect, onScopeDispose, mergeDefaults, isReadonly, isShallow, isReactive, toRaw } from 'vue';
+import { A as serialize, e as defu, p as hasProtocol, I as withLeadingSlash, K as withTrailingSlash, u as joinURL, v as klona, w as parseQuery, q as isEqual, f as defuFn, x as parseURL, h as encodePath, d as decodePath, i as getContext, J as withQuery, s as isScriptProtocol, L as withoutTrailingSlash, z as sanitizeStatusCode, $ as $fetch$1, c as createError$1, r as isEqual$1, C as stringifyParsedURL, D as stringifyQuery, l as getRequestHeader } from '../_/nitro.mjs';
 import { u as useHead$1, h as headSymbol, b as baseURL, p as publicAssetsURL } from '../routes/renderer.mjs';
-import { ssrRenderComponent, ssrRenderSlot, ssrRenderVNode, ssrRenderClass, ssrInterpolate, ssrRenderAttr, ssrRenderList, ssrRenderAttrs, ssrIncludeBooleanAttr, ssrLooseContain, ssrLooseEqual, ssrRenderStyle, ssrRenderSuspense } from 'vue/server-renderer';
-import { unrefElement, useMounted, reactiveOmit, defaultWindow, reactivePick, createSharedComposable, useEventListener, createGlobalState, useVModel, onKeyStroke, useDebounceFn, useRafFn, computedEager } from '@vueuse/core';
+import { ssrRenderComponent, ssrRenderSlot, ssrRenderList, ssrRenderVNode, ssrRenderClass, ssrInterpolate, ssrRenderAttr, ssrRenderAttrs, ssrIncludeBooleanAttr, ssrRenderSuspense, ssrRenderStyle } from 'vue/server-renderer';
+import { useEventListener, unrefElement, useMounted, useVModel, reactiveOmit, reactivePick, defaultWindow, createSharedComposable, createGlobalState, onKeyStroke, useDebounceFn, useRafFn, computedEager } from '@vueuse/core';
 import { isClient, isIOS, useTimeoutFn, syncRef, useTimeout, refAutoReset, tryOnScopeDispose, createEventHook, tryOnBeforeUnmount, reactiveOmit as reactiveOmit$1 } from '@vueuse/shared';
 import ArrowToTheLeftIcon from '@bitrix24/b24icons-vue/actions/ArrowToTheLeftIcon';
 import ArrowToTheRightIcon from '@bitrix24/b24icons-vue/actions/ArrowToTheRightIcon';
@@ -64,7 +64,7 @@ import { offset, flip, shift, limitShift, size, arrow, hide, useFloating, autoUp
 import { hideOthers } from 'aria-hidden';
 import CircleCheckIcon$1 from '@bitrix24/b24icons-vue/main/CircleCheckIcon';
 import RocketIcon from '@bitrix24/b24icons-vue/main/RocketIcon';
-import RefreshIcon$1 from '@bitrix24/b24icons-vue/main/RefreshIcon';
+import { g as getScenario, c as getScenarioStep, O as OBJECTION_CATALOG_GROUPS, a as OBJECTION_SCENARIOS, N as NAVIGATOR_VARIABLE_LABELS, b as getScenarioChannels } from '../_/objection-navigator.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -72,7 +72,6 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
-import 'node:fs/promises';
 import 'node:url';
 import 'vue-bundle-renderer/runtime';
 import 'unhead/server';
@@ -1000,53 +999,53 @@ const revive_payload_server_MVtmlZaQpj6ApFmshWfUWl5PehCebzaBf2NuRMiIbms = /* @__
     }
   }
 });
-const LazyProseA = defineAsyncComponent(() => import('./A-Cee2WvbQ.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseAccordion = defineAsyncComponent(() => import('./Accordion-mI3DrhL1.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseAccordionItem = defineAsyncComponent(() => import('./AccordionItem-BzZs7Mz2.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseBadge = defineAsyncComponent(() => import('./Badge-CX72nOJf.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseBlockquote = defineAsyncComponent(() => import('./Blockquote-CLQcpFFa.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseCallout = defineAsyncComponent(() => import('./Callout-mw6EzPrW.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseCard = defineAsyncComponent(() => import('./Card-ptyLFkgE.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseCardGroup = defineAsyncComponent(() => import('./CardGroup-BZahZ4TF.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseCode = defineAsyncComponent(() => import('./Code-B9ZCUrx-.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseCodeCollapse = defineAsyncComponent(() => import('./CodeCollapse-VVI3otyX.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseCodeGroup = defineAsyncComponent(() => import('./CodeGroup-D5bE1E3V.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseCodeIcon = defineAsyncComponent(() => import('./CodeIcon-ClyZtDla.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseCodePreview = defineAsyncComponent(() => import('./CodePreview-BE3upnpQ.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseCollapsible = defineAsyncComponent(() => import('./Collapsible-BX878pWp.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseEm = defineAsyncComponent(() => import('./Em-yvmnp3ww.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseField = defineAsyncComponent(() => import('./Field-pTdVjQlh.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseFieldGroup = defineAsyncComponent(() => import('./FieldGroup-C_GjQNht.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseH1 = defineAsyncComponent(() => import('./H1-BQ_xk0NV.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseH2 = defineAsyncComponent(() => import('./H2-CZlkTZz-.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseH3 = defineAsyncComponent(() => import('./H3-CFnRPPko.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseH4 = defineAsyncComponent(() => import('./H4-jdGYSeu1.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseH5 = defineAsyncComponent(() => import('./H5-BnKjLEok.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseH6 = defineAsyncComponent(() => import('./H6-gzRe2jfa.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseHr = defineAsyncComponent(() => import('./Hr-BiWvn8K8.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseImg = defineAsyncComponent(() => import('./Img-DtNWr7g8.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseKbd = defineAsyncComponent(() => import('./Kbd-UXEy6jAQ.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseLi = defineAsyncComponent(() => import('./Li-D0ru6by_.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseOl = defineAsyncComponent(() => import('./Ol-eKEINgpm.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseP = defineAsyncComponent(() => import('./P-C0TGlozq.mjs').then((r) => r["default"] || r.default || r));
-const LazyProsePre = defineAsyncComponent(() => import('./Pre-Ds02hFH6.mjs').then((r) => r["default"] || r.default || r));
-const LazyProsePrompt = defineAsyncComponent(() => import('./Prompt-yjaGpTo_.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseA = defineAsyncComponent(() => import('./A-DjXMmdxY.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseAccordion = defineAsyncComponent(() => import('./Accordion-BrELIxNL.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseAccordionItem = defineAsyncComponent(() => import('./AccordionItem-CWaDSEjS.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseBadge = defineAsyncComponent(() => import('./Badge-DtVqbT2c.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseBlockquote = defineAsyncComponent(() => import('./Blockquote-CRXYWhoM.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseCallout = defineAsyncComponent(() => import('./Callout-DaDyRWKK.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseCard = defineAsyncComponent(() => import('./Card-QkMbgC3l.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseCardGroup = defineAsyncComponent(() => import('./CardGroup-DMvVPGYm.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseCode = defineAsyncComponent(() => import('./Code-Xqg0jJaX.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseCodeCollapse = defineAsyncComponent(() => import('./CodeCollapse-Ba3ujfqM.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseCodeGroup = defineAsyncComponent(() => import('./CodeGroup-DYc5bZXp.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseCodeIcon = defineAsyncComponent(() => import('./CodeIcon-BzYtHhS1.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseCodePreview = defineAsyncComponent(() => import('./CodePreview-DIUf35VL.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseCollapsible = defineAsyncComponent(() => import('./Collapsible-SGxD2cKB.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseEm = defineAsyncComponent(() => import('./Em-DqSf2ZPf.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseField = defineAsyncComponent(() => import('./Field-yRwT5nIV.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseFieldGroup = defineAsyncComponent(() => import('./FieldGroup-S8JIcfZS.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseH1 = defineAsyncComponent(() => import('./H1-CE__CPQZ.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseH2 = defineAsyncComponent(() => import('./H2-CRCzRdo-.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseH3 = defineAsyncComponent(() => import('./H3-DIBjdXKs.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseH4 = defineAsyncComponent(() => import('./H4-CCReE43B.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseH5 = defineAsyncComponent(() => import('./H5-CA3YpzgF.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseH6 = defineAsyncComponent(() => import('./H6-Dh2Bx0Vs.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseHr = defineAsyncComponent(() => import('./Hr-bxjf0syD.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseImg = defineAsyncComponent(() => import('./Img-B1csB_eH.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseKbd = defineAsyncComponent(() => import('./Kbd-ClszCxpD.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseLi = defineAsyncComponent(() => import('./Li-iR9RDXSI.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseOl = defineAsyncComponent(() => import('./Ol-X_S4rLIF.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseP = defineAsyncComponent(() => import('./P-BoJtdQax.mjs').then((r) => r["default"] || r.default || r));
+const LazyProsePre = defineAsyncComponent(() => import('./Pre-DhCFauyv.mjs').then((r) => r["default"] || r.default || r));
+const LazyProsePrompt = defineAsyncComponent(() => import('./Prompt-DlcYowNV.mjs').then((r) => r["default"] || r.default || r));
 const LazyProseScript = defineAsyncComponent(() => import('./Script-4T5bZV8T.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseSteps = defineAsyncComponent(() => import('./Steps-C41i3167.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseStrong = defineAsyncComponent(() => import('./Strong-BdNZdzDi.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseTable = defineAsyncComponent(() => import('./Table-X1JMjSCu.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseTabs = defineAsyncComponent(() => import('./Tabs-B0M4pKkW.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseTabsItem = defineAsyncComponent(() => import('./TabsItem-BpjKw24s.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseTbody = defineAsyncComponent(() => import('./Tbody-DLzU5ml5.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseTd = defineAsyncComponent(() => import('./Td-Cyr9lUvJ.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseTh = defineAsyncComponent(() => import('./Th-Dzjjq5u-.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseThead = defineAsyncComponent(() => import('./Thead-BOS-RduI.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseTr = defineAsyncComponent(() => import('./Tr-DedbxiVV.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseUl = defineAsyncComponent(() => import('./Ul-DrzE2Obx.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseCaution = defineAsyncComponent(() => import('./Caution-DwFSpTCv.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseNote = defineAsyncComponent(() => import('./Note-MVsgB3Lv.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseTip = defineAsyncComponent(() => import('./Tip-DU_qspvY.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseWarning = defineAsyncComponent(() => import('./Warning-Bwjs_Qjw.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseSteps = defineAsyncComponent(() => import('./Steps-Ddj4pDlK.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseStrong = defineAsyncComponent(() => import('./Strong-CzpGX2wA.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseTable = defineAsyncComponent(() => import('./Table-BxOYS64r.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseTabs = defineAsyncComponent(() => import('./Tabs-BRp5qkTC.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseTabsItem = defineAsyncComponent(() => import('./TabsItem-D45rjiHt.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseTbody = defineAsyncComponent(() => import('./Tbody-WFlAtODX.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseTd = defineAsyncComponent(() => import('./Td-B-SJDg-Z.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseTh = defineAsyncComponent(() => import('./Th-DgTpaQfU.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseThead = defineAsyncComponent(() => import('./Thead-DtLzLbyJ.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseTr = defineAsyncComponent(() => import('./Tr-CPKDrwj6.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseUl = defineAsyncComponent(() => import('./Ul-CuVFo-i5.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseCaution = defineAsyncComponent(() => import('./Caution-DXEBfmsl.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseNote = defineAsyncComponent(() => import('./Note-BRtj-2H7.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseTip = defineAsyncComponent(() => import('./Tip-DRSEzKQ6.mjs').then((r) => r["default"] || r.default || r));
+const LazyProseWarning = defineAsyncComponent(() => import('./Warning-kGJlMzkK.mjs').then((r) => r["default"] || r.default || r));
 const lazyGlobalComponents = [
   ["ProseA", LazyProseA],
   ["ProseAccordion", LazyProseAccordion],
@@ -1261,12 +1260,61 @@ function handleAndDispatchCustomEvent$1(name, handler, detail) {
 function isNullish(value) {
   return value === null || value === void 0;
 }
+function isValueEqualOrExist(base, current) {
+  if (isNullish(base)) return false;
+  if (Array.isArray(base)) return base.some((val) => isEqual(val, current));
+  else return isEqual(base, current);
+}
 function renderSlotFragments(children) {
   if (!children) return [];
   return children.flatMap((child) => {
     if (child.type === Fragment) return renderSlotFragments(child.children);
     return [child];
   });
+}
+const ignoredElement = ["INPUT", "TEXTAREA"];
+function useArrowNavigation(e, currentElement, parentElement, options = {}) {
+  if (!currentElement || options.enableIgnoredElement && ignoredElement.includes(currentElement.nodeName)) return null;
+  const { arrowKeyOptions = "both", attributeName = "[data-reka-collection-item]", itemsArray = [], loop = true, dir = "ltr", preventScroll = true, focus: focus2 = false } = options;
+  const [right, left, up, down, home, end] = [
+    e.key === "ArrowRight",
+    e.key === "ArrowLeft",
+    e.key === "ArrowUp",
+    e.key === "ArrowDown",
+    e.key === "Home",
+    e.key === "End"
+  ];
+  const goingVertical = up || down;
+  const goingHorizontal = right || left;
+  if (!home && !end && (!goingVertical && !goingHorizontal || arrowKeyOptions === "vertical" && goingHorizontal || arrowKeyOptions === "horizontal" && goingVertical)) return null;
+  const allCollectionItems = parentElement ? Array.from(parentElement.querySelectorAll(attributeName)) : itemsArray;
+  if (!allCollectionItems.length) return null;
+  if (preventScroll) e.preventDefault();
+  let item = null;
+  if (goingHorizontal || goingVertical) {
+    const goForward = goingVertical ? down : dir === "ltr" ? right : left;
+    item = findNextFocusableElement(allCollectionItems, currentElement, {
+      goForward,
+      loop
+    });
+  } else if (home) item = allCollectionItems.at(0) || null;
+  else if (end) item = allCollectionItems.at(-1) || null;
+  if (focus2) item?.focus();
+  return item;
+}
+function findNextFocusableElement(elements, currentElement, options, iterations = !elements.includes(currentElement) ? elements.length + 1 : elements.length) {
+  if (--iterations === 0) return null;
+  const index = elements.indexOf(currentElement);
+  let newIndex;
+  if (index === -1) newIndex = options.goForward ? 0 : elements.length - 1;
+  else newIndex = options.goForward ? index + 1 : index - 1;
+  if (!options.loop && (newIndex < 0 || newIndex >= elements.length)) return null;
+  const adjustedNewIndex = (newIndex + elements.length) % elements.length;
+  const candidate = elements[adjustedNewIndex];
+  if (!candidate) return null;
+  const isDisabled = candidate.hasAttribute("disabled") && candidate.getAttribute("disabled") !== "false";
+  if (isDisabled) return findNextFocusableElement(elements, candidate, options, iterations);
+  return candidate;
 }
 const [injectConfigProviderContext, provideConfigProviderContext] = /* @__PURE__ */ createContext("ConfigProvider");
 var ConfigProvider_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
@@ -2287,6 +2335,586 @@ function usePrimitiveElement() {
     currentElement
   };
 }
+const [injectCollapsibleRootContext, provideCollapsibleRootContext] = /* @__PURE__ */ createContext("CollapsibleRoot");
+var CollapsibleRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "CollapsibleRoot",
+  props: {
+    defaultOpen: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    open: {
+      type: Boolean,
+      required: false,
+      default: void 0
+    },
+    disabled: {
+      type: Boolean,
+      required: false
+    },
+    unmountOnHide: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false
+    }
+  },
+  emits: ["update:open"],
+  setup(__props, { expose: __expose, emit: __emit }) {
+    const props = __props;
+    const emit = __emit;
+    const open = useVModel(props, "open", emit, {
+      defaultValue: props.defaultOpen,
+      passive: props.open === void 0
+    });
+    const { disabled, unmountOnHide } = toRefs(props);
+    provideCollapsibleRootContext({
+      contentId: "",
+      disabled,
+      open,
+      unmountOnHide,
+      onOpenToggle: () => {
+        if (disabled.value) return;
+        open.value = !open.value;
+      }
+    });
+    __expose({ open });
+    useForwardExpose();
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(Primitive), {
+        as: _ctx.as,
+        "as-child": props.asChild,
+        "data-state": unref(open) ? "open" : "closed",
+        "data-disabled": unref(disabled) ? "" : void 0
+      }, {
+        default: withCtx(() => [renderSlot(_ctx.$slots, "default", { open: unref(open) })]),
+        _: 3
+      }, 8, [
+        "as",
+        "as-child",
+        "data-state",
+        "data-disabled"
+      ]);
+    };
+  }
+});
+var CollapsibleRoot_default = CollapsibleRoot_vue_vue_type_script_setup_true_lang_default;
+var CollapsibleContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  inheritAttrs: false,
+  __name: "CollapsibleContent",
+  props: {
+    forceMount: {
+      type: Boolean,
+      required: false
+    },
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false
+    }
+  },
+  emits: ["contentFound"],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emits = __emit;
+    const rootContext = injectCollapsibleRootContext();
+    rootContext.contentId ||= useId(void 0, "reka-collapsible-content");
+    const presentRef = ref();
+    const { forwardRef, currentElement } = useForwardExpose();
+    const width = ref(0);
+    const height = ref(0);
+    const isOpen = computed(() => rootContext.open.value);
+    const isMountAnimationPrevented = ref(isOpen.value);
+    const currentStyle = ref();
+    watch(() => [isOpen.value, presentRef.value?.present], async () => {
+      await nextTick();
+      const node = currentElement.value;
+      if (!node) return;
+      currentStyle.value = currentStyle.value || {
+        transitionDuration: node.style.transitionDuration,
+        animationName: node.style.animationName
+      };
+      node.style.transitionDuration = "0s";
+      node.style.animationName = "none";
+      const rect = node.getBoundingClientRect();
+      height.value = rect.height;
+      width.value = rect.width;
+      if (!isMountAnimationPrevented.value) {
+        node.style.transitionDuration = currentStyle.value.transitionDuration;
+        node.style.animationName = currentStyle.value.animationName;
+      }
+    }, { immediate: true });
+    const skipAnimation = computed(() => isMountAnimationPrevented.value && rootContext.open.value);
+    useEventListener(currentElement, "beforematch", (ev) => {
+      requestAnimationFrame(() => {
+        rootContext.onOpenToggle();
+        emits("contentFound");
+      });
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(Presence_default), {
+        ref_key: "presentRef",
+        ref: presentRef,
+        present: _ctx.forceMount || unref(rootContext).open.value,
+        "force-mount": true
+      }, {
+        default: withCtx(({ present }) => [createVNode(unref(Primitive), mergeProps(_ctx.$attrs, {
+          id: unref(rootContext).contentId,
+          ref: unref(forwardRef),
+          "as-child": props.asChild,
+          as: _ctx.as,
+          hidden: !present ? unref(rootContext).unmountOnHide.value ? "" : "until-found" : void 0,
+          "data-state": skipAnimation.value ? void 0 : unref(rootContext).open.value ? "open" : "closed",
+          "data-disabled": unref(rootContext).disabled?.value ? "" : void 0,
+          style: {
+            [`--reka-collapsible-content-height`]: `${height.value}px`,
+            [`--reka-collapsible-content-width`]: `${width.value}px`
+          }
+        }), {
+          default: withCtx(() => [(unref(rootContext).unmountOnHide.value ? present : true) ? renderSlot(_ctx.$slots, "default", { key: 0 }) : createCommentVNode("v-if", true)]),
+          _: 2
+        }, 1040, [
+          "id",
+          "as-child",
+          "as",
+          "hidden",
+          "data-state",
+          "data-disabled",
+          "style"
+        ])]),
+        _: 3
+      }, 8, ["present"]);
+    };
+  }
+});
+var CollapsibleContent_default = CollapsibleContent_vue_vue_type_script_setup_true_lang_default;
+var CollapsibleTrigger_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "CollapsibleTrigger",
+  props: {
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false,
+      default: "button"
+    }
+  },
+  setup(__props) {
+    const props = __props;
+    useForwardExpose();
+    const rootContext = injectCollapsibleRootContext();
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(Primitive), {
+        type: _ctx.as === "button" ? "button" : void 0,
+        as: _ctx.as,
+        "as-child": props.asChild,
+        "aria-controls": unref(rootContext).contentId,
+        "aria-expanded": unref(rootContext).open.value,
+        "data-state": unref(rootContext).open.value ? "open" : "closed",
+        "data-disabled": unref(rootContext).disabled?.value ? "" : void 0,
+        disabled: unref(rootContext).disabled?.value,
+        onClick: unref(rootContext).onOpenToggle
+      }, {
+        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+        _: 3
+      }, 8, [
+        "type",
+        "as",
+        "as-child",
+        "aria-controls",
+        "aria-expanded",
+        "data-state",
+        "data-disabled",
+        "disabled",
+        "onClick"
+      ]);
+    };
+  }
+});
+var CollapsibleTrigger_default = CollapsibleTrigger_vue_vue_type_script_setup_true_lang_default;
+function validateProps({ type, defaultValue, modelValue }) {
+  const value = modelValue || defaultValue;
+  const canTypeBeInferred = modelValue !== void 0 || defaultValue !== void 0;
+  if (canTypeBeInferred) return Array.isArray(value) ? "multiple" : "single";
+  else return type ?? "single";
+}
+function getDefaultType({ type, defaultValue, modelValue }) {
+  if (type) return type;
+  return validateProps({
+    type,
+    defaultValue,
+    modelValue
+  });
+}
+function getDefaultValue({ type, defaultValue }) {
+  if (defaultValue !== void 0) return defaultValue;
+  return type === "single" ? void 0 : [];
+}
+function useSingleOrMultipleValue(props, emits) {
+  const type = computed(() => getDefaultType(props));
+  const modelValue = useVModel(props, "modelValue", emits, {
+    defaultValue: getDefaultValue(props),
+    passive: props.modelValue === void 0,
+    deep: true
+  });
+  function changeModelValue(value) {
+    if (type.value === "single") modelValue.value = isEqual(value, modelValue.value) ? void 0 : value;
+    else {
+      const modelValueArray = Array.isArray(modelValue.value) ? [...modelValue.value || []] : [modelValue.value].filter(Boolean);
+      if (isValueEqualOrExist(modelValueArray, value)) {
+        const index = modelValueArray.findIndex((i) => isEqual(i, value));
+        modelValueArray.splice(index, 1);
+      } else modelValueArray.push(value);
+      modelValue.value = modelValueArray;
+    }
+  }
+  const isSingle = computed(() => type.value === "single");
+  return {
+    modelValue,
+    changeModelValue,
+    isSingle
+  };
+}
+const [injectAccordionRootContext, provideAccordionRootContext] = /* @__PURE__ */ createContext("AccordionRoot");
+var AccordionRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "AccordionRoot",
+  props: {
+    collapsible: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    dir: {
+      type: String,
+      required: false
+    },
+    orientation: {
+      type: String,
+      required: false,
+      default: "vertical"
+    },
+    unmountOnHide: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false
+    },
+    type: {
+      type: String,
+      required: false
+    },
+    modelValue: {
+      type: null,
+      required: false
+    },
+    defaultValue: {
+      type: null,
+      required: false
+    }
+  },
+  emits: ["update:modelValue"],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emits = __emit;
+    const { dir, disabled, unmountOnHide } = toRefs(props);
+    const direction = useDirection(dir);
+    const { modelValue, changeModelValue, isSingle } = useSingleOrMultipleValue(props, emits);
+    const { forwardRef, currentElement: parentElement } = useForwardExpose();
+    provideAccordionRootContext({
+      disabled,
+      direction,
+      orientation: props.orientation,
+      parentElement,
+      isSingle,
+      collapsible: props.collapsible,
+      modelValue,
+      changeModelValue,
+      unmountOnHide
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(Primitive), {
+        ref: unref(forwardRef),
+        "as-child": _ctx.asChild,
+        as: _ctx.as
+      }, {
+        default: withCtx(() => [renderSlot(_ctx.$slots, "default", { modelValue: unref(modelValue) })]),
+        _: 3
+      }, 8, ["as-child", "as"]);
+    };
+  }
+});
+var AccordionRoot_default = AccordionRoot_vue_vue_type_script_setup_true_lang_default;
+var AccordionItemState = /* @__PURE__ */ (function(AccordionItemState$1) {
+  AccordionItemState$1["Open"] = "open";
+  AccordionItemState$1["Closed"] = "closed";
+  return AccordionItemState$1;
+})(AccordionItemState || {});
+const [injectAccordionItemContext, provideAccordionItemContext] = /* @__PURE__ */ createContext("AccordionItem");
+var AccordionItem_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "AccordionItem",
+  props: {
+    disabled: {
+      type: Boolean,
+      required: false
+    },
+    value: {
+      type: String,
+      required: true
+    },
+    unmountOnHide: {
+      type: Boolean,
+      required: false,
+      default: void 0
+    },
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false
+    }
+  },
+  setup(__props, { expose: __expose }) {
+    const props = __props;
+    const rootContext = injectAccordionRootContext();
+    const open = computed(() => rootContext.isSingle.value ? props.value === rootContext.modelValue.value : Array.isArray(rootContext.modelValue.value) && rootContext.modelValue.value.includes(props.value));
+    const disabled = computed(() => {
+      return rootContext.disabled.value || props.disabled;
+    });
+    const dataDisabled = computed(() => disabled.value ? "" : void 0);
+    const dataState = computed(() => open.value ? AccordionItemState.Open : AccordionItemState.Closed);
+    __expose({
+      open,
+      dataDisabled
+    });
+    const { currentRef, currentElement } = useForwardExpose();
+    provideAccordionItemContext({
+      open,
+      dataState,
+      disabled,
+      dataDisabled,
+      triggerId: "",
+      currentRef,
+      currentElement,
+      value: computed(() => props.value)
+    });
+    function handleArrowKey(e) {
+      const target = e.target;
+      const allCollectionItems = Array.from(rootContext.parentElement.value?.querySelectorAll("[data-reka-collection-item]") ?? []);
+      const collectionItemIndex = allCollectionItems.findIndex((item) => item === target);
+      if (collectionItemIndex === -1) return null;
+      useArrowNavigation(e, target, rootContext.parentElement.value, {
+        arrowKeyOptions: rootContext.orientation,
+        dir: rootContext.direction.value,
+        focus: true
+      });
+    }
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(CollapsibleRoot_default), {
+        "data-orientation": unref(rootContext).orientation,
+        "data-disabled": dataDisabled.value,
+        "data-state": dataState.value,
+        disabled: disabled.value,
+        open: open.value,
+        as: props.as,
+        "as-child": props.asChild,
+        "unmount-on-hide": props.unmountOnHide ?? unref(rootContext).unmountOnHide.value,
+        onKeydown: withKeys(handleArrowKey, [
+          "up",
+          "down",
+          "left",
+          "right",
+          "home",
+          "end"
+        ])
+      }, {
+        default: withCtx(() => [renderSlot(_ctx.$slots, "default", { open: open.value })]),
+        _: 3
+      }, 8, [
+        "data-orientation",
+        "data-disabled",
+        "data-state",
+        "disabled",
+        "open",
+        "as",
+        "as-child",
+        "unmount-on-hide"
+      ]);
+    };
+  }
+});
+var AccordionItem_default = AccordionItem_vue_vue_type_script_setup_true_lang_default;
+var AccordionContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "AccordionContent",
+  props: {
+    forceMount: {
+      type: Boolean,
+      required: false
+    },
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false
+    }
+  },
+  setup(__props) {
+    const props = __props;
+    const rootContext = injectAccordionRootContext();
+    const itemContext = injectAccordionItemContext();
+    useForwardExpose();
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(CollapsibleContent_default), {
+        role: "region",
+        "as-child": props.asChild,
+        as: _ctx.as,
+        "force-mount": props.forceMount,
+        "aria-labelledby": unref(itemContext).triggerId,
+        "data-state": unref(itemContext).dataState.value,
+        "data-disabled": unref(itemContext).dataDisabled.value,
+        "data-orientation": unref(rootContext).orientation,
+        style: {
+          "--reka-accordion-content-width": "var(--reka-collapsible-content-width)",
+          "--reka-accordion-content-height": "var(--reka-collapsible-content-height)"
+        },
+        onContentFound: _cache[0] || (_cache[0] = ($event) => unref(rootContext).changeModelValue(unref(itemContext).value.value))
+      }, {
+        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+        _: 3
+      }, 8, [
+        "as-child",
+        "as",
+        "force-mount",
+        "aria-labelledby",
+        "data-state",
+        "data-disabled",
+        "data-orientation"
+      ]);
+    };
+  }
+});
+var AccordionContent_default = AccordionContent_vue_vue_type_script_setup_true_lang_default;
+var AccordionHeader_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "AccordionHeader",
+  props: {
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false,
+      default: "h3"
+    }
+  },
+  setup(__props) {
+    const props = __props;
+    const rootContext = injectAccordionRootContext();
+    const itemContext = injectAccordionItemContext();
+    useForwardExpose();
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(Primitive), {
+        as: props.as,
+        "as-child": props.asChild,
+        "data-orientation": unref(rootContext).orientation,
+        "data-state": unref(itemContext).dataState.value,
+        "data-disabled": unref(itemContext).dataDisabled.value
+      }, {
+        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+        _: 3
+      }, 8, [
+        "as",
+        "as-child",
+        "data-orientation",
+        "data-state",
+        "data-disabled"
+      ]);
+    };
+  }
+});
+var AccordionHeader_default = AccordionHeader_vue_vue_type_script_setup_true_lang_default;
+var AccordionTrigger_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "AccordionTrigger",
+  props: {
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false
+    }
+  },
+  setup(__props) {
+    const props = __props;
+    const rootContext = injectAccordionRootContext();
+    const itemContext = injectAccordionItemContext();
+    itemContext.triggerId ||= useId(void 0, "reka-accordion-trigger");
+    function changeItem() {
+      const triggerDisabled = rootContext.isSingle.value && itemContext.open.value && !rootContext.collapsible;
+      if (itemContext.disabled.value || triggerDisabled) return;
+      rootContext.changeModelValue(itemContext.value.value);
+    }
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(CollapsibleTrigger_default), {
+        id: unref(itemContext).triggerId,
+        ref: unref(itemContext).currentRef,
+        "data-reka-collection-item": "",
+        as: props.as,
+        "as-child": props.asChild,
+        "aria-disabled": unref(itemContext).disabled.value || void 0,
+        "aria-expanded": unref(itemContext).open.value || false,
+        "data-disabled": unref(itemContext).dataDisabled.value,
+        "data-orientation": unref(rootContext).orientation,
+        "data-state": unref(itemContext).dataState.value,
+        disabled: unref(itemContext).disabled.value,
+        onClick: changeItem
+      }, {
+        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+        _: 3
+      }, 8, [
+        "id",
+        "as",
+        "as-child",
+        "aria-disabled",
+        "aria-expanded",
+        "data-disabled",
+        "data-orientation",
+        "data-state",
+        "disabled"
+      ]);
+    };
+  }
+});
+var AccordionTrigger_default = AccordionTrigger_vue_vue_type_script_setup_true_lang_default;
 const POINTER_DOWN_OUTSIDE = "dismissableLayer.pointerDownOutside";
 const FOCUS_OUTSIDE = "dismissableLayer.focusOutside";
 function isLayerExist(layerElement, targetElement) {
@@ -8423,7 +9051,7 @@ function useAvatarGroup(props) {
     color
   };
 }
-const theme$d = {
+const theme$e = {
   "slots": {
     "root": "relative shrink-0 isolate inline-flex items-center justify-center",
     "base": "ui-counter__scope --air font-[family-name:var(--ui-font-family-primary)] font-(--ui-font-weight-medium) select-none relative min-w-(--ui-counter-size) h-(--ui-counter-size) py-0 px-(--ui-counter-inline-space) inline-flex items-center justify-center bg-(--b24ui-background) rounded-(--ui-counter-current-size) ring-(length:--b24ui-border-width) ring-(--b24ui-border-color) text-center align-middle text-(length:--ui-counter-font-size) text-(--b24ui-color) leading-(--ui-counter-current-size) overflow-hidden z-1 text-nowrap",
@@ -8628,7 +9256,7 @@ const theme$d = {
     "inverted": false
   }
 };
-const _sfc_main$l = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
+const _sfc_main$m = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
   __name: "B24Chip",
   __ssrInlineRender: true,
   props: /* @__PURE__ */ mergeModels({
@@ -8654,7 +9282,7 @@ const _sfc_main$l = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
     const props = useComponentProps("chip", _props);
     const show = useModel(__props, "show", { type: Boolean, ...{ default: true } });
     const appConfig2 = useAppConfig();
-    const b24ui = computed(() => tv({ extend: tv(theme$d), ...appConfig2.b24ui?.chip || {} })({
+    const b24ui = computed(() => tv({ extend: tv(theme$e), ...appConfig2.b24ui?.chip || {} })({
       color: props.color,
       inverted: Boolean(props.inverted),
       size: props.size,
@@ -8735,13 +9363,13 @@ const _sfc_main$l = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
     };
   }
 });
-const _sfc_setup$l = _sfc_main$l.setup;
-_sfc_main$l.setup = (props, ctx) => {
+const _sfc_setup$m = _sfc_main$m.setup;
+_sfc_main$m.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/Chip.vue");
-  return _sfc_setup$l ? _sfc_setup$l(props, ctx) : void 0;
+  return _sfc_setup$m ? _sfc_setup$m(props, ctx) : void 0;
 };
-const theme$c = {
+const theme$d = {
   "slots": {
     "root": "air-secondary-accent inline-flex items-center justify-center shrink-0 select-none rounded-full align-middle bg-(--b24ui-background) ring ring-(--b24ui-border-color)",
     "image": "h-full w-full rounded-[inherit] object-cover",
@@ -8846,7 +9474,7 @@ const theme$c = {
     "color": "air-secondary-no-accent"
   }
 };
-const _sfc_main$k = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
+const _sfc_main$l = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
   __name: "B24Avatar",
   __ssrInlineRender: true,
   props: {
@@ -8876,7 +9504,7 @@ const _sfc_main$k = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
     );
     const appConfig2 = useAppConfig();
     const { size: size2, color } = useAvatarGroup(_props);
-    const b24ui = computed(() => tv({ extend: tv(theme$c), ...appConfig2.b24ui?.avatar || {} })({
+    const b24ui = computed(() => tv({ extend: tv(theme$d), ...appConfig2.b24ui?.avatar || {} })({
       size: size2.value ?? props.size,
       color: color.value ?? props.color
     }));
@@ -8899,7 +9527,7 @@ const _sfc_main$k = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
       error.value = true;
     }
     return (_ctx, _push, _parent, _attrs) => {
-      ssrRenderVNode(_push, createVNode(resolveDynamicComponent(unref(props).chip ? _sfc_main$l : unref(Primitive)), mergeProps({
+      ssrRenderVNode(_push, createVNode(resolveDynamicComponent(unref(props).chip ? _sfc_main$m : unref(Primitive)), mergeProps({
         as: as.value.root
       }, unref(props).chip ? typeof unref(props).chip === "object" ? { inset: true, ...unref(props).chip } : { inset: true } : {}, {
         "data-slot": "root",
@@ -8988,11 +9616,11 @@ const _sfc_main$k = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
     };
   }
 });
-const _sfc_setup$k = _sfc_main$k.setup;
-_sfc_main$k.setup = (props, ctx) => {
+const _sfc_setup$l = _sfc_main$l.setup;
+_sfc_main$l.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/Avatar.vue");
-  return _sfc_setup$k ? _sfc_setup$k(props, ctx) : void 0;
+  return _sfc_setup$l ? _sfc_setup$l(props, ctx) : void 0;
 };
 function useComponentIcons(componentProps) {
   const props = computed(() => toValue(componentProps));
@@ -9446,7 +10074,7 @@ function applyTrailingSlashBehavior(to, trailingSlash) {
   }
   return normalizeFn(to, true);
 }
-const _sfc_main$j = {
+const _sfc_main$k = {
   __name: "B24LinkBase",
   __ssrInlineRender: true,
   props: {
@@ -9510,13 +10138,13 @@ const _sfc_main$j = {
     };
   }
 };
-const _sfc_setup$j = _sfc_main$j.setup;
-_sfc_main$j.setup = (props, ctx) => {
+const _sfc_setup$k = _sfc_main$k.setup;
+_sfc_main$k.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/LinkBase.vue");
-  return _sfc_setup$j ? _sfc_setup$j(props, ctx) : void 0;
+  return _sfc_setup$k ? _sfc_setup$k(props, ctx) : void 0;
 };
-const theme$b = {
+const theme$c = {
   "base": "cursor-pointer focus-visible:outline-(--ui-color-accent-main-primary) focus-visible:outline-1 focus-visible:rounded-[4px] text-start",
   "variants": {
     "active": {
@@ -9538,7 +10166,7 @@ const theme$b = {
     }
   ]
 };
-const _sfc_main$i = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
+const _sfc_main$j = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
   __name: "B24Link",
   __ssrInlineRender: true,
   props: {
@@ -9579,7 +10207,7 @@ const _sfc_main$i = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
     const nuxtApp = useNuxtApp();
     const nuxtLinkProps = useForwardProps$1(reactiveOmit(props, "as", "type", "disabled", "active", "exact", "exactQuery", "exactHash", "activeClass", "inactiveClass", "to", "href", "raw", "custom", "locale", "class"));
     const b24ui = computed(() => tv({
-      extend: tv(theme$b),
+      extend: tv(theme$c),
       ...defu({
         variants: {
           active: {
@@ -9705,7 +10333,7 @@ const _sfc_main$i = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
                   _: 2
                 }, _parent2, _scopeId));
               } else {
-                _push2(ssrRenderComponent(_sfc_main$j, mergeProps({
+                _push2(ssrRenderComponent(_sfc_main$k, mergeProps({
                   ..._ctx.$attrs,
                   ...__props.exact && isExactActive ? { "aria-current": props.ariaCurrentValue } : {},
                   as: __props.as,
@@ -9754,7 +10382,7 @@ const _sfc_main$i = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
                     })
                   ]),
                   _: 2
-                }, 1024)) : (openBlock(), createBlock(_sfc_main$j, mergeProps({ key: 1 }, {
+                }, 1024)) : (openBlock(), createBlock(_sfc_main$k, mergeProps({ key: 1 }, {
                   ..._ctx.$attrs,
                   ...__props.exact && isExactActive ? { "aria-current": props.ariaCurrentValue } : {},
                   as: __props.as,
@@ -9808,7 +10436,7 @@ const _sfc_main$i = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
           _: 3
         }, _parent));
       } else {
-        _push(ssrRenderComponent(_sfc_main$j, mergeProps({
+        _push(ssrRenderComponent(_sfc_main$k, mergeProps({
           ..._ctx.$attrs,
           as: __props.as,
           type: __props.type,
@@ -9836,13 +10464,13 @@ const _sfc_main$i = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
     };
   }
 });
-const _sfc_setup$i = _sfc_main$i.setup;
-_sfc_main$i.setup = (props, ctx) => {
+const _sfc_setup$j = _sfc_main$j.setup;
+_sfc_main$j.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/Link.vue");
-  return _sfc_setup$i ? _sfc_setup$i(props, ctx) : void 0;
+  return _sfc_setup$j ? _sfc_setup$j(props, ctx) : void 0;
 };
-const theme$a = {
+const theme$b = {
   "slots": {
     "base": "ui-btn font-[family-name:var(--ui-font-family-primary)] select-none cursor-pointer inline-flex items-center relative outline-transparent focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed aria-disabled:cursor-not-allowed disabled:opacity-30 aria-disabled:opacity-30 transition duration-0 ease-linear border-(length:--ui-btn-border-width) text-(--ui-btn-color) bg-(--ui-btn-background) border-(--ui-btn-border-color) hover:text-(--ui-btn-color-hover) hover:bg-(--ui-btn-background-hover) hover:border-(--ui-btn-border-color-hover) focus:text-(--ui-btn-color-hover) focus:bg-(--ui-btn-background-hover) focus:border-(--ui-btn-border-color-hover) active:text-(--ui-btn-color-active) active:bg-(--ui-btn-background-active) active:border-(--ui-btn-border-color-active) disabled:bg-(--ui-btn-background) disabled:border-(--ui-btn-border-color) aria-disabled:bg-(--ui-btn-background) aria-disabled:border-(--ui-btn-border-color) focus-visible:outline-(--ui-btn-background) ring-(--ui-btn-background-hover) focus:outline-none focus-visible:ring-(--ui-btn-background-hover) h-(--ui-btn-height) text-(length:--ui-btn-font-size) leading-(--ui-btn-height) font-(--ui-btn-font-weight)",
     "baseLoading": "h-full w-full absolute inset-0 flex flex-row flex-nowrap items-center justify-center",
@@ -10150,7 +10778,7 @@ const theme$a = {
     "isAir": true
   }
 };
-const _sfc_main$h = {
+const _sfc_main$i = {
   __name: "B24Button",
   __ssrInlineRender: true,
   props: {
@@ -10235,7 +10863,7 @@ const _sfc_main$h = {
       return (props?.label || "").length > 0 || isUseSlot;
     });
     const b24ui = computed(() => tv({
-      extend: tv(theme$a),
+      extend: tv(theme$b),
       ...defu({
         variants: {
           active: {
@@ -10266,13 +10894,13 @@ const _sfc_main$h = {
       isAir: true
     }));
     return (_ctx, _push, _parent, _attrs) => {
-      _push(ssrRenderComponent(_sfc_main$i, mergeProps({
+      _push(ssrRenderComponent(_sfc_main$j, mergeProps({
         type: unref(props).type,
         disabled: unref(props).disabled || isLoading.value
       }, proxyLinkProps.value, { custom: "" }, _attrs), {
         default: withCtx(({ active, ...slotProps }, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(ssrRenderComponent(_sfc_main$j, mergeProps(slotProps, {
+            _push2(ssrRenderComponent(_sfc_main$k, mergeProps(slotProps, {
               "data-slot": "base",
               class: b24ui.value.base({
                 class: [unref(props).b24ui?.base, unref(props).class],
@@ -10317,7 +10945,7 @@ const _sfc_main$h = {
                         class: b24ui.value.leadingIcon({ class: unref(props).b24ui?.leadingIcon })
                       }, null), _parent3, _scopeId2);
                     } else if (!!unref(props).avatar) {
-                      _push3(ssrRenderComponent(_sfc_main$k, mergeProps({
+                      _push3(ssrRenderComponent(_sfc_main$l, mergeProps({
                         size: unref(props).b24ui?.leadingAvatarSize || b24ui.value.leadingAvatarSize()
                       }, unref(props).avatar, {
                         "data-slot": "leadingAvatar",
@@ -10379,7 +11007,7 @@ const _sfc_main$h = {
                           key: 0,
                           "data-slot": "leadingIcon",
                           class: b24ui.value.leadingIcon({ class: unref(props).b24ui?.leadingIcon })
-                        }, null, 8, ["class"])) : !!unref(props).avatar ? (openBlock(), createBlock(_sfc_main$k, mergeProps({
+                        }, null, 8, ["class"])) : !!unref(props).avatar ? (openBlock(), createBlock(_sfc_main$l, mergeProps({
                           key: 1,
                           size: unref(props).b24ui?.leadingAvatarSize || b24ui.value.leadingAvatarSize()
                         }, unref(props).avatar, {
@@ -10415,7 +11043,7 @@ const _sfc_main$h = {
             }, _parent2, _scopeId));
           } else {
             return [
-              createVNode(_sfc_main$j, mergeProps(slotProps, {
+              createVNode(_sfc_main$k, mergeProps(slotProps, {
                 "data-slot": "base",
                 class: b24ui.value.base({
                   class: [unref(props).b24ui?.base, unref(props).class],
@@ -10457,7 +11085,7 @@ const _sfc_main$h = {
                         key: 0,
                         "data-slot": "leadingIcon",
                         class: b24ui.value.leadingIcon({ class: unref(props).b24ui?.leadingIcon })
-                      }, null, 8, ["class"])) : !!unref(props).avatar ? (openBlock(), createBlock(_sfc_main$k, mergeProps({
+                      }, null, 8, ["class"])) : !!unref(props).avatar ? (openBlock(), createBlock(_sfc_main$l, mergeProps({
                         key: 1,
                         size: unref(props).b24ui?.leadingAvatarSize || b24ui.value.leadingAvatarSize()
                       }, unref(props).avatar, {
@@ -10497,13 +11125,13 @@ const _sfc_main$h = {
     };
   }
 };
-const _sfc_setup$h = _sfc_main$h.setup;
-_sfc_main$h.setup = (props, ctx) => {
+const _sfc_setup$i = _sfc_main$i.setup;
+_sfc_main$i.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/Button.vue");
-  return _sfc_setup$h ? _sfc_setup$h(props, ctx) : void 0;
+  return _sfc_setup$i ? _sfc_setup$i(props, ctx) : void 0;
 };
-const theme$9 = {
+const theme$a = {
   "slots": {
     "root": "gap-2",
     "base": "relative overflow-hidden rounded-(--ui-border-radius-pill) bg-(--ui-color-base-5)",
@@ -10748,7 +11376,7 @@ const theme$9 = {
     "size": "md"
   }
 };
-const _sfc_main$g = {
+const _sfc_main$h = {
   __name: "B24Progress",
   __ssrInlineRender: true,
   props: {
@@ -10846,7 +11474,7 @@ const _sfc_main$g = {
       }
       return "other";
     }
-    const b24ui = computed(() => tv({ extend: tv(theme$9), ...appConfig2.b24ui?.progress || {} })({
+    const b24ui = computed(() => tv({ extend: tv(theme$a), ...appConfig2.b24ui?.progress || {} })({
       animation: props.animation,
       size: props.size,
       color: props.color,
@@ -10961,13 +11589,13 @@ const _sfc_main$g = {
     };
   }
 };
-const _sfc_setup$g = _sfc_main$g.setup;
-_sfc_main$g.setup = (props, ctx) => {
+const _sfc_setup$h = _sfc_main$h.setup;
+_sfc_main$h.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/Progress.vue");
-  return _sfc_setup$g ? _sfc_setup$g(props, ctx) : void 0;
+  return _sfc_setup$h ? _sfc_setup$h(props, ctx) : void 0;
 };
-const theme$8 = {
+const theme$9 = {
   "slots": {
     "root": "dark relative group overflow-hidden rounded-[8px] p-4 flex gap-4 focus-visible:outline-(length:--ui-design-outline-stroke-weight) focus-visible:outline-offset-2 focus-visible:outline-(--ui-color-design-outline-content-divider) font-[family-name:var(--ui-font-family-primary)] bg-(--ui-color-base-black-fixed)/80 text-(--ui-color-design-plain-na-focused-content) text-(length:--ui-font-size-sm) font-(--ui-font-weight-normal)",
     "wrapper": "w-0 flex-1 flex flex-col",
@@ -11045,7 +11673,7 @@ const theme$8 = {
     "color": "air-secondary"
   }
 };
-const _sfc_main$f = {
+const _sfc_main$g = {
   __name: "B24Toast",
   __ssrInlineRender: true,
   props: {
@@ -11076,7 +11704,7 @@ const _sfc_main$f = {
     const { t } = useLocale();
     const appConfig2 = useAppConfig();
     const rootProps = useForwardProps(reactivePick(props, "as", "defaultOpen", "open", "duration", "type"), emits);
-    const b24ui = computed(() => tv({ extend: tv(theme$8), ...appConfig2.b24ui?.toast || {} })({
+    const b24ui = computed(() => tv({ extend: tv(theme$9), ...appConfig2.b24ui?.toast || {} })({
       color: props.color,
       orientation: props.orientation,
       title: !!props.title || !!slots.title
@@ -11105,7 +11733,7 @@ const _sfc_main$f = {
                   class: b24ui.value.icon({ class: unref(props).b24ui?.icon })
                 }, null), _parent2, _scopeId);
               } else if (unref(props).avatar) {
-                _push2(ssrRenderComponent(_sfc_main$k, mergeProps({
+                _push2(ssrRenderComponent(_sfc_main$l, mergeProps({
                   size: unref(props).b24ui?.avatarSize || b24ui.value.avatarSize()
                 }, unref(props).avatar, {
                   "data-slot": "avatar",
@@ -11192,13 +11820,13 @@ const _sfc_main$f = {
                   }, {
                     default: withCtx((_, _push3, _parent3, _scopeId2) => {
                       if (_push3) {
-                        _push3(ssrRenderComponent(_sfc_main$h, mergeProps({
+                        _push3(ssrRenderComponent(_sfc_main$i, mergeProps({
                           size: "sm",
                           color: unref(props).color
                         }, { ref_for: true }, action), null, _parent3, _scopeId2));
                       } else {
                         return [
-                          createVNode(_sfc_main$h, mergeProps({
+                          createVNode(_sfc_main$i, mergeProps({
                             size: "sm",
                             color: unref(props).color
                           }, { ref_for: true }, action), null, 16, ["color"])
@@ -11230,13 +11858,13 @@ const _sfc_main$f = {
                     }, {
                       default: withCtx((_, _push3, _parent3, _scopeId2) => {
                         if (_push3) {
-                          _push3(ssrRenderComponent(_sfc_main$h, mergeProps({
+                          _push3(ssrRenderComponent(_sfc_main$i, mergeProps({
                             size: "sm",
                             color: unref(props).color
                           }, { ref_for: true }, action), null, _parent3, _scopeId2));
                         } else {
                           return [
-                            createVNode(_sfc_main$h, mergeProps({
+                            createVNode(_sfc_main$i, mergeProps({
                               size: "sm",
                               color: unref(props).color
                             }, { ref_for: true }, action), null, 16, ["color"])
@@ -11257,7 +11885,7 @@ const _sfc_main$f = {
                     if (_push3) {
                       ssrRenderSlot(_ctx.$slots, "close", { b24ui: b24ui.value }, () => {
                         if (unref(props).close) {
-                          _push3(ssrRenderComponent(_sfc_main$h, mergeProps({
+                          _push3(ssrRenderComponent(_sfc_main$i, mergeProps({
                             icon: unref(props).closeIcon || unref(icons).close,
                             size: "sm",
                             color: "air-tertiary",
@@ -11275,7 +11903,7 @@ const _sfc_main$f = {
                     } else {
                       return [
                         renderSlot(_ctx.$slots, "close", { b24ui: b24ui.value }, () => [
-                          unref(props).close ? (openBlock(), createBlock(_sfc_main$h, mergeProps({
+                          unref(props).close ? (openBlock(), createBlock(_sfc_main$i, mergeProps({
                             key: 0,
                             icon: unref(props).closeIcon || unref(icons).close,
                             size: "sm",
@@ -11301,7 +11929,7 @@ const _sfc_main$f = {
               _push2(`<!---->`);
             }
             if (unref(props).progress && open && remaining > 0 && duration) {
-              _push2(ssrRenderComponent(_sfc_main$g, mergeProps({
+              _push2(ssrRenderComponent(_sfc_main$h, mergeProps({
                 "model-value": remaining / duration * 100,
                 color: unref(props).color
               }, typeof unref(props).progress === "object" ? unref(props).progress : {}, {
@@ -11319,7 +11947,7 @@ const _sfc_main$f = {
                   key: 0,
                   "data-slot": "icon",
                   class: b24ui.value.icon({ class: unref(props).b24ui?.icon })
-                }, null, 8, ["class"])) : unref(props).avatar ? (openBlock(), createBlock(_sfc_main$k, mergeProps({
+                }, null, 8, ["class"])) : unref(props).avatar ? (openBlock(), createBlock(_sfc_main$l, mergeProps({
                   key: 1,
                   size: unref(props).b24ui?.avatarSize || b24ui.value.avatarSize()
                 }, unref(props).avatar, {
@@ -11374,7 +12002,7 @@ const _sfc_main$f = {
                         }, ["stop"])
                       }, {
                         default: withCtx(() => [
-                          createVNode(_sfc_main$h, mergeProps({
+                          createVNode(_sfc_main$i, mergeProps({
                             size: "sm",
                             color: unref(props).color
                           }, { ref_for: true }, action), null, 16, ["color"])
@@ -11400,7 +12028,7 @@ const _sfc_main$f = {
                       }, ["stop"])
                     }, {
                       default: withCtx(() => [
-                        createVNode(_sfc_main$h, mergeProps({
+                        createVNode(_sfc_main$i, mergeProps({
                           size: "sm",
                           color: unref(props).color
                         }, { ref_for: true }, action), null, 16, ["color"])
@@ -11415,7 +12043,7 @@ const _sfc_main$f = {
                 }, {
                   default: withCtx(() => [
                     renderSlot(_ctx.$slots, "close", { b24ui: b24ui.value }, () => [
-                      unref(props).close ? (openBlock(), createBlock(_sfc_main$h, mergeProps({
+                      unref(props).close ? (openBlock(), createBlock(_sfc_main$i, mergeProps({
                         key: 0,
                         icon: unref(props).closeIcon || unref(icons).close,
                         size: "sm",
@@ -11432,7 +12060,7 @@ const _sfc_main$f = {
                   _: 3
                 })) : createCommentVNode("", true)
               ], 2)) : createCommentVNode("", true),
-              unref(props).progress && open && remaining > 0 && duration ? (openBlock(), createBlock(_sfc_main$g, mergeProps({
+              unref(props).progress && open && remaining > 0 && duration ? (openBlock(), createBlock(_sfc_main$h, mergeProps({
                 key: 1,
                 "model-value": remaining / duration * 100,
                 color: unref(props).color
@@ -11449,13 +12077,13 @@ const _sfc_main$f = {
     };
   }
 };
-const _sfc_setup$f = _sfc_main$f.setup;
-_sfc_main$f.setup = (props, ctx) => {
+const _sfc_setup$g = _sfc_main$g.setup;
+_sfc_main$g.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/Toast.vue");
-  return _sfc_setup$f ? _sfc_setup$f(props, ctx) : void 0;
+  return _sfc_setup$g ? _sfc_setup$g(props, ctx) : void 0;
 };
-const theme$7 = {
+const theme$8 = {
   "slots": {
     "viewport": "fixed flex flex-col w-[calc(100%-2rem)] sm:w-[384px] z-[100] data-[expanded=true]:h-(--height) focus:outline-none mr-(--scrollbar-width)",
     "base": "pointer-events-auto absolute inset-x-0 z-(--index) transform-(--transform) data-[expanded=false]:data-[front=false]:h-(--front-height) data-[expanded=false]:data-[front=false]:*:opacity-0 data-[front=false]:*:transition-opacity data-[front=false]:*:duration-100 data-[state=closed]:animate-[toast-closed_200ms_ease-in-out] data-[state=closed]:data-[expanded=false]:data-[front=false]:animate-[toast-collapsed-closed_200ms_ease-in-out] data-[state=open]:data-[pulsing=odd]:animate-[toast-pulse-a_300ms_ease-out] data-[state=open]:data-[pulsing=even]:animate-[toast-pulse-b_300ms_ease-out] data-[swipe=move]:transition-none transition-[transform,translate,height] duration-200 ease-out"
@@ -11533,7 +12161,7 @@ const theme$7 = {
 const __default__$1 = {
   name: "Toaster"
 };
-const _sfc_main$e = /* @__PURE__ */ Object.assign(__default__$1, {
+const _sfc_main$f = /* @__PURE__ */ Object.assign(__default__$1, {
   __ssrInlineRender: true,
   props: {
     position: { type: null, required: false, default: "top-right" },
@@ -11571,7 +12199,7 @@ const _sfc_main$e = /* @__PURE__ */ Object.assign(__default__$1, {
       }
       return "right";
     });
-    const b24ui = computed(() => tv({ extend: tv(theme$7), ...appConfig2.b24ui?.toaster || {} })({
+    const b24ui = computed(() => tv({ extend: tv(theme$8), ...appConfig2.b24ui?.toaster || {} })({
       position: props.position,
       swipeDirection: swipeDirection.value
     }));
@@ -11596,7 +12224,7 @@ const _sfc_main$e = /* @__PURE__ */ Object.assign(__default__$1, {
             ssrRenderSlot(_ctx.$slots, "default", {}, null, _push2, _parent2, _scopeId);
             _push2(`<!--[-->`);
             ssrRenderList(unref(toasts), (toast, index) => {
-              _push2(ssrRenderComponent(_sfc_main$f, mergeProps({
+              _push2(ssrRenderComponent(_sfc_main$g, mergeProps({
                 key: toast.id,
                 ref_for: true,
                 ref_key: "refs",
@@ -11664,7 +12292,7 @@ const _sfc_main$e = /* @__PURE__ */ Object.assign(__default__$1, {
             return [
               renderSlot(_ctx.$slots, "default"),
               (openBlock(true), createBlock(Fragment, null, renderList(unref(toasts), (toast, index) => {
-                return openBlock(), createBlock(_sfc_main$f, mergeProps({
+                return openBlock(), createBlock(_sfc_main$g, mergeProps({
                   key: toast.id,
                   ref_for: true,
                   ref_key: "refs",
@@ -11716,13 +12344,13 @@ const _sfc_main$e = /* @__PURE__ */ Object.assign(__default__$1, {
     };
   }
 });
-const _sfc_setup$e = _sfc_main$e.setup;
-_sfc_main$e.setup = (props, ctx) => {
+const _sfc_setup$f = _sfc_main$f.setup;
+_sfc_main$f.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/Toaster.vue");
-  return _sfc_setup$e ? _sfc_setup$e(props, ctx) : void 0;
+  return _sfc_setup$f ? _sfc_setup$f(props, ctx) : void 0;
 };
-const B24Toaster = Object.assign(_sfc_main$e, { __name: "B24Toaster" });
+const B24Toaster = Object.assign(_sfc_main$f, { __name: "B24Toaster" });
 function _useOverlay() {
   const overlays = shallowReactive([]);
   const create = (component, _options) => {
@@ -11807,7 +12435,7 @@ function _useOverlay() {
   };
 }
 const useOverlay = /* @__PURE__ */ createSharedComposable(_useOverlay);
-const _sfc_main$d = {
+const _sfc_main$e = {
   __name: "B24OverlayProvider",
   __ssrInlineRender: true,
   setup(__props) {
@@ -11836,16 +12464,16 @@ const _sfc_main$d = {
     };
   }
 };
-const _sfc_setup$d = _sfc_main$d.setup;
-_sfc_main$d.setup = (props, ctx) => {
+const _sfc_setup$e = _sfc_main$e.setup;
+_sfc_main$e.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/OverlayProvider.vue");
-  return _sfc_setup$d ? _sfc_setup$d(props, ctx) : void 0;
+  return _sfc_setup$e ? _sfc_setup$e(props, ctx) : void 0;
 };
 const __default__ = {
   name: "App"
 };
-const _sfc_main$c = /* @__PURE__ */ Object.assign(__default__, {
+const _sfc_main$d = /* @__PURE__ */ Object.assign(__default__, {
   __ssrInlineRender: true,
   props: {
     tooltip: { type: Object, required: false },
@@ -11892,7 +12520,7 @@ const _sfc_main$c = /* @__PURE__ */ Object.assign(__default__, {
                   } else {
                     ssrRenderSlot(_ctx.$slots, "default", {}, null, _push3, _parent3, _scopeId2);
                   }
-                  _push3(ssrRenderComponent(_sfc_main$d, null, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(_sfc_main$e, null, null, _parent3, _scopeId2));
                 } else {
                   return [
                     __props.toaster !== null ? (openBlock(), createBlock(B24Toaster, mergeProps({ key: 0 }, toasterProps.value), {
@@ -11901,7 +12529,7 @@ const _sfc_main$c = /* @__PURE__ */ Object.assign(__default__, {
                       ]),
                       _: 3
                     }, 16)) : renderSlot(_ctx.$slots, "default", { key: 1 }),
-                    createVNode(_sfc_main$d)
+                    createVNode(_sfc_main$e)
                   ];
                 }
               }),
@@ -11917,7 +12545,7 @@ const _sfc_main$c = /* @__PURE__ */ Object.assign(__default__, {
                     ]),
                     _: 3
                   }, 16)) : renderSlot(_ctx.$slots, "default", { key: 1 }),
-                  createVNode(_sfc_main$d)
+                  createVNode(_sfc_main$e)
                 ]),
                 _: 3
               }, 16)
@@ -11929,14 +12557,14 @@ const _sfc_main$c = /* @__PURE__ */ Object.assign(__default__, {
     };
   }
 });
-const _sfc_setup$c = _sfc_main$c.setup;
-_sfc_main$c.setup = (props, ctx) => {
+const _sfc_setup$d = _sfc_main$d.setup;
+_sfc_main$d.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/App.vue");
-  return _sfc_setup$c ? _sfc_setup$c(props, ctx) : void 0;
+  return _sfc_setup$d ? _sfc_setup$d(props, ctx) : void 0;
 };
-const __nuxt_component_0 = Object.assign(_sfc_main$c, { __name: "B24App" });
-const theme$6 = {
+const __nuxt_component_0 = Object.assign(_sfc_main$d, { __name: "B24App" });
+const theme$7 = {
   "slots": {
     "base": "ui-label__scope --air select-none font-[family-name:var(--ui-font-family-secondary)] font-(--ui-label-font-weight) text-(length:--ui-label-font-size)/normal inline-flex items-center transition-all duration-200 ease-linear px-(--ui-label-inline-space) text-(--b24ui-color) bg-(--b24ui-background) border-(--b24ui-border-color) border-(length:--b24ui-border-width)",
     "wrapper": "h-(--ui-label-height) inline-flex items-center",
@@ -12232,7 +12860,7 @@ const theme$6 = {
     "inverted": false
   }
 };
-const _sfc_main$b = {
+const _sfc_main$c = {
   __name: "B24Badge",
   __ssrInlineRender: true,
   props: {
@@ -12266,7 +12894,7 @@ const _sfc_main$b = {
     }
     const { orientation, size: fieldGroupSize } = useFieldGroup(_props);
     const { isLeading, leadingIconName } = useComponentIcons(props);
-    const b24ui = computed(() => tv({ extend: tv(theme$6), ...appConfig2.b24ui?.badge || {} })({
+    const b24ui = computed(() => tv({ extend: tv(theme$7), ...appConfig2.b24ui?.badge || {} })({
       color: props.color,
       inverted: Boolean(props.inverted),
       size: fieldGroupSize.value ?? props.size,
@@ -12298,7 +12926,7 @@ const _sfc_main$b = {
                         class: b24ui.value.leadingIcon({ class: unref(props).b24ui?.leadingIcon })
                       }, null), _parent3, _scopeId2);
                     } else if (!!unref(props).avatar) {
-                      _push3(ssrRenderComponent(_sfc_main$k, mergeProps({
+                      _push3(ssrRenderComponent(_sfc_main$l, mergeProps({
                         size: unref(props).b24ui?.leadingAvatarSize || b24ui.value.leadingAvatarSize()
                       }, unref(props).avatar, {
                         "data-slot": "leadingAvatar",
@@ -12322,7 +12950,7 @@ const _sfc_main$b = {
                         key: 0,
                         "data-slot": "leadingIcon",
                         class: b24ui.value.leadingIcon({ class: unref(props).b24ui?.leadingIcon })
-                      }, null, 8, ["class"])) : !!unref(props).avatar ? (openBlock(), createBlock(_sfc_main$k, mergeProps({
+                      }, null, 8, ["class"])) : !!unref(props).avatar ? (openBlock(), createBlock(_sfc_main$l, mergeProps({
                         key: 1,
                         size: unref(props).b24ui?.leadingAvatarSize || b24ui.value.leadingAvatarSize()
                       }, unref(props).avatar, {
@@ -12367,7 +12995,7 @@ const _sfc_main$b = {
                       key: 0,
                       "data-slot": "leadingIcon",
                       class: b24ui.value.leadingIcon({ class: unref(props).b24ui?.leadingIcon })
-                    }, null, 8, ["class"])) : !!unref(props).avatar ? (openBlock(), createBlock(_sfc_main$k, mergeProps({
+                    }, null, 8, ["class"])) : !!unref(props).avatar ? (openBlock(), createBlock(_sfc_main$l, mergeProps({
                       key: 1,
                       size: unref(props).b24ui?.leadingAvatarSize || b24ui.value.leadingAvatarSize()
                     }, unref(props).avatar, {
@@ -12402,13 +13030,13 @@ const _sfc_main$b = {
     };
   }
 };
-const _sfc_setup$b = _sfc_main$b.setup;
-_sfc_main$b.setup = (props, ctx) => {
+const _sfc_setup$c = _sfc_main$c.setup;
+_sfc_main$c.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/Badge.vue");
-  return _sfc_setup$b ? _sfc_setup$b(props, ctx) : void 0;
+  return _sfc_setup$c ? _sfc_setup$c(props, ctx) : void 0;
 };
-const theme$5 = {
+const theme$6 = {
   "slots": {
     "root": "font-[family-name:var(--ui-font-family-system)] font-(--ui-font-weight-regular)",
     "wrapper": "leading-(--ui-font-line-height-reset)",
@@ -12492,7 +13120,7 @@ const theme$5 = {
     "size": "md"
   }
 };
-const _sfc_main$a = {
+const _sfc_main$b = {
   __name: "B24FormField",
   __ssrInlineRender: true,
   props: {
@@ -12517,7 +13145,7 @@ const _sfc_main$a = {
     const slots = useSlots();
     const props = useComponentProps("formField", _props);
     const appConfig2 = useAppConfig();
-    const b24ui = computed(() => tv({ extend: tv(theme$5), ...appConfig2.b24ui?.formField || {} })({
+    const b24ui = computed(() => tv({ extend: tv(theme$6), ...appConfig2.b24ui?.formField || {} })({
       size: props.size,
       required: props.required,
       orientation: props.orientation,
@@ -12728,13 +13356,13 @@ const _sfc_main$a = {
     };
   }
 };
-const _sfc_setup$a = _sfc_main$a.setup;
-_sfc_main$a.setup = (props, ctx) => {
+const _sfc_setup$b = _sfc_main$b.setup;
+_sfc_main$b.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/FormField.vue");
-  return _sfc_setup$a ? _sfc_setup$a(props, ctx) : void 0;
+  return _sfc_setup$b ? _sfc_setup$b(props, ctx) : void 0;
 };
-const theme$4 = {
+const theme$5 = {
   "slots": {
     "root": "isolate relative inline-flex items-center",
     "base": "px-3 w-full py-0 border-0 focus:outline-none disabled:cursor-not-allowed disabled:pointer-events-auto disabled:select-none disabled:opacity-30 disabled:resize-none appearance-none transition-colors duration-300 ease-linear text-(--ui-color-base-1) style-blurred-bg-input placeholder:text-(--ui-color-design-plain-na-content-secondary) hover:text-(--ui-color-base-1) focus:text-(--ui-color-base-1) active:text-(--ui-color-base-1) font-[family-name:var(--ui-font-family-primary)] font-(--ui-font-weight-regular) align-middle text-ellipsis whitespace-nowrap",
@@ -13131,7 +13759,7 @@ const theme$4 = {
     "size": "md"
   }
 };
-const _sfc_main$9 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
+const _sfc_main$a = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
   __name: "B24Input",
   __ssrInlineRender: true,
   props: {
@@ -13181,7 +13809,7 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
     const isTag = computed(() => {
       return props.tag;
     });
-    const b24ui = computed(() => tv({ extend: tv(theme$4), ...appConfig2.b24ui?.input || {} })({
+    const b24ui = computed(() => tv({ extend: tv(theme$5), ...appConfig2.b24ui?.input || {} })({
       type: props.type,
       color: color.value ?? props.color,
       size: inputSize?.value ?? props.size,
@@ -13245,7 +13873,7 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
             if (isTag.value) {
-              _push2(ssrRenderComponent(_sfc_main$b, {
+              _push2(ssrRenderComponent(_sfc_main$c, {
                 "data-slot": "tag",
                 class: b24ui.value.tag({ class: unref(props).b24ui?.tag }),
                 color: unref(props).tagColor,
@@ -13279,7 +13907,7 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
                     class: b24ui.value.leadingIcon({ class: unref(props).b24ui?.leadingIcon })
                   }, null), _parent2, _scopeId);
                 } else if (!!unref(props).avatar) {
-                  _push2(ssrRenderComponent(_sfc_main$k, mergeProps({
+                  _push2(ssrRenderComponent(_sfc_main$l, mergeProps({
                     size: unref(props).b24ui?.leadingAvatarSize || b24ui.value.leadingAvatarSize()
                   }, unref(props).avatar, {
                     "data-slot": "leadingAvatar",
@@ -13311,7 +13939,7 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
             }
           } else {
             return [
-              isTag.value ? (openBlock(), createBlock(_sfc_main$b, {
+              isTag.value ? (openBlock(), createBlock(_sfc_main$c, {
                 key: 0,
                 "data-slot": "tag",
                 class: b24ui.value.tag({ class: unref(props).b24ui?.tag }),
@@ -13349,7 +13977,7 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
                     key: 0,
                     "data-slot": "leadingIcon",
                     class: b24ui.value.leadingIcon({ class: unref(props).b24ui?.leadingIcon })
-                  }, null, 8, ["class"])) : !!unref(props).avatar ? (openBlock(), createBlock(_sfc_main$k, mergeProps({
+                  }, null, 8, ["class"])) : !!unref(props).avatar ? (openBlock(), createBlock(_sfc_main$l, mergeProps({
                     key: 1,
                     size: unref(props).b24ui?.leadingAvatarSize || b24ui.value.leadingAvatarSize()
                   }, unref(props).avatar, {
@@ -13379,11 +14007,11 @@ const _sfc_main$9 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
     };
   }
 });
-const _sfc_setup$9 = _sfc_main$9.setup;
-_sfc_main$9.setup = (props, ctx) => {
+const _sfc_setup$a = _sfc_main$a.setup;
+_sfc_main$a.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/Input.vue");
-  return _sfc_setup$9 ? _sfc_setup$9(props, ctx) : void 0;
+  return _sfc_setup$a ? _sfc_setup$a(props, ctx) : void 0;
 };
 const Calendar = {
   Root: CalendarRoot_default,
@@ -13442,13 +14070,13 @@ function pointerDownOutside(e, options = {}) {
     }
   }
 }
-const theme$3 = {
+const theme$4 = {
   "slots": {
     "content": "base-mode bg-(--ui-color-bg-content-primary) shadow-(--popup-window-box-shadow) rounded-(--ui-border-radius-xl) will-change-[opacity] motion-safe:data-[state=open]:animate-[scale-in_100ms_ease-out] motion-safe:data-[state=closed]:animate-[scale-out_100ms_ease-in] origin-(--reka-popover-content-transform-origin) focus:outline-none pointer-events-auto",
     "arrow": "fill-(--ui-color-bg-content-primary)"
   }
 };
-const _sfc_main$8 = {
+const _sfc_main$9 = {
   __name: "B24Popover",
   __ssrInlineRender: true,
   props: {
@@ -13493,7 +14121,7 @@ const _sfc_main$8 = {
       };
     });
     const arrowProps = toRef(() => defu(typeof props.arrow === "boolean" ? {} : props.arrow, { width: 20, height: 10 }));
-    const b24ui = computed(() => tv({ extend: tv(theme$3), ...appConfig2.b24ui?.popover || {} })({
+    const b24ui = computed(() => tv({ extend: tv(theme$4), ...appConfig2.b24ui?.popover || {} })({
       side: contentProps.value.side
     }));
     const Component = computed(() => props.mode === "hover" ? HoverCard : Popover);
@@ -13668,13 +14296,13 @@ const _sfc_main$8 = {
     };
   }
 };
-const _sfc_setup$8 = _sfc_main$8.setup;
-_sfc_main$8.setup = (props, ctx) => {
+const _sfc_setup$9 = _sfc_main$9.setup;
+_sfc_main$9.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/Popover.vue");
-  return _sfc_setup$8 ? _sfc_setup$8(props, ctx) : void 0;
+  return _sfc_setup$9 ? _sfc_setup$9(props, ctx) : void 0;
 };
-const theme$2 = {
+const theme$3 = {
   "slots": {
     "root": "font-[family-name:var(--ui-font-family-primary)]",
     "header": "flex items-center justify-between",
@@ -13779,7 +14407,7 @@ const theme$2 = {
     "color": "air-primary"
   }
 };
-const _sfc_main$7 = {
+const _sfc_main$8 = {
   __name: "B24Calendar",
   __ssrInlineRender: true,
   props: {
@@ -13839,7 +14467,7 @@ const _sfc_main$7 = {
     const nextMonthIcon = computed(() => props.nextMonthIcon || (dir.value === "rtl" ? icons.chevronLeft : icons.chevronRight));
     const prevYearIcon = computed(() => props.prevYearIcon || (dir.value === "rtl" ? icons.chevronDoubleRight : icons.chevronDoubleLeft));
     const prevMonthIcon = computed(() => props.prevMonthIcon || (dir.value === "rtl" ? icons.chevronRight : icons.chevronLeft));
-    const b24ui = computed(() => tv({ extend: tv(theme$2), ...appConfig2.b24ui?.calendar || {} })({
+    const b24ui = computed(() => tv({ extend: tv(theme$3), ...appConfig2.b24ui?.calendar || {} })({
       color: props.color,
       size: props.size,
       weekNumbers: props.weekNumbers
@@ -13882,14 +14510,14 @@ const _sfc_main$7 = {
                     }, {
                       default: withCtx((_2, _push4, _parent4, _scopeId3) => {
                         if (_push4) {
-                          _push4(ssrRenderComponent(_sfc_main$h, mergeProps({
+                          _push4(ssrRenderComponent(_sfc_main$i, mergeProps({
                             icon: prevYearIcon.value,
                             size: btnSize.value,
                             color: "air-tertiary"
                           }, unref(props).prevYear), null, _parent4, _scopeId3));
                         } else {
                           return [
-                            createVNode(_sfc_main$h, mergeProps({
+                            createVNode(_sfc_main$i, mergeProps({
                               icon: prevYearIcon.value,
                               size: btnSize.value,
                               color: "air-tertiary"
@@ -13909,14 +14537,14 @@ const _sfc_main$7 = {
                     }, {
                       default: withCtx((_2, _push4, _parent4, _scopeId3) => {
                         if (_push4) {
-                          _push4(ssrRenderComponent(_sfc_main$h, mergeProps({
+                          _push4(ssrRenderComponent(_sfc_main$i, mergeProps({
                             icon: prevMonthIcon.value,
                             size: btnSize.value,
                             color: "air-tertiary"
                           }, unref(props).prevMonth), null, _parent4, _scopeId3));
                         } else {
                           return [
-                            createVNode(_sfc_main$h, mergeProps({
+                            createVNode(_sfc_main$i, mergeProps({
                               icon: prevMonthIcon.value,
                               size: btnSize.value,
                               color: "air-tertiary"
@@ -13955,14 +14583,14 @@ const _sfc_main$7 = {
                     }, {
                       default: withCtx((_2, _push4, _parent4, _scopeId3) => {
                         if (_push4) {
-                          _push4(ssrRenderComponent(_sfc_main$h, mergeProps({
+                          _push4(ssrRenderComponent(_sfc_main$i, mergeProps({
                             icon: nextMonthIcon.value,
                             size: btnSize.value,
                             color: "air-tertiary"
                           }, unref(props).nextMonth), null, _parent4, _scopeId3));
                         } else {
                           return [
-                            createVNode(_sfc_main$h, mergeProps({
+                            createVNode(_sfc_main$i, mergeProps({
                               icon: nextMonthIcon.value,
                               size: btnSize.value,
                               color: "air-tertiary"
@@ -13983,14 +14611,14 @@ const _sfc_main$7 = {
                     }, {
                       default: withCtx((_2, _push4, _parent4, _scopeId3) => {
                         if (_push4) {
-                          _push4(ssrRenderComponent(_sfc_main$h, mergeProps({
+                          _push4(ssrRenderComponent(_sfc_main$i, mergeProps({
                             icon: nextYearIcon.value,
                             size: btnSize.value,
                             color: "air-tertiary"
                           }, unref(props).nextYear), null, _parent4, _scopeId3));
                         } else {
                           return [
-                            createVNode(_sfc_main$h, mergeProps({
+                            createVNode(_sfc_main$i, mergeProps({
                               icon: nextYearIcon.value,
                               size: btnSize.value,
                               color: "air-tertiary"
@@ -14012,7 +14640,7 @@ const _sfc_main$7 = {
                       "as-child": ""
                     }, {
                       default: withCtx(() => [
-                        createVNode(_sfc_main$h, mergeProps({
+                        createVNode(_sfc_main$i, mergeProps({
                           icon: prevYearIcon.value,
                           size: btnSize.value,
                           color: "air-tertiary"
@@ -14026,7 +14654,7 @@ const _sfc_main$7 = {
                       "as-child": ""
                     }, {
                       default: withCtx(() => [
-                        createVNode(_sfc_main$h, mergeProps({
+                        createVNode(_sfc_main$i, mergeProps({
                           icon: prevMonthIcon.value,
                           size: btnSize.value,
                           color: "air-tertiary"
@@ -14051,7 +14679,7 @@ const _sfc_main$7 = {
                       "as-child": ""
                     }, {
                       default: withCtx(() => [
-                        createVNode(_sfc_main$h, mergeProps({
+                        createVNode(_sfc_main$i, mergeProps({
                           icon: nextMonthIcon.value,
                           size: btnSize.value,
                           color: "air-tertiary"
@@ -14066,7 +14694,7 @@ const _sfc_main$7 = {
                       "as-child": ""
                     }, {
                       default: withCtx(() => [
-                        createVNode(_sfc_main$h, mergeProps({
+                        createVNode(_sfc_main$i, mergeProps({
                           icon: nextYearIcon.value,
                           size: btnSize.value,
                           color: "air-tertiary"
@@ -14433,7 +15061,7 @@ const _sfc_main$7 = {
                     "as-child": ""
                   }, {
                     default: withCtx(() => [
-                      createVNode(_sfc_main$h, mergeProps({
+                      createVNode(_sfc_main$i, mergeProps({
                         icon: prevYearIcon.value,
                         size: btnSize.value,
                         color: "air-tertiary"
@@ -14447,7 +15075,7 @@ const _sfc_main$7 = {
                     "as-child": ""
                   }, {
                     default: withCtx(() => [
-                      createVNode(_sfc_main$h, mergeProps({
+                      createVNode(_sfc_main$i, mergeProps({
                         icon: prevMonthIcon.value,
                         size: btnSize.value,
                         color: "air-tertiary"
@@ -14472,7 +15100,7 @@ const _sfc_main$7 = {
                     "as-child": ""
                   }, {
                     default: withCtx(() => [
-                      createVNode(_sfc_main$h, mergeProps({
+                      createVNode(_sfc_main$i, mergeProps({
                         icon: nextMonthIcon.value,
                         size: btnSize.value,
                         color: "air-tertiary"
@@ -14487,7 +15115,7 @@ const _sfc_main$7 = {
                     "as-child": ""
                   }, {
                     default: withCtx(() => [
-                      createVNode(_sfc_main$h, mergeProps({
+                      createVNode(_sfc_main$i, mergeProps({
                         icon: nextYearIcon.value,
                         size: btnSize.value,
                         color: "air-tertiary"
@@ -14599,13 +15227,13 @@ const _sfc_main$7 = {
     };
   }
 };
-const _sfc_setup$7 = _sfc_main$7.setup;
-_sfc_main$7.setup = (props, ctx) => {
+const _sfc_setup$8 = _sfc_main$8.setup;
+_sfc_main$8.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/Calendar.vue");
-  return _sfc_setup$7 ? _sfc_setup$7(props, ctx) : void 0;
+  return _sfc_setup$8 ? _sfc_setup$8(props, ctx) : void 0;
 };
-const theme$1 = {
+const theme$2 = {
   "slots": {
     "root": "isolate relative inline-flex items-center",
     "base": "px-3 w-full pt-[7px] pb-2 border-0 focus:outline-none disabled:cursor-not-allowed disabled:pointer-events-auto disabled:select-none disabled:opacity-30 disabled:resize-none appearance-none transition-colors duration-300 ease-linear text-(--ui-color-base-1) style-blurred-bg-input placeholder:text-(--ui-color-design-plain-na-content-secondary) hover:text-(--ui-color-base-1) focus:text-(--ui-color-base-1) active:text-(--ui-color-base-1) font-[family-name:var(--ui-font-family-primary)] font-(--ui-font-weight-regular) text-(length:--ui-font-size-lg)/(--ui-font-line-height-2xs) align-middle",
@@ -14783,7 +15411,7 @@ const theme$1 = {
     "color": "air-primary"
   }
 };
-const _sfc_main$6 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
+const _sfc_main$7 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
   __name: "B24Textarea",
   __ssrInlineRender: true,
   props: {
@@ -14832,7 +15460,7 @@ const _sfc_main$6 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
     const isTag = computed(() => {
       return props.tag;
     });
-    const b24ui = computed(() => tv({ extend: tv(theme$1), ...appConfig2.b24ui?.textarea || {} })({
+    const b24ui = computed(() => tv({ extend: tv(theme$2), ...appConfig2.b24ui?.textarea || {} })({
       color: color.value ?? props.color,
       // size: size?.value ?? props.size,
       loading: props.loading,
@@ -14919,7 +15547,7 @@ const _sfc_main$6 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
             if (isTag.value) {
-              _push2(ssrRenderComponent(_sfc_main$b, {
+              _push2(ssrRenderComponent(_sfc_main$c, {
                 "data-slot": "tag",
                 class: b24ui.value.tag({ class: unref(props).b24ui?.tag }),
                 color: unref(props).tagColor,
@@ -14952,7 +15580,7 @@ const _sfc_main$6 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
                     class: b24ui.value.leadingIcon({ class: unref(props).b24ui?.leadingIcon })
                   }, null), _parent2, _scopeId);
                 } else if (!!unref(props).avatar) {
-                  _push2(ssrRenderComponent(_sfc_main$k, mergeProps({
+                  _push2(ssrRenderComponent(_sfc_main$l, mergeProps({
                     size: unref(props).b24ui?.leadingAvatarSize || b24ui.value.leadingAvatarSize()
                   }, unref(props).avatar, {
                     "data-slot": "leadingAvatar",
@@ -14984,7 +15612,7 @@ const _sfc_main$6 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
             }
           } else {
             return [
-              isTag.value ? (openBlock(), createBlock(_sfc_main$b, {
+              isTag.value ? (openBlock(), createBlock(_sfc_main$c, {
                 key: 0,
                 "data-slot": "tag",
                 class: b24ui.value.tag({ class: unref(props).b24ui?.tag }),
@@ -15021,7 +15649,7 @@ const _sfc_main$6 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
                     key: 0,
                     "data-slot": "leadingIcon",
                     class: b24ui.value.leadingIcon({ class: unref(props).b24ui?.leadingIcon })
-                  }, null, 8, ["class"])) : !!unref(props).avatar ? (openBlock(), createBlock(_sfc_main$k, mergeProps({
+                  }, null, 8, ["class"])) : !!unref(props).avatar ? (openBlock(), createBlock(_sfc_main$l, mergeProps({
                     key: 1,
                     size: unref(props).b24ui?.leadingAvatarSize || b24ui.value.leadingAvatarSize()
                   }, unref(props).avatar, {
@@ -15051,13 +15679,13 @@ const _sfc_main$6 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
     };
   }
 });
-const _sfc_setup$6 = _sfc_main$6.setup;
-_sfc_main$6.setup = (props, ctx) => {
+const _sfc_setup$7 = _sfc_main$7.setup;
+_sfc_main$7.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/Textarea.vue");
-  return _sfc_setup$6 ? _sfc_setup$6(props, ctx) : void 0;
+  return _sfc_setup$7 ? _sfc_setup$7(props, ctx) : void 0;
 };
-const theme = {
+const theme$1 = {
   "slots": {
     "root": "relative overflow-hidden w-full flex text-(--b24ui-color) bg-(--b24ui-background) border-(--b24ui-border-color) border-(length:--b24ui-border-width) rounded-(--ui-border-radius-md)",
     "wrapper": "min-w-0 flex-1 flex flex-col font-[family-name:var(--ui-font-family-primary)]",
@@ -15206,7 +15834,7 @@ const theme = {
     "inverted": false
   }
 };
-const _sfc_main$5 = {
+const _sfc_main$6 = {
   __name: "B24Alert",
   __ssrInlineRender: true,
   props: {
@@ -15233,7 +15861,7 @@ const _sfc_main$5 = {
     const props = useComponentProps("alert", _props);
     const { t } = useLocale();
     const appConfig2 = useAppConfig();
-    const b24ui = computed(() => tv({ extend: tv(theme), ...appConfig2.b24ui?.alert || {} })({
+    const b24ui = computed(() => tv({ extend: tv(theme$1), ...appConfig2.b24ui?.alert || {} })({
       color: props.color,
       inverted: Boolean(props.inverted),
       size: props.size,
@@ -15256,7 +15884,7 @@ const _sfc_main$5 = {
                   class: b24ui.value.icon({ class: unref(props).b24ui?.icon })
                 }, null), _parent2, _scopeId);
               } else if (unref(props).avatar) {
-                _push2(ssrRenderComponent(_sfc_main$k, mergeProps({
+                _push2(ssrRenderComponent(_sfc_main$l, mergeProps({
                   size: unref(props).b24ui?.avatarSize || b24ui.value.avatarSize()
                 }, unref(props).avatar, {
                   "data-slot": "avatar",
@@ -15290,7 +15918,7 @@ const _sfc_main$5 = {
               ssrRenderSlot(_ctx.$slots, "actions", {}, () => {
                 _push2(`<!--[-->`);
                 ssrRenderList(unref(props).actions, (action, index) => {
-                  _push2(ssrRenderComponent(_sfc_main$h, mergeProps({
+                  _push2(ssrRenderComponent(_sfc_main$i, mergeProps({
                     key: index,
                     size: "sm"
                   }, { ref_for: true }, action), null, _parent2, _scopeId));
@@ -15308,7 +15936,7 @@ const _sfc_main$5 = {
                 ssrRenderSlot(_ctx.$slots, "actions", {}, () => {
                   _push2(`<!--[-->`);
                   ssrRenderList(unref(props).actions, (action, index) => {
-                    _push2(ssrRenderComponent(_sfc_main$h, mergeProps({
+                    _push2(ssrRenderComponent(_sfc_main$i, mergeProps({
                       key: index,
                       size: "sm"
                     }, { ref_for: true }, action), null, _parent2, _scopeId));
@@ -15320,7 +15948,7 @@ const _sfc_main$5 = {
               }
               ssrRenderSlot(_ctx.$slots, "close", { b24ui: b24ui.value }, () => {
                 if (unref(props).close) {
-                  _push2(ssrRenderComponent(_sfc_main$h, mergeProps({
+                  _push2(ssrRenderComponent(_sfc_main$i, mergeProps({
                     icon: unref(props).closeIcon || unref(icons).close,
                     size: "md",
                     color: "air-tertiary-no-accent",
@@ -15345,7 +15973,7 @@ const _sfc_main$5 = {
                   key: 0,
                   "data-slot": "icon",
                   class: b24ui.value.icon({ class: unref(props).b24ui?.icon })
-                }, null, 8, ["class"])) : unref(props).avatar ? (openBlock(), createBlock(_sfc_main$k, mergeProps({
+                }, null, 8, ["class"])) : unref(props).avatar ? (openBlock(), createBlock(_sfc_main$l, mergeProps({
                   key: 1,
                   size: unref(props).b24ui?.avatarSize || b24ui.value.avatarSize()
                 }, unref(props).avatar, {
@@ -15382,7 +16010,7 @@ const _sfc_main$5 = {
                 }, [
                   renderSlot(_ctx.$slots, "actions", {}, () => [
                     (openBlock(true), createBlock(Fragment, null, renderList(unref(props).actions, (action, index) => {
-                      return openBlock(), createBlock(_sfc_main$h, mergeProps({
+                      return openBlock(), createBlock(_sfc_main$i, mergeProps({
                         key: index,
                         size: "sm"
                       }, { ref_for: true }, action), null, 16);
@@ -15397,14 +16025,14 @@ const _sfc_main$5 = {
               }, [
                 unref(props).orientation === "horizontal" && (unref(props).actions?.length || !!slots.actions) ? renderSlot(_ctx.$slots, "actions", { key: 0 }, () => [
                   (openBlock(true), createBlock(Fragment, null, renderList(unref(props).actions, (action, index) => {
-                    return openBlock(), createBlock(_sfc_main$h, mergeProps({
+                    return openBlock(), createBlock(_sfc_main$i, mergeProps({
                       key: index,
                       size: "sm"
                     }, { ref_for: true }, action), null, 16);
                   }), 128))
                 ]) : createCommentVNode("", true),
                 renderSlot(_ctx.$slots, "close", { b24ui: b24ui.value }, () => [
-                  unref(props).close ? (openBlock(), createBlock(_sfc_main$h, mergeProps({
+                  unref(props).close ? (openBlock(), createBlock(_sfc_main$i, mergeProps({
                     key: 0,
                     icon: unref(props).closeIcon || unref(icons).close,
                     size: "md",
@@ -15425,39 +16053,37 @@ const _sfc_main$5 = {
     };
   }
 };
-const _sfc_setup$5 = _sfc_main$5.setup;
-_sfc_main$5.setup = (props, ctx) => {
+const _sfc_setup$6 = _sfc_main$6.setup;
+_sfc_main$6.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/Alert.vue");
-  return _sfc_setup$5 ? _sfc_setup$5(props, ctx) : void 0;
+  return _sfc_setup$6 ? _sfc_setup$6(props, ctx) : void 0;
 };
-const _sfc_main$4 = /* @__PURE__ */ defineComponent({
+const activityLabel = "дело";
+const _sfc_main$5 = /* @__PURE__ */ defineComponent({
   __name: "AiNextStepPanel",
   __ssrInlineRender: true,
   props: {
     dealId: {},
     agentName: {},
     clientName: {},
-    accessToken: {},
-    loadingContext: { type: Boolean }
+    loadingContext: { type: Boolean },
+    createTodo: { type: Function }
   },
   setup(__props) {
     const props = __props;
     const toast = useToast();
     const pending = ref(false);
     const creating = ref(false);
+    const asking = ref(false);
     const errorMessage = ref("");
     const result = ref(null);
+    const question = ref("");
+    const chatMessages = ref([]);
+    ref(null);
     const canAnalyze = computed(() => Boolean(props.dealId) && !pending.value && !creating.value && !props.loadingContext);
     const canCreate = computed(() => Boolean(result.value?.recommendation) && !creating.value && !pending.value);
-    const headers = computed(() => {
-      if (!props.accessToken) {
-        const emptyHeaders = {};
-        return emptyHeaders;
-      }
-      const authHeaders = { Authorization: `Bearer ${props.accessToken}` };
-      return authHeaders;
-    });
+    const canAskAi = computed(() => Boolean(props.dealId && result.value?.recommendation && question.value.trim() && !asking.value));
     const formattedDeadline = computed(() => {
       const value = result.value?.recommendation.deadline;
       if (!value) {
@@ -15484,13 +16110,14 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
       try {
         const response = await $fetch("/api/b24/analyze-next-step", {
           method: "POST",
-          headers: headers.value,
+          credentials: "same-origin",
           body: {
             dealId: props.dealId,
             mode: "preview"
           }
         });
         result.value = response.data;
+        chatMessages.value = [];
         toast.add({
           title: "AI-рекомендация готова",
           description: "Проверьте следующий шаг перед созданием дела.",
@@ -15509,6 +16136,14 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
         pending.value = false;
       }
     }
+    function clearChat() {
+      chatMessages.value = [];
+      question.value = "";
+    }
+    watch(() => props.dealId, () => {
+      chatMessages.value = [];
+      question.value = "";
+    });
     async function createActivity() {
       if (!props.dealId || !result.value?.recommendation || !canCreate.value) {
         return;
@@ -15516,25 +16151,21 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
       creating.value = true;
       errorMessage.value = "";
       try {
-        const response = await $fetch("/api/b24/analyze-next-step", {
-          method: "POST",
-          headers: headers.value,
-          body: {
-            dealId: props.dealId,
-            mode: "live",
-            recommendation: result.value.recommendation
-          }
-        });
-        result.value = response.data;
-        const createdId = response.data.createdActivityId;
+        const createdId = await props.createTodo(result.value.recommendation);
+        result.value = {
+          ...result.value,
+          mode: "live",
+          createdActivityId: createdId,
+          createdEntityType: "activity"
+        };
         toast.add({
-          title: "Дело создано в CRM",
+          title: "Дело создано",
           description: createdId ? `ID: ${createdId}` : "Откройте карточку сделки для проверки.",
           color: "air-primary-success",
           icon: CircleCheckIcon$1
         });
       } catch (error) {
-        errorMessage.value = error?.statusMessage || error?.message || "Не удалось создать дело в CRM.";
+        errorMessage.value = error?.data?.statusMessage || error?.data?.message || error?.statusMessage || error?.message || "Не удалось создать дело в CRM.";
         toast.add({
           title: "Ошибка создания дела",
           description: errorMessage.value,
@@ -15561,47 +16192,30 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
       });
     }
     return (_ctx, _push, _parent, _attrs) => {
-      const _component_B24Alert = _sfc_main$5;
-      const _component_B24Button = _sfc_main$h;
-      const _component_B24Badge = _sfc_main$b;
-      _push(`<main${ssrRenderAttrs(mergeProps({ class: "grid gap-4 p-4 lg:grid-cols-[420px_minmax(0,1fr)]" }, _attrs))}><aside class="sidebar-sticky work-panel p-4 workspace-scroll"><div class="mb-4 border-b border-default pb-3"><h2 class="text-base font-bold text-label">AI следующий шаг</h2><p class="mt-1 text-xs text-description"> Анализирует историю сделки и предлагает одно практичное дело для менеджера. </p></div><div class="field-stack">`);
+      const _component_B24Button = _sfc_main$i;
+      const _component_B24Alert = _sfc_main$6;
+      const _component_B24Badge = _sfc_main$c;
+      _push(`<main${ssrRenderAttrs(mergeProps({ class: "workspace-layout workspace-ai gap-4 p-4" }, _attrs))}><section class="ai-decision-column"><section class="ai-command-bar work-panel p-5"><div class="flex flex-wrap items-start justify-between gap-4"><div><p class="eyebrow">AI следующий шаг</p><h2 class="mt-1 text-xl font-bold text-label">Одно действие, которое важно сейчас</h2><p class="mt-2 max-w-2xl text-sm leading-6 text-description">AI изучит историю сделки, коммуникации и звонки, затем подготовит одно дело для менеджера.</p></div>`);
+      _push(ssrRenderComponent(_component_B24Button, {
+        icon: unref(RocketIcon),
+        loading: unref(pending),
+        disabled: !unref(canAnalyze),
+        label: unref(result) ? "Сформировать заново" : "Сформировать следующий шаг",
+        class: "brand-action",
+        onClick: analyze
+      }, null, _parent));
+      _push(`</div>`);
       if (!__props.dealId) {
         _push(ssrRenderComponent(_component_B24Alert, {
+          class: "mt-4",
           color: "air-primary-alert",
           variant: "soft",
           title: "Сделка не определена",
           description: "Откройте виджет из карточки сделки, чтобы AI получил рабочий контекст."
         }, null, _parent));
-      } else {
-        _push(`<!---->`);
-      }
-      _push(`<div class="rounded-lg border border-default bg-muted p-3"><p class="text-xs font-semibold uppercase text-description">Контекст</p><div class="mt-2 grid gap-2 text-sm text-label"><p><strong>Сделка:</strong> ${ssrInterpolate(__props.dealId ? `#${__props.dealId}` : "не найдена")}</p><p><strong>Менеджер:</strong> ${ssrInterpolate(__props.agentName || "не указан")}</p><p><strong>Клиент:</strong> ${ssrInterpolate(__props.clientName || "не указан")}</p></div></div>`);
-      _push(ssrRenderComponent(_component_B24Button, {
-        icon: unref(RocketIcon),
-        loading: unref(pending),
-        disabled: !unref(canAnalyze),
-        label: "Сформировать следующий шаг",
-        block: "",
-        class: "brand-action",
-        onClick: analyze
-      }, null, _parent));
-      _push(ssrRenderComponent(_component_B24Button, {
-        loading: unref(creating),
-        disabled: !unref(canCreate),
-        label: "Создать дело в CRM",
-        block: "",
-        class: "border border-default bg-default text-label",
-        onClick: createActivity
-      }, null, _parent));
-      _push(ssrRenderComponent(_component_B24Button, {
-        disabled: !unref(result),
-        label: "Копировать рекомендацию",
-        block: "",
-        class: "border border-default bg-default text-label",
-        onClick: copyRecommendation
-      }, null, _parent));
-      if (unref(result)?.createdActivityId) {
+      } else if (unref(result)?.createdActivityId) {
         _push(ssrRenderComponent(_component_B24Alert, {
+          class: "mt-4",
           color: "air-primary-success",
           variant: "soft",
           title: "Дело создано",
@@ -15610,7 +16224,7 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
       } else {
         _push(`<!---->`);
       }
-      _push(`</div></aside><section class="script-scroll workspace-scroll"><div class="grid gap-4">`);
+      _push(`</section>`);
       if (unref(errorMessage)) {
         _push(ssrRenderComponent(_component_B24Alert, {
           color: "air-primary-alert",
@@ -15622,738 +16236,989 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
         _push(`<!---->`);
       }
       if (unref(result)) {
-        _push(`<article class="script-card p-5"><div class="mb-4 flex flex-wrap items-start justify-between gap-3 border-b border-default pb-3"><div><p class="text-xs font-bold uppercase text-[var(--brand-red)]">Рекомендация AI</p><h2 class="mt-1 text-xl font-bold text-label">${ssrInterpolate(unref(result).recommendation.title)}</h2><p class="mt-1 text-sm text-description">${ssrInterpolate(unref(result).recommendation.activityType)} · выполнить ${ssrInterpolate(unref(formattedDeadline))}</p></div>`);
+        _push(`<article class="ai-recommendation-panel work-panel p-5"><div class="flex flex-wrap items-start justify-between gap-3 border-b border-default pb-4"><div><p class="eyebrow">Рекомендация</p><h2 class="mt-1 text-xl font-bold text-label">${ssrInterpolate(unref(result).recommendation.title)}</h2><p class="mt-1 text-sm text-description">Дело · выполнить ${ssrInterpolate(unref(formattedDeadline))}</p></div>`);
         _push(ssrRenderComponent(_component_B24Badge, {
-          label: unref(result).mode === "live" ? "Создано в CRM" : "Preview",
-          class: unref(result).mode === "live" ? "border border-green-200 bg-green-50 text-green-800" : "brand-soft"
+          label: unref(result).mode === "live" ? "Создано в CRM" : "Готово к созданию",
+          class: "brand-soft"
         }, null, _parent));
-        _push(`</div><div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]"><div class="rounded-lg border border-default bg-muted p-4 text-sm leading-6 whitespace-pre-wrap text-label">${ssrInterpolate(unref(result).recommendation.description)}</div><div class="grid content-start gap-4">`);
-        if (unref(result).nativeAiTodoFound) {
+        _push(`</div><div class="mt-5 grid gap-5"><div class="ai-recommendation-copy">${ssrInterpolate(unref(result).recommendation.description)}</div><div class="ai-recommendation-meta"><div><h3>Почему этот шаг</h3><ul><!--[-->`);
+        ssrRenderList(unref(result).recommendation.justification, (item) => {
+          _push(`<li>${ssrInterpolate(item)}</li>`);
+        });
+        _push(`<!--]--></ul></div><div><h3>Важно учесть</h3><ul><!--[-->`);
+        ssrRenderList(unref(result).recommendation.importantDetails, (item) => {
+          _push(`<li>${ssrInterpolate(item)}</li>`);
+        });
+        _push(`<!--]--></ul></div></div><div class="flex flex-wrap gap-2 border-t border-default pt-4">`);
+        _push(ssrRenderComponent(_component_B24Button, {
+          loading: unref(creating),
+          disabled: !unref(canCreate),
+          label: `Создать ${activityLabel}`,
+          class: "brand-action",
+          onClick: createActivity
+        }, null, _parent));
+        _push(ssrRenderComponent(_component_B24Button, {
+          disabled: !unref(result),
+          label: "Копировать текст",
+          class: "mode-switch-button border border-default",
+          onClick: copyRecommendation
+        }, null, _parent));
+        _push(`</div>`);
+        if (unref(result).context?.transcriptStats) {
           _push(ssrRenderComponent(_component_B24Alert, {
-            color: "air-primary-warning",
+            color: "air-primary",
             variant: "soft",
-            title: "Найдено штатное AI-дело",
-            description: "Рекомендация построена на уже найденном открытом AI-деле Bitrix24."
+            title: "Звонки в анализе",
+            description: "Найдено: " + unref(result).context.transcriptStats.calls + "; готовых: " + unref(result).context.transcriptStats.native + "; из кэша: " + unref(result).context.transcriptStats.cached + "; расшифровано сейчас: " + unref(result).context.transcriptStats.transcribed + "."
           }, null, _parent));
         } else {
           _push(`<!---->`);
         }
-        _push(`<div class="rounded-lg border border-default bg-default p-3"><h3 class="text-sm font-bold text-label">Важные детали</h3><ul class="mt-2 grid gap-2 text-sm text-description"><!--[-->`);
-        ssrRenderList(unref(result).recommendation.importantDetails, (item) => {
-          _push(`<li>${ssrInterpolate(item)}</li>`);
-        });
-        _push(`<!--]--></ul></div><div class="rounded-lg border border-default bg-default p-3"><h3 class="text-sm font-bold text-label">Почему сейчас</h3><ul class="mt-2 grid gap-2 text-sm text-description"><!--[-->`);
-        ssrRenderList(unref(result).recommendation.justification, (item) => {
-          _push(`<li>${ssrInterpolate(item)}</li>`);
-        });
-        _push(`<!--]--></ul></div>`);
-        if (unref(result).context?.sourceStats) {
-          _push(`<div class="rounded-lg border border-default bg-default p-3 text-sm text-description"> Источники: таймлайн ${ssrInterpolate(unref(result).context.sourceStats.timelines)}, дела ${ssrInterpolate(unref(result).context.sourceStats.activities)}, сообщения ${ssrInterpolate(unref(result).context.sourceStats.messages)}. </div>`);
-        } else {
-          _push(`<!---->`);
-        }
-        _push(`</div></div></article>`);
+        _push(`</div></article>`);
       } else {
-        _push(`<article class="script-card p-8"><div class="mx-auto flex max-w-xl flex-col items-center gap-3 text-center"><div class="flex h-12 w-12 items-center justify-center rounded-lg brand-soft">`);
-        _push(ssrRenderComponent(unref(RocketIcon), { class: "h-6 w-6" }, null, _parent));
-        _push(`</div><h2 class="text-xl font-bold text-label">Готово к анализу сделки</h2><p class="text-sm leading-6 text-description"> Нажмите кнопку формирования, чтобы AI изучил историю сделки, коммуникации и открытые дела, а затем предложил следующий шаг без автоматической записи в CRM. </p></div></article>`);
+        _push(`<article class="ai-empty-state work-panel p-8">`);
+        _push(ssrRenderComponent(unref(RocketIcon), { class: "h-7 w-7 text-[var(--brand-red)]" }, null, _parent));
+        _push(`<h2 class="mt-3 text-xl font-bold text-label">Готово к анализу сделки</h2><p class="mt-2 max-w-xl text-sm leading-6 text-description">Создайте рекомендацию, чтобы увидеть приоритетное действие, обоснование и готовый текст для клиента.</p></article>`);
       }
-      _push(`</div></section></main>`);
+      _push(`</section><aside class="ai-chat-panel work-panel overflow-hidden"><div class="flex flex-wrap items-center justify-between gap-3 border-b border-default px-5 py-4"><div><h2 class="text-base font-bold text-label">Обсудить с AI</h2><p class="mt-1 text-xs text-description">Уточните рекомендации и факты сделки.</p></div>`);
+      if (unref(chatMessages).length) {
+        _push(ssrRenderComponent(_component_B24Button, {
+          label: "Очистить",
+          size: "xs",
+          class: "mode-switch-button",
+          onClick: clearChat
+        }, null, _parent));
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`</div><div class="ai-chat-scroll grid gap-3 px-5 py-4">`);
+      if (!unref(chatMessages).length) {
+        _push(`<div class="grid gap-2"><p class="text-xs font-semibold uppercase text-description">Быстрые вопросы</p><div class="grid gap-2"><button type="button" class="ai-question-suggestion">Почему этот шаг?</button><button type="button" class="ai-question-suggestion">Какие факты важны?</button><button type="button" class="ai-question-suggestion">Что уточнить?</button></div></div>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`<!--[-->`);
+      ssrRenderList(unref(chatMessages), (message) => {
+        _push(`<div class="${ssrRenderClass([message.role === "user" ? "ai-chat-message-user" : "ai-chat-message-assistant", "ai-chat-message"])}"><p class="${ssrRenderClass([message.role === "user" ? "text-white/80" : "text-[var(--brand-red)]", "mb-1 text-xs font-semibold"])}">${ssrInterpolate(message.role === "user" ? "Вы" : "AI ассистент")}</p><p class="whitespace-pre-wrap text-sm leading-6">${ssrInterpolate(message.content)}</p></div>`);
+      });
+      _push(`<!--]-->`);
+      if (unref(asking)) {
+        _push(`<div class="ai-chat-message ai-chat-message-assistant"><p class="text-sm text-description">AI изучает актуальный контекст сделки…</p></div>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`</div><form class="grid gap-3 border-t border-default p-4"><label class="sr-only" for="ai-next-step-question">Ваш вопрос</label><textarea id="ai-next-step-question" class="ai-chat-input"${ssrIncludeBooleanAttr(unref(asking)) ? " disabled" : ""} maxlength="4000" placeholder="Задайте вопрос по сделке…" rows="3">${ssrInterpolate(unref(question))}</textarea><div class="flex items-center justify-between gap-3"><p class="text-xs text-description">Enter — отправить</p>`);
+      _push(ssrRenderComponent(_component_B24Button, {
+        type: "submit",
+        loading: unref(asking),
+        disabled: !unref(canAskAi),
+        label: "Спросить",
+        class: "brand-action"
+      }, null, _parent));
+      _push(`</div></form></aside></main>`);
     };
   }
 });
+const _sfc_setup$5 = _sfc_main$5.setup;
+_sfc_main$5.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("components/AiNextStepPanel.vue");
+  return _sfc_setup$5 ? _sfc_setup$5(props, ctx) : void 0;
+};
+const __nuxt_component_9 = Object.assign(_sfc_main$5, { __name: "AiNextStepPanel" });
+const theme = {
+  "slots": {
+    "root": "w-full",
+    "item": "text-label border-b border-(--ui-color-divider-vibrant-accent-more) last:border-b-0",
+    "header": "flex",
+    "trigger": "min-w-0 group flex-1 flex items-center gap-1.5 py-[12px] font-(--ui-font-weight-medium) text-(length:--ui-font-size-sm) leading-[20px] focus-visible:outline-(--ui-color-accent-soft-element-blue) cursor-pointer",
+    "content": "motion-safe:data-[state=open]:animate-[accordion-down_200ms_ease-out] motion-safe:data-[state=closed]:animate-[accordion-up_200ms_ease-out] overflow-hidden focus:outline-none",
+    "body": "text-(length:--ui-font-size-sm) pb-[12px]",
+    "leadingIcon": "shrink-0 size-[20px]",
+    "trailingIcon": "shrink-0 size-[20px] ms-auto group-data-[state=open]:rotate-180 transition-transform duration-200",
+    "label": "text-start wrap-break-word"
+  },
+  "variants": {
+    "disabled": {
+      "true": {
+        "trigger": "cursor-not-allowed opacity-75"
+      }
+    }
+  }
+};
+const _sfc_main$4 = {
+  __name: "B24Accordion",
+  __ssrInlineRender: true,
+  props: {
+    as: { type: null, required: false },
+    items: { type: Array, required: false },
+    trailingIcon: { type: [Function, Object], required: false },
+    valueKey: { type: null, required: false, default: "value" },
+    labelKey: { type: null, required: false, default: "label" },
+    class: { type: null, required: false },
+    b24ui: { type: Object, required: false },
+    collapsible: { type: Boolean, required: false, default: true },
+    defaultValue: { type: null, required: false },
+    modelValue: { type: null, required: false },
+    type: { type: String, required: false, default: "single" },
+    disabled: { type: Boolean, required: false },
+    unmountOnHide: { type: Boolean, required: false, default: true }
+  },
+  emits: ["update:modelValue"],
+  setup(__props, { emit: __emit }) {
+    const _props = __props;
+    const emits = __emit;
+    const slots = useSlots();
+    const props = useComponentProps("accordion", _props);
+    const appConfig2 = useAppConfig();
+    const rootProps = useForwardProps(reactivePick(props, "as", "collapsible", "defaultValue", "disabled", "modelValue", "unmountOnHide"), emits);
+    const b24ui = computed(() => tv({ extend: tv(theme), ...appConfig2.b24ui?.accordion || {} })({
+      disabled: props.disabled
+    }));
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(unref(AccordionRoot_default), mergeProps(unref(rootProps), {
+        type: unref(props).type,
+        "data-slot": "root",
+        class: b24ui.value.root({ class: [unref(props).b24ui?.root, unref(props).class] })
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<!--[-->`);
+            ssrRenderList(unref(props).items, (item, index) => {
+              _push2(ssrRenderComponent(unref(AccordionItem_default), {
+                key: unref(get)(item, unref(props).valueKey) ?? index,
+                value: unref(get)(item, unref(props).valueKey) ?? String(index),
+                disabled: item.disabled,
+                "data-slot": "item",
+                class: b24ui.value.item({ class: [unref(props).b24ui?.item, item.b24ui?.item, item.class] })
+              }, {
+                default: withCtx(({ open }, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    _push3(ssrRenderComponent(unref(AccordionHeader_default), {
+                      as: "div",
+                      "data-slot": "header",
+                      class: b24ui.value.header({ class: [unref(props).b24ui?.header, item.b24ui?.header] })
+                    }, {
+                      default: withCtx((_2, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(ssrRenderComponent(unref(AccordionTrigger_default), {
+                            "data-slot": "trigger",
+                            class: b24ui.value.trigger({ class: [unref(props).b24ui?.trigger, item.b24ui?.trigger], disabled: item.disabled })
+                          }, {
+                            default: withCtx((_3, _push5, _parent5, _scopeId4) => {
+                              if (_push5) {
+                                ssrRenderSlot(_ctx.$slots, "leading", {
+                                  item,
+                                  index,
+                                  open,
+                                  b24ui: b24ui.value
+                                }, () => {
+                                  if (item.icon) {
+                                    ssrRenderVNode(_push5, createVNode(resolveDynamicComponent(item.icon), {
+                                      "data-slot": "leadingIcon",
+                                      class: b24ui.value.leadingIcon({ class: [unref(props).b24ui?.leadingIcon, item?.b24ui?.leadingIcon] })
+                                    }, null), _parent5, _scopeId4);
+                                  } else {
+                                    _push5(`<!---->`);
+                                  }
+                                }, _push5, _parent5, _scopeId4);
+                                if (unref(get)(item, unref(props).labelKey) || !!slots.default) {
+                                  _push5(`<span data-slot="label" class="${ssrRenderClass(b24ui.value.label({ class: [unref(props).b24ui?.label, item.b24ui?.label] }))}"${_scopeId4}>`);
+                                  ssrRenderSlot(_ctx.$slots, "default", {
+                                    item,
+                                    index,
+                                    open
+                                  }, () => {
+                                    _push5(`${ssrInterpolate(unref(get)(item, unref(props).labelKey))}`);
+                                  }, _push5, _parent5, _scopeId4);
+                                  _push5(`</span>`);
+                                } else {
+                                  _push5(`<!---->`);
+                                }
+                                ssrRenderSlot(_ctx.$slots, "trailing", {
+                                  item,
+                                  index,
+                                  open,
+                                  b24ui: b24ui.value
+                                }, () => {
+                                  ssrRenderVNode(_push5, createVNode(resolveDynamicComponent(item.trailingIcon || unref(props).trailingIcon || unref(icons).chevronDown), {
+                                    "data-slot": "trailingIcon",
+                                    class: b24ui.value.trailingIcon({ class: [unref(props).b24ui?.trailingIcon, item.b24ui?.trailingIcon] })
+                                  }, null), _parent5, _scopeId4);
+                                }, _push5, _parent5, _scopeId4);
+                              } else {
+                                return [
+                                  renderSlot(_ctx.$slots, "leading", {
+                                    item,
+                                    index,
+                                    open,
+                                    b24ui: b24ui.value
+                                  }, () => [
+                                    item.icon ? (openBlock(), createBlock(resolveDynamicComponent(item.icon), {
+                                      key: 0,
+                                      "data-slot": "leadingIcon",
+                                      class: b24ui.value.leadingIcon({ class: [unref(props).b24ui?.leadingIcon, item?.b24ui?.leadingIcon] })
+                                    }, null, 8, ["class"])) : createCommentVNode("", true)
+                                  ]),
+                                  unref(get)(item, unref(props).labelKey) || !!slots.default ? (openBlock(), createBlock("span", {
+                                    key: 0,
+                                    "data-slot": "label",
+                                    class: b24ui.value.label({ class: [unref(props).b24ui?.label, item.b24ui?.label] })
+                                  }, [
+                                    renderSlot(_ctx.$slots, "default", {
+                                      item,
+                                      index,
+                                      open
+                                    }, () => [
+                                      createTextVNode(toDisplayString(unref(get)(item, unref(props).labelKey)), 1)
+                                    ])
+                                  ], 2)) : createCommentVNode("", true),
+                                  renderSlot(_ctx.$slots, "trailing", {
+                                    item,
+                                    index,
+                                    open,
+                                    b24ui: b24ui.value
+                                  }, () => [
+                                    (openBlock(), createBlock(resolveDynamicComponent(item.trailingIcon || unref(props).trailingIcon || unref(icons).chevronDown), {
+                                      "data-slot": "trailingIcon",
+                                      class: b24ui.value.trailingIcon({ class: [unref(props).b24ui?.trailingIcon, item.b24ui?.trailingIcon] })
+                                    }, null, 8, ["class"]))
+                                  ])
+                                ];
+                              }
+                            }),
+                            _: 2
+                          }, _parent4, _scopeId3));
+                        } else {
+                          return [
+                            createVNode(unref(AccordionTrigger_default), {
+                              "data-slot": "trigger",
+                              class: b24ui.value.trigger({ class: [unref(props).b24ui?.trigger, item.b24ui?.trigger], disabled: item.disabled })
+                            }, {
+                              default: withCtx(() => [
+                                renderSlot(_ctx.$slots, "leading", {
+                                  item,
+                                  index,
+                                  open,
+                                  b24ui: b24ui.value
+                                }, () => [
+                                  item.icon ? (openBlock(), createBlock(resolveDynamicComponent(item.icon), {
+                                    key: 0,
+                                    "data-slot": "leadingIcon",
+                                    class: b24ui.value.leadingIcon({ class: [unref(props).b24ui?.leadingIcon, item?.b24ui?.leadingIcon] })
+                                  }, null, 8, ["class"])) : createCommentVNode("", true)
+                                ]),
+                                unref(get)(item, unref(props).labelKey) || !!slots.default ? (openBlock(), createBlock("span", {
+                                  key: 0,
+                                  "data-slot": "label",
+                                  class: b24ui.value.label({ class: [unref(props).b24ui?.label, item.b24ui?.label] })
+                                }, [
+                                  renderSlot(_ctx.$slots, "default", {
+                                    item,
+                                    index,
+                                    open
+                                  }, () => [
+                                    createTextVNode(toDisplayString(unref(get)(item, unref(props).labelKey)), 1)
+                                  ])
+                                ], 2)) : createCommentVNode("", true),
+                                renderSlot(_ctx.$slots, "trailing", {
+                                  item,
+                                  index,
+                                  open,
+                                  b24ui: b24ui.value
+                                }, () => [
+                                  (openBlock(), createBlock(resolveDynamicComponent(item.trailingIcon || unref(props).trailingIcon || unref(icons).chevronDown), {
+                                    "data-slot": "trailingIcon",
+                                    class: b24ui.value.trailingIcon({ class: [unref(props).b24ui?.trailingIcon, item.b24ui?.trailingIcon] })
+                                  }, null, 8, ["class"]))
+                                ])
+                              ]),
+                              _: 2
+                            }, 1032, ["class"])
+                          ];
+                        }
+                      }),
+                      _: 2
+                    }, _parent3, _scopeId2));
+                    if (item.content || !!slots.content || item.slot && !!slots[item.slot] || !!slots.body || item.slot && !!slots[`${item.slot}-body`]) {
+                      _push3(ssrRenderComponent(unref(AccordionContent_default), {
+                        "data-slot": "content",
+                        class: b24ui.value.content({ class: [unref(props).b24ui?.content, item.b24ui?.content] })
+                      }, {
+                        default: withCtx((_2, _push4, _parent4, _scopeId3) => {
+                          if (_push4) {
+                            ssrRenderSlot(_ctx.$slots, item.slot || "content", {
+                              item,
+                              index,
+                              open,
+                              b24ui: b24ui.value
+                            }, () => {
+                              _push4(`<div data-slot="body" class="${ssrRenderClass(b24ui.value.body({ class: [unref(props).b24ui?.body, item.b24ui?.body] }))}"${_scopeId3}>`);
+                              ssrRenderSlot(_ctx.$slots, item.slot ? `${item.slot}-body` : "body", {
+                                item,
+                                index,
+                                open,
+                                b24ui: b24ui.value
+                              }, () => {
+                                _push4(`${ssrInterpolate(item.content)}`);
+                              }, _push4, _parent4, _scopeId3);
+                              _push4(`</div>`);
+                            }, _push4, _parent4, _scopeId3);
+                          } else {
+                            return [
+                              renderSlot(_ctx.$slots, item.slot || "content", {
+                                item,
+                                index,
+                                open,
+                                b24ui: b24ui.value
+                              }, () => [
+                                createVNode("div", {
+                                  "data-slot": "body",
+                                  class: b24ui.value.body({ class: [unref(props).b24ui?.body, item.b24ui?.body] })
+                                }, [
+                                  renderSlot(_ctx.$slots, item.slot ? `${item.slot}-body` : "body", {
+                                    item,
+                                    index,
+                                    open,
+                                    b24ui: b24ui.value
+                                  }, () => [
+                                    createTextVNode(toDisplayString(item.content), 1)
+                                  ])
+                                ], 2)
+                              ])
+                            ];
+                          }
+                        }),
+                        _: 2
+                      }, _parent3, _scopeId2));
+                    } else {
+                      _push3(`<!---->`);
+                    }
+                  } else {
+                    return [
+                      createVNode(unref(AccordionHeader_default), {
+                        as: "div",
+                        "data-slot": "header",
+                        class: b24ui.value.header({ class: [unref(props).b24ui?.header, item.b24ui?.header] })
+                      }, {
+                        default: withCtx(() => [
+                          createVNode(unref(AccordionTrigger_default), {
+                            "data-slot": "trigger",
+                            class: b24ui.value.trigger({ class: [unref(props).b24ui?.trigger, item.b24ui?.trigger], disabled: item.disabled })
+                          }, {
+                            default: withCtx(() => [
+                              renderSlot(_ctx.$slots, "leading", {
+                                item,
+                                index,
+                                open,
+                                b24ui: b24ui.value
+                              }, () => [
+                                item.icon ? (openBlock(), createBlock(resolveDynamicComponent(item.icon), {
+                                  key: 0,
+                                  "data-slot": "leadingIcon",
+                                  class: b24ui.value.leadingIcon({ class: [unref(props).b24ui?.leadingIcon, item?.b24ui?.leadingIcon] })
+                                }, null, 8, ["class"])) : createCommentVNode("", true)
+                              ]),
+                              unref(get)(item, unref(props).labelKey) || !!slots.default ? (openBlock(), createBlock("span", {
+                                key: 0,
+                                "data-slot": "label",
+                                class: b24ui.value.label({ class: [unref(props).b24ui?.label, item.b24ui?.label] })
+                              }, [
+                                renderSlot(_ctx.$slots, "default", {
+                                  item,
+                                  index,
+                                  open
+                                }, () => [
+                                  createTextVNode(toDisplayString(unref(get)(item, unref(props).labelKey)), 1)
+                                ])
+                              ], 2)) : createCommentVNode("", true),
+                              renderSlot(_ctx.$slots, "trailing", {
+                                item,
+                                index,
+                                open,
+                                b24ui: b24ui.value
+                              }, () => [
+                                (openBlock(), createBlock(resolveDynamicComponent(item.trailingIcon || unref(props).trailingIcon || unref(icons).chevronDown), {
+                                  "data-slot": "trailingIcon",
+                                  class: b24ui.value.trailingIcon({ class: [unref(props).b24ui?.trailingIcon, item.b24ui?.trailingIcon] })
+                                }, null, 8, ["class"]))
+                              ])
+                            ]),
+                            _: 2
+                          }, 1032, ["class"])
+                        ]),
+                        _: 2
+                      }, 1032, ["class"]),
+                      item.content || !!slots.content || item.slot && !!slots[item.slot] || !!slots.body || item.slot && !!slots[`${item.slot}-body`] ? (openBlock(), createBlock(unref(AccordionContent_default), {
+                        key: 0,
+                        "data-slot": "content",
+                        class: b24ui.value.content({ class: [unref(props).b24ui?.content, item.b24ui?.content] })
+                      }, {
+                        default: withCtx(() => [
+                          renderSlot(_ctx.$slots, item.slot || "content", {
+                            item,
+                            index,
+                            open,
+                            b24ui: b24ui.value
+                          }, () => [
+                            createVNode("div", {
+                              "data-slot": "body",
+                              class: b24ui.value.body({ class: [unref(props).b24ui?.body, item.b24ui?.body] })
+                            }, [
+                              renderSlot(_ctx.$slots, item.slot ? `${item.slot}-body` : "body", {
+                                item,
+                                index,
+                                open,
+                                b24ui: b24ui.value
+                              }, () => [
+                                createTextVNode(toDisplayString(item.content), 1)
+                              ])
+                            ], 2)
+                          ])
+                        ]),
+                        _: 2
+                      }, 1032, ["class"])) : createCommentVNode("", true)
+                    ];
+                  }
+                }),
+                _: 2
+              }, _parent2, _scopeId));
+            });
+            _push2(`<!--]-->`);
+          } else {
+            return [
+              (openBlock(true), createBlock(Fragment, null, renderList(unref(props).items, (item, index) => {
+                return openBlock(), createBlock(unref(AccordionItem_default), {
+                  key: unref(get)(item, unref(props).valueKey) ?? index,
+                  value: unref(get)(item, unref(props).valueKey) ?? String(index),
+                  disabled: item.disabled,
+                  "data-slot": "item",
+                  class: b24ui.value.item({ class: [unref(props).b24ui?.item, item.b24ui?.item, item.class] })
+                }, {
+                  default: withCtx(({ open }) => [
+                    createVNode(unref(AccordionHeader_default), {
+                      as: "div",
+                      "data-slot": "header",
+                      class: b24ui.value.header({ class: [unref(props).b24ui?.header, item.b24ui?.header] })
+                    }, {
+                      default: withCtx(() => [
+                        createVNode(unref(AccordionTrigger_default), {
+                          "data-slot": "trigger",
+                          class: b24ui.value.trigger({ class: [unref(props).b24ui?.trigger, item.b24ui?.trigger], disabled: item.disabled })
+                        }, {
+                          default: withCtx(() => [
+                            renderSlot(_ctx.$slots, "leading", {
+                              item,
+                              index,
+                              open,
+                              b24ui: b24ui.value
+                            }, () => [
+                              item.icon ? (openBlock(), createBlock(resolveDynamicComponent(item.icon), {
+                                key: 0,
+                                "data-slot": "leadingIcon",
+                                class: b24ui.value.leadingIcon({ class: [unref(props).b24ui?.leadingIcon, item?.b24ui?.leadingIcon] })
+                              }, null, 8, ["class"])) : createCommentVNode("", true)
+                            ]),
+                            unref(get)(item, unref(props).labelKey) || !!slots.default ? (openBlock(), createBlock("span", {
+                              key: 0,
+                              "data-slot": "label",
+                              class: b24ui.value.label({ class: [unref(props).b24ui?.label, item.b24ui?.label] })
+                            }, [
+                              renderSlot(_ctx.$slots, "default", {
+                                item,
+                                index,
+                                open
+                              }, () => [
+                                createTextVNode(toDisplayString(unref(get)(item, unref(props).labelKey)), 1)
+                              ])
+                            ], 2)) : createCommentVNode("", true),
+                            renderSlot(_ctx.$slots, "trailing", {
+                              item,
+                              index,
+                              open,
+                              b24ui: b24ui.value
+                            }, () => [
+                              (openBlock(), createBlock(resolveDynamicComponent(item.trailingIcon || unref(props).trailingIcon || unref(icons).chevronDown), {
+                                "data-slot": "trailingIcon",
+                                class: b24ui.value.trailingIcon({ class: [unref(props).b24ui?.trailingIcon, item.b24ui?.trailingIcon] })
+                              }, null, 8, ["class"]))
+                            ])
+                          ]),
+                          _: 2
+                        }, 1032, ["class"])
+                      ]),
+                      _: 2
+                    }, 1032, ["class"]),
+                    item.content || !!slots.content || item.slot && !!slots[item.slot] || !!slots.body || item.slot && !!slots[`${item.slot}-body`] ? (openBlock(), createBlock(unref(AccordionContent_default), {
+                      key: 0,
+                      "data-slot": "content",
+                      class: b24ui.value.content({ class: [unref(props).b24ui?.content, item.b24ui?.content] })
+                    }, {
+                      default: withCtx(() => [
+                        renderSlot(_ctx.$slots, item.slot || "content", {
+                          item,
+                          index,
+                          open,
+                          b24ui: b24ui.value
+                        }, () => [
+                          createVNode("div", {
+                            "data-slot": "body",
+                            class: b24ui.value.body({ class: [unref(props).b24ui?.body, item.b24ui?.body] })
+                          }, [
+                            renderSlot(_ctx.$slots, item.slot ? `${item.slot}-body` : "body", {
+                              item,
+                              index,
+                              open,
+                              b24ui: b24ui.value
+                            }, () => [
+                              createTextVNode(toDisplayString(item.content), 1)
+                            ])
+                          ], 2)
+                        ])
+                      ]),
+                      _: 2
+                    }, 1032, ["class"])) : createCommentVNode("", true)
+                  ]),
+                  _: 2
+                }, 1032, ["value", "disabled", "class"]);
+              }), 128))
+            ];
+          }
+        }),
+        _: 3
+      }, _parent));
+    };
+  }
+};
 const _sfc_setup$4 = _sfc_main$4.setup;
 _sfc_main$4.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
-  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("components/AiNextStepPanel.vue");
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/Accordion.vue");
   return _sfc_setup$4 ? _sfc_setup$4(props, ctx) : void 0;
 };
-const __nuxt_component_9 = Object.assign(_sfc_main$4, { __name: "AiNextStepPanel" });
-const intervalError = "[nuxt] `setInterval` should not be used on the server. Consider wrapping it with an `onNuxtReady`, `onBeforeMount` or `onMounted` lifecycle hook, or ensure you only call it in the browser by checking `false`.";
-const setInterval = (() => {
-  console.error(intervalError);
-});
-const pageSize = 25;
 const _sfc_main$3 = /* @__PURE__ */ defineComponent({
-  __name: "AdminReportsPanel",
+  __name: "ObjectionNavigator",
   __ssrInlineRender: true,
   props: {
-    mode: {},
-    accessToken: {}
+    dealId: {},
+    agentName: {},
+    clientName: {},
+    loadingContext: { type: Boolean }
   },
   setup(__props) {
     const props = __props;
-    const reportConfig = {
-      "sla-first-contact": {
-        title: "Первичный контакт",
-        subtitle: "SLA первого контакта по лидам",
-        logUrl: "/api/sla-log",
-        runUrl: "/api/check-sla",
-        statusUrl: "/api/check-sla/status",
-        runNeedsDateRange: true,
-        searchPlaceholder: "ID, лид, стадия или сотрудник"
-      },
-      "data-quality": {
-        title: "Качество данных",
-        subtitle: "Контроль контактов CRM",
-        logUrl: "/api/data-quality-log",
-        runUrl: "/api/check-data-quality",
-        statusUrl: "/api/check-data-quality/status",
-        runNeedsDateRange: true,
-        searchPlaceholder: "ID, контакт, телефон, email или сотрудник"
-      },
-      reactivation: {
-        title: "Контроль Реактивация",
-        subtitle: "План и рейтинг отдела продаж",
-        logUrl: "/api/reactivation-log",
-        runUrl: "/api/check-reactivation",
-        statusUrl: "/api/check-reactivation/status",
-        runNeedsDateRange: false,
-        searchPlaceholder: "Сотрудник или сделка"
-      },
-      "next-step-control": {
-        title: "Следующий шаг",
-        subtitle: "Контроль качества планирования дел",
-        logUrl: "/api/next-step-log",
-        runUrl: "/api/check-next-step",
-        statusUrl: "/api/check-next-step/status",
-        runNeedsDateRange: false,
-        searchPlaceholder: "ID, сделка, стадия, ошибка или сотрудник"
-      }
-    };
-    const STATUS_OPTIONS = {
-      "sla-first-contact": ["Все", "В пределах 15 минут", "Более 15 минут", "Контакта не было", "Входящий звонок", "Требуется ручная проверка"],
-      "data-quality": ["Все", "Без ошибок", "Предупреждение", "Ошибка"],
-      reactivation: ["Все"],
-      "next-step-control": ["Все", "OK", "WARNING", "ERROR"]
-    };
-    const EMPTY_JOB = {
-      id: null,
-      status: "idle",
-      startedAt: null,
-      finishedAt: null,
-      error: null,
-      progress: { stage: "starting", message: "Проверка не запущена", current: 0, total: 1 }
-    };
-    const payload = ref({ generatedAt: null, rows: [] });
-    const job = ref({ ...EMPTY_JOB, progress: { ...EMPTY_JOB.progress } });
+    const toast = useToast();
     const loading = ref(false);
     const errorMessage = ref("");
-    const page = ref(1);
-    const filters = reactive({
-      dateFrom: "",
-      dateTo: "",
-      status: "Все",
-      responsible: "Все",
-      violation: "Все",
-      query: ""
+    const context2 = ref(null);
+    const selectedScenarioId = ref(null);
+    const selectedStepId = ref(null);
+    const channel = ref("message");
+    const aiRecommendation = ref(null);
+    const transcriptStats = ref(null);
+    const aiLoading = ref(false);
+    const aiErrorMessage = ref("");
+    const expandedScenarioGroups = ref(["choice"]);
+    const selectedScenario = computed(() => getScenario(selectedScenarioId.value));
+    const selectedStep = computed(() => getScenarioStep(selectedScenarioId.value, selectedStepId.value));
+    const selectedStepChannels = computed(() => Object.keys(selectedStep.value?.text || {}));
+    const scenarioGroups = computed(() => OBJECTION_CATALOG_GROUPS.map((group) => ({
+      ...group,
+      scenarios: OBJECTION_SCENARIOS.filter((item) => item.group === group.id)
+    })));
+    const contextVariables = computed(() => ({
+      clientName: context2.value ? context2.value.deal.contactName || props.clientName.trim() : "",
+      agentName: context2.value ? context2.value.deal.responsibleName || props.agentName.trim() : "",
+      dealTitle: context2.value?.deal.title || "",
+      ...context2.value?.deal.variables || {}
+    }));
+    const missingVariables = computed(() => (selectedStep.value?.requiredVariables || []).filter((name) => !contextVariables.value[name]?.trim()));
+    const renderedText = computed(() => {
+      const text = selectedStep.value?.text[channel.value] || selectedStep.value?.text[selectedStepChannels.value[0] || "message"] || "";
+      return renderTemplate(text, contextVariables.value);
     });
-    const slaAutoControl = ref(null);
-    const slaAutoSaving = ref(false);
-    let pollTimer = null;
-    const config = computed(() => reportConfig[props.mode]);
-    const rows = computed(() => payload.value.rows ?? []);
-    const isRunning = computed(() => job.value.status === "running");
-    const progressPercent = computed(() => job.value.progress.total > 0 ? Math.min(100, Math.round(job.value.progress.current / job.value.progress.total * 100)) : 0);
-    const authHeaders = computed(() => props.accessToken ? { Authorization: `Bearer ${props.accessToken}` } : {});
-    function headers(extra = {}) {
-      return { ...authHeaders.value, ...extra };
-    }
-    function formatDateTime(value) {
-      if (!value) return "—";
+    const canCopy = computed(() => Boolean(selectedStep.value && !missingVariables.value.length));
+    const recommendedScenario = computed(() => context2.value?.recommendation ? getScenario(context2.value.recommendation.scenarioId) : null);
+    computed(() => {
+      const value = context2.value?.deal.lastActivityAt;
+      if (!value) return "не найдена";
       const date = new Date(value);
-      if (!Number.isFinite(date.getTime())) return "—";
-      return new Intl.DateTimeFormat("ru-RU", {
-        timeZone: "Europe/Moscow",
+      return Number.isNaN(date.getTime()) ? "не найдена" : new Intl.DateTimeFormat("ru-RU", {
         day: "2-digit",
-        month: "2-digit",
+        month: "short",
         year: "numeric",
         hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
-      }).format(date).replace(",", "");
-    }
-    function fromInputDate(value) {
-      if (!value) return null;
-      const date = new Date(value.includes("T") ? value : `${value}T00:00:00`);
-      return Number.isFinite(date.getTime()) ? date.getTime() : null;
-    }
-    function toInputDateEnd(value) {
-      if (!value) return null;
-      const date = /* @__PURE__ */ new Date(value.includes("T") ? `${value}:59.999` : `${value}T23:59:59.999`);
-      return Number.isFinite(date.getTime()) ? date.getTime() : null;
-    }
-    function normalizeStatus(row) {
-      if (props.mode === "data-quality" && row.status === "OK") return "Без ошибок";
-      if (props.mode === "data-quality" && row.status === "WARNING") return "Предупреждение";
-      if (props.mode === "data-quality" && row.status === "ERROR") return "Ошибка";
-      return row.status ?? "Все";
-    }
-    function rowCreatedAt(row) {
-      if (props.mode === "sla-first-contact") return row.leadCreatedAt;
-      if (props.mode === "data-quality") return row.contactCreatedAt;
-      if (props.mode === "next-step-control") return row.dealCreatedAt;
-      return null;
-    }
-    function rowSearchText(row) {
-      if (props.mode === "sla-first-contact") {
-        return `${row.leadId} ${row.leadTitle} ${row.leadStageName ?? ""} ${row.rejectionReason ?? ""} ${row.responsibleName}`;
-      }
-      if (props.mode === "data-quality") {
-        return `${row.contactId} ${row.contactName} ${row.responsibleName} ${row.normalizedPhone ?? ""} ${row.normalizedEmail ?? ""} ${(row.qualityErrors ?? []).join(" ")}`;
-      }
-      if (props.mode === "reactivation") {
-        return `${row.employeeId} ${row.name} ${row.lastName} ${(row.successfulDeals ?? []).map((deal) => deal.title).join(" ")}`;
-      }
-      return `${row.dealId} ${row.dealTitle} ${row.stageName} ${row.responsibleName} ${(row.nextStepErrors ?? []).join(" ")}`;
-    }
-    const responsibleOptions = computed(() => {
-      const names = /* @__PURE__ */ new Set();
-      for (const row of rows.value) {
-        const name = props.mode === "reactivation" ? [row.lastName, row.name].filter(Boolean).join(" ").trim() : row.responsibleName;
-        if (name) names.add(name);
-      }
-      return ["Все", ...[...names].sort((left, right) => left.localeCompare(right, "ru"))];
+        minute: "2-digit"
+      }).format(date);
     });
-    const filteredRows = computed(() => {
-      const query = filters.query.trim().toLowerCase();
-      const dateFrom = filters.dateFrom ? fromInputDate(filters.dateFrom) : null;
-      const dateTo = filters.dateTo ? toInputDateEnd(filters.dateTo) : null;
-      return rows.value.filter((row) => {
-        const createdAtValue = rowCreatedAt(row);
-        if (createdAtValue) {
-          const createdAt = new Date(createdAtValue).getTime();
-          if (dateFrom != null && createdAt < dateFrom) return false;
-          if (dateTo != null && createdAt > dateTo) return false;
-        }
-        if (filters.status !== "Все" && normalizeStatus(row) !== filters.status) return false;
-        const responsible = props.mode === "reactivation" ? [row.lastName, row.name].filter(Boolean).join(" ").trim() : row.responsibleName;
-        if (filters.responsible !== "Все" && responsible !== filters.responsible) return false;
-        if (filters.violation !== "Все" && row.violationFlag !== filters.violation) return false;
-        if (query && !rowSearchText(row).toLowerCase().includes(query)) return false;
-        return true;
-      });
-    });
-    const pageCount = computed(() => Math.max(1, Math.ceil(filteredRows.value.length / pageSize)));
-    const pagedRows = computed(() => {
-      const current = Math.min(page.value, pageCount.value);
-      return filteredRows.value.slice((current - 1) * pageSize, current * pageSize);
-    });
-    const kpis = computed(() => {
-      const list = filteredRows.value;
-      if (props.mode === "sla-first-contact") {
-        const violations = list.filter((row) => row.status === "Контакта не было" || row.violationFlag === "Да").length;
-        const within = list.filter((row) => row.status === "В пределах 15 минут" || row.status === "Входящий звонок").length;
-        return [
-          { label: "Всего лидов", value: list.length, tone: "blue" },
-          { label: "Нарушения", value: violations, tone: "red" },
-          { label: "В SLA", value: within, tone: "green" },
-          { label: "Без контакта", value: list.filter((row) => row.status === "Контакта не было").length, tone: "amber" }
-        ];
+    function selectScenario(scenarioId, stepId) {
+      const scenario = getScenario(scenarioId);
+      if (!scenario) return;
+      selectedScenarioId.value = scenarioId;
+      selectedStepId.value = scenario.steps[0]?.id || null;
+      if (!expandedScenarioGroups.value.includes(scenario.group)) {
+        expandedScenarioGroups.value = [...expandedScenarioGroups.value, scenario.group];
       }
-      if (props.mode === "data-quality") {
-        return [
-          { label: "Всего контактов", value: list.length, tone: "blue" },
-          { label: "Без ошибок", value: list.filter((row) => normalizeStatus(row) === "Без ошибок").length, tone: "green" },
-          { label: "Предупреждение", value: list.filter((row) => normalizeStatus(row) === "Предупреждение").length, tone: "amber" },
-          { label: "Ошибка", value: list.filter((row) => normalizeStatus(row) === "Ошибка").length, tone: "red" }
-        ];
+      const availableChannels = getScenarioChannels(scenario);
+      if (!availableChannels.includes(channel.value)) channel.value = availableChannels[0] || "message";
+    }
+    function chooseAnswer(nextStepId) {
+      if (!nextStepId) return;
+      selectedStepId.value = nextStepId;
+      const nextStep = getScenarioStep(selectedScenarioId.value, nextStepId);
+      const availableChannels = Object.keys(nextStep?.text || {});
+      if (!availableChannels.includes(channel.value)) channel.value = availableChannels[0] || "message";
+    }
+    async function loadContext() {
+      if (!props.dealId) {
+        context2.value = null;
+        return;
       }
-      if (props.mode === "reactivation") {
-        return [
-          { label: "Сотрудников", value: list.length, tone: "blue" },
-          { label: "За неделю", value: list.reduce((sum, row) => sum + row.weeklyCount, 0), tone: "green" },
-          { label: "План недели", value: list.reduce((sum, row) => sum + row.weeklyPlan, 0), tone: "amber" },
-          { label: "Рейтинг месяца", value: list.reduce((sum, row) => sum + row.monthlyRating, 0), tone: "red" }
-        ];
-      }
-      return [
-        { label: "Всего сделок", value: list.length, tone: "blue" },
-        { label: "OK", value: list.filter((row) => row.status === "OK").length, tone: "green" },
-        { label: "WARNING", value: list.filter((row) => row.status === "WARNING").length, tone: "amber" },
-        { label: "ERROR", value: list.filter((row) => row.status === "ERROR").length, tone: "red" }
-      ];
-    });
-    const chartSegments = computed(() => {
-      const counts = /* @__PURE__ */ new Map();
-      for (const row of filteredRows.value) {
-        const key = props.mode === "reactivation" ? "План" : normalizeStatus(row);
-        counts.set(key, (counts.get(key) ?? 0) + 1);
-      }
-      const colors = ["#31c484", "#ffb02e", "#ff5752", "#2fc6f6", "#8b96a7"];
-      return [...counts.entries()].map(([label, value], index) => ({ label, value, color: colors[index % colors.length] }));
-    });
-    async function loadLog() {
       loading.value = true;
       errorMessage.value = "";
       try {
-        payload.value = await $fetch(config.value.logUrl, { headers: headers() });
+        const response = await $fetch(`/api/b24/load-navigator-context?dealId=${props.dealId}`, {
+          credentials: "same-origin"
+        });
+        if (!response.success || !response.data) throw new Error("Контекст сценариев недоступен.");
+        context2.value = response.data;
+        if (!selectedScenarioId.value && response.data.recommendation?.scenarioId) {
+          selectScenario(response.data.recommendation.scenarioId);
+        }
       } catch (error) {
-        errorMessage.value = error?.statusMessage || error?.message || "Не удалось загрузить отчет";
+        errorMessage.value = error?.statusMessage || error?.message || "Не удалось загрузить контекст сценариев.";
       } finally {
         loading.value = false;
       }
     }
-    async function loadStatus() {
+    async function copyCurrentText() {
+      if (!canCopy.value) return;
       try {
-        job.value = await $fetch(config.value.statusUrl, { headers: headers() });
-      } catch (error) {
-        errorMessage.value = error?.statusMessage || error?.message || "Не удалось получить статус проверки";
-      }
-    }
-    async function loadSlaAutoControl() {
-      if (props.mode !== "sla-first-contact") return;
-      try {
-        slaAutoControl.value = await $fetch("/api/sla-auto-control", { headers: headers() });
+        await copyText(renderedText.value);
+        toast.add({ title: "Текст скопирован", description: "Отправьте его клиенту вручную в Wazzup.", color: "air-primary-success", duration: 2600 });
       } catch {
-        slaAutoControl.value = null;
+        toast.add({ title: "Не удалось скопировать текст", description: "Выделите текст и скопируйте его вручную.", color: "air-primary-alert" });
       }
     }
-    async function refreshAll() {
-      page.value = 1;
-      await Promise.all([loadLog(), loadStatus(), loadSlaAutoControl()]);
-    }
-    async function runCheck(updateCrm = false) {
-      errorMessage.value = "";
+    async function generateAiRecommendation() {
+      if (!props.dealId) return;
+      aiLoading.value = true;
+      aiErrorMessage.value = "";
       try {
-        const body = config.value.runNeedsDateRange ? { dateFrom: filters.dateFrom, dateTo: filters.dateTo, updateCrm } : void 0;
-        job.value = await $fetch(config.value.runUrl, {
+        const response = await $fetch("/api/b24/recommend-objection", {
           method: "POST",
-          headers: headers({ "Content-Type": "application/json" }),
-          body
+          credentials: "same-origin",
+          body: { dealId: props.dealId, scenarioId: selectedScenarioId.value || void 0 }
         });
-        startPolling();
+        if (!response.success || !response.data?.recommendation) throw new Error("AI-рекомендация недоступна.");
+        aiRecommendation.value = response.data.recommendation;
+        transcriptStats.value = response.data.transcriptStats || null;
+        selectScenario(response.data.recommendation.scenarioId);
+        channel.value = response.data.recommendation.channel;
       } catch (error) {
-        errorMessage.value = error?.statusMessage || error?.message || "Не удалось запустить проверку";
-      }
-    }
-    async function saveSlaAutoControl() {
-      if (!slaAutoControl.value) return;
-      slaAutoSaving.value = true;
-      try {
-        slaAutoControl.value = await $fetch("/api/sla-auto-control", {
-          method: "PATCH",
-          headers: headers({ "Content-Type": "application/json" }),
-          body: slaAutoControl.value
-        });
-      } catch (error) {
-        errorMessage.value = error?.statusMessage || error?.message || "Не удалось сохранить расписание";
+        aiErrorMessage.value = error?.statusMessage || error?.message || "Не удалось подготовить AI-рекомендацию.";
       } finally {
-        slaAutoSaving.value = false;
+        aiLoading.value = false;
       }
     }
-    function stopPolling() {
-      if (pollTimer) {
-        clearInterval(pollTimer);
-        pollTimer = null;
+    async function copyAiRecommendation() {
+      if (!aiRecommendation.value?.responseText) return;
+      try {
+        await copyText(aiRecommendation.value.responseText);
+        toast.add({ title: "Рекомендация скопирована", description: "Отправьте текст клиенту вручную в Wazzup.", color: "air-primary-success", duration: 2600 });
+      } catch {
+        toast.add({ title: "Не удалось скопировать текст", description: "Выделите текст и скопируйте его вручную.", color: "air-primary-alert" });
       }
     }
-    function startPolling() {
-      stopPolling();
-      pollTimer = setInterval();
+    async function copyText(value) {
+      if (!value) throw new Error("Text is empty");
+      if ((void 0).clipboard?.writeText && (void 0).isSecureContext) {
+        try {
+          await (void 0).clipboard.writeText(value);
+          return;
+        } catch {
+        }
+      }
+      const textarea = (void 0).createElement("textarea");
+      textarea.value = value;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.top = "0";
+      textarea.style.left = "0";
+      textarea.style.width = "1px";
+      textarea.style.height = "1px";
+      textarea.style.padding = "0";
+      textarea.style.border = "0";
+      textarea.style.opacity = "0";
+      textarea.style.pointerEvents = "none";
+      (void 0).body.appendChild(textarea);
+      textarea.focus({ preventScroll: true });
+      textarea.select();
+      textarea.setSelectionRange(0, value.length);
+      let copied = false;
+      try {
+        copied = (void 0).execCommand("copy");
+      } finally {
+        textarea.remove();
+      }
+      if (!copied) throw new Error("Clipboard is unavailable");
     }
-    function exportRows() {
-      const header = Object.keys(filteredRows.value[0] ?? { empty: "" });
-      const lines = [
-        header.join(";"),
-        ...filteredRows.value.map((row) => header.map((key) => JSON.stringify(row[key] ?? "")).join(";"))
-      ];
-      const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
-      const url = (void 0).URL.createObjectURL(blob);
-      const link = (void 0).createElement("a");
-      link.href = url;
-      link.download = `${props.mode}-${(/* @__PURE__ */ new Date()).toISOString().slice(0, 10)}.csv`;
-      (void 0).body.appendChild(link);
-      link.click();
-      link.remove();
-      (void 0).URL.revokeObjectURL(url);
+    function renderTemplate(template, values) {
+      return template.replace(/{{(\w+)}}/g, (_, key) => values[key]?.trim() || `{{${key}}}`);
     }
-    function employeeName(row) {
-      return [row.lastName, row.name].filter(Boolean).join(" ").trim() || `ID ${row.employeeId}`;
+    function channelLabel(value) {
+      if (value === "message") return "Мессенджер";
+      if (value === "remote") return "Удаленная продажа";
+      return "Звонок";
     }
-    watch(() => props.mode, async () => {
-      filters.status = "Все";
-      filters.responsible = "Все";
-      filters.violation = "Все";
-      filters.query = "";
-      stopPolling();
-      await refreshAll();
-    });
-    watch(filteredRows, () => {
-      page.value = 1;
-    });
+    function directionLabel(value) {
+      if (value === "client") return "Клиент";
+      if (value === "manager") return "Менеджер";
+      return "Не определено";
+    }
+    watch(() => props.dealId, () => {
+      context2.value = null;
+      selectedScenarioId.value = null;
+      selectedStepId.value = null;
+      aiRecommendation.value = null;
+      transcriptStats.value = null;
+      aiErrorMessage.value = "";
+      void loadContext();
+    }, { immediate: true });
     return (_ctx, _push, _parent, _attrs) => {
-      const _component_B24Button = _sfc_main$h;
-      const _component_B24FormField = _sfc_main$a;
-      const _component_B24Input = _sfc_main$9;
-      const _component_B24Alert = _sfc_main$5;
-      const _component_B24Badge = _sfc_main$b;
-      _push(`<main${ssrRenderAttrs(mergeProps({ class: "admin-report" }, _attrs))}><header class="admin-report-header"><div><p class="report-kicker">Административный дашборд</p><h1>${ssrInterpolate(unref(config).title)}</h1><span>${ssrInterpolate(unref(config).subtitle)}</span></div><div class="report-actions"><span>Последняя проверка: ${ssrInterpolate(formatDateTime(unref(payload).generatedAt))}</span>`);
+      const _component_B24Button = _sfc_main$i;
+      const _component_B24Alert = _sfc_main$6;
+      const _component_B24Accordion = _sfc_main$4;
+      const _component_B24Badge = _sfc_main$c;
+      _push(`<main${ssrRenderAttrs(mergeProps({ class: "objection-navigator-layout workspace-layout workspace-navigator gap-4 p-4" }, _attrs))}><aside class="navigator-sidebar work-panel p-4"><div class="flex items-center justify-between gap-2 border-b border-default pb-3"><div><p class="eyebrow">Навигатор возражений</p><h2 class="mt-1 text-base font-bold text-label">Каталог сценариев</h2></div>`);
       _push(ssrRenderComponent(_component_B24Button, {
-        label: "Экспорт",
-        class: "border border-default bg-default text-label",
-        disabled: unref(filteredRows).length === 0,
-        onClick: exportRows
+        label: "Обновить",
+        size: "xs",
+        loading: loading.value,
+        class: "mode-switch-button",
+        onClick: loadContext
       }, null, _parent));
-      _push(ssrRenderComponent(_component_B24Button, {
-        icon: unref(RefreshIcon$1),
-        label: unref(isRunning) ? "Проверяем" : "Обновить",
-        loading: unref(isRunning),
-        class: "brand-action",
-        onClick: () => void runCheck(false)
-      }, null, _parent));
-      _push(`</div></header>`);
-      if (unref(config).runNeedsDateRange) {
-        _push(`<section class="report-toolbar">`);
-        _push(ssrRenderComponent(_component_B24FormField, { label: "Создан с" }, {
-          default: withCtx((_, _push2, _parent2, _scopeId) => {
-            if (_push2) {
-              _push2(ssrRenderComponent(_component_B24Input, {
-                modelValue: unref(filters).dateFrom,
-                "onUpdate:modelValue": ($event) => unref(filters).dateFrom = $event,
-                type: "datetime-local"
-              }, null, _parent2, _scopeId));
-            } else {
-              return [
-                createVNode(_component_B24Input, {
-                  modelValue: unref(filters).dateFrom,
-                  "onUpdate:modelValue": ($event) => unref(filters).dateFrom = $event,
-                  type: "datetime-local"
-                }, null, 8, ["modelValue", "onUpdate:modelValue"])
-              ];
-            }
-          }),
-          _: 1
-        }, _parent));
-        _push(ssrRenderComponent(_component_B24FormField, { label: "Создан по" }, {
-          default: withCtx((_, _push2, _parent2, _scopeId) => {
-            if (_push2) {
-              _push2(ssrRenderComponent(_component_B24Input, {
-                modelValue: unref(filters).dateTo,
-                "onUpdate:modelValue": ($event) => unref(filters).dateTo = $event,
-                type: "datetime-local"
-              }, null, _parent2, _scopeId));
-            } else {
-              return [
-                createVNode(_component_B24Input, {
-                  modelValue: unref(filters).dateTo,
-                  "onUpdate:modelValue": ($event) => unref(filters).dateTo = $event,
-                  type: "datetime-local"
-                }, null, 8, ["modelValue", "onUpdate:modelValue"])
-              ];
-            }
-          }),
-          _: 1
-        }, _parent));
-        _push(ssrRenderComponent(_component_B24FormField, { label: "Статус" }, {
-          default: withCtx((_, _push2, _parent2, _scopeId) => {
-            if (_push2) {
-              _push2(`<select class="native-select"${_scopeId}><!--[-->`);
-              ssrRenderList(STATUS_OPTIONS[__props.mode], (status) => {
-                _push2(`<option${ssrRenderAttr("value", status)}${ssrIncludeBooleanAttr(Array.isArray(unref(filters).status) ? ssrLooseContain(unref(filters).status, status) : ssrLooseEqual(unref(filters).status, status)) ? " selected" : ""}${_scopeId}>${ssrInterpolate(status)}</option>`);
-              });
-              _push2(`<!--]--></select>`);
-            } else {
-              return [
-                withDirectives(createVNode("select", {
-                  "onUpdate:modelValue": ($event) => unref(filters).status = $event,
-                  class: "native-select"
-                }, [
-                  (openBlock(true), createBlock(Fragment, null, renderList(STATUS_OPTIONS[__props.mode], (status) => {
-                    return openBlock(), createBlock("option", {
-                      key: status,
-                      value: status
-                    }, toDisplayString(status), 9, ["value"]);
-                  }), 128))
-                ], 8, ["onUpdate:modelValue"]), [
-                  [vModelSelect, unref(filters).status]
-                ])
-              ];
-            }
-          }),
-          _: 1
-        }, _parent));
-        _push(ssrRenderComponent(_component_B24FormField, { label: "Ответственный" }, {
-          default: withCtx((_, _push2, _parent2, _scopeId) => {
-            if (_push2) {
-              _push2(`<select class="native-select"${_scopeId}><!--[-->`);
-              ssrRenderList(unref(responsibleOptions), (responsible) => {
-                _push2(`<option${ssrRenderAttr("value", responsible)}${ssrIncludeBooleanAttr(Array.isArray(unref(filters).responsible) ? ssrLooseContain(unref(filters).responsible, responsible) : ssrLooseEqual(unref(filters).responsible, responsible)) ? " selected" : ""}${_scopeId}>${ssrInterpolate(responsible)}</option>`);
-              });
-              _push2(`<!--]--></select>`);
-            } else {
-              return [
-                withDirectives(createVNode("select", {
-                  "onUpdate:modelValue": ($event) => unref(filters).responsible = $event,
-                  class: "native-select"
-                }, [
-                  (openBlock(true), createBlock(Fragment, null, renderList(unref(responsibleOptions), (responsible) => {
-                    return openBlock(), createBlock("option", {
-                      key: responsible,
-                      value: responsible
-                    }, toDisplayString(responsible), 9, ["value"]);
-                  }), 128))
-                ], 8, ["onUpdate:modelValue"]), [
-                  [vModelSelect, unref(filters).responsible]
-                ])
-              ];
-            }
-          }),
-          _: 1
-        }, _parent));
-        _push(ssrRenderComponent(_component_B24FormField, { label: "Поиск" }, {
-          default: withCtx((_, _push2, _parent2, _scopeId) => {
-            if (_push2) {
-              _push2(ssrRenderComponent(_component_B24Input, {
-                modelValue: unref(filters).query,
-                "onUpdate:modelValue": ($event) => unref(filters).query = $event,
-                placeholder: unref(config).searchPlaceholder
-              }, null, _parent2, _scopeId));
-            } else {
-              return [
-                createVNode(_component_B24Input, {
-                  modelValue: unref(filters).query,
-                  "onUpdate:modelValue": ($event) => unref(filters).query = $event,
-                  placeholder: unref(config).searchPlaceholder
-                }, null, 8, ["modelValue", "onUpdate:modelValue", "placeholder"])
-              ];
-            }
-          }),
-          _: 1
-        }, _parent));
-        _push(`</section>`);
-      } else {
-        _push(`<section class="report-toolbar">`);
-        _push(ssrRenderComponent(_component_B24FormField, { label: "Статус" }, {
-          default: withCtx((_, _push2, _parent2, _scopeId) => {
-            if (_push2) {
-              _push2(`<select class="native-select"${_scopeId}><!--[-->`);
-              ssrRenderList(STATUS_OPTIONS[__props.mode], (status) => {
-                _push2(`<option${ssrRenderAttr("value", status)}${ssrIncludeBooleanAttr(Array.isArray(unref(filters).status) ? ssrLooseContain(unref(filters).status, status) : ssrLooseEqual(unref(filters).status, status)) ? " selected" : ""}${_scopeId}>${ssrInterpolate(status)}</option>`);
-              });
-              _push2(`<!--]--></select>`);
-            } else {
-              return [
-                withDirectives(createVNode("select", {
-                  "onUpdate:modelValue": ($event) => unref(filters).status = $event,
-                  class: "native-select"
-                }, [
-                  (openBlock(true), createBlock(Fragment, null, renderList(STATUS_OPTIONS[__props.mode], (status) => {
-                    return openBlock(), createBlock("option", {
-                      key: status,
-                      value: status
-                    }, toDisplayString(status), 9, ["value"]);
-                  }), 128))
-                ], 8, ["onUpdate:modelValue"]), [
-                  [vModelSelect, unref(filters).status]
-                ])
-              ];
-            }
-          }),
-          _: 1
-        }, _parent));
-        _push(ssrRenderComponent(_component_B24FormField, { label: "Ответственный" }, {
-          default: withCtx((_, _push2, _parent2, _scopeId) => {
-            if (_push2) {
-              _push2(`<select class="native-select"${_scopeId}><!--[-->`);
-              ssrRenderList(unref(responsibleOptions), (responsible) => {
-                _push2(`<option${ssrRenderAttr("value", responsible)}${ssrIncludeBooleanAttr(Array.isArray(unref(filters).responsible) ? ssrLooseContain(unref(filters).responsible, responsible) : ssrLooseEqual(unref(filters).responsible, responsible)) ? " selected" : ""}${_scopeId}>${ssrInterpolate(responsible)}</option>`);
-              });
-              _push2(`<!--]--></select>`);
-            } else {
-              return [
-                withDirectives(createVNode("select", {
-                  "onUpdate:modelValue": ($event) => unref(filters).responsible = $event,
-                  class: "native-select"
-                }, [
-                  (openBlock(true), createBlock(Fragment, null, renderList(unref(responsibleOptions), (responsible) => {
-                    return openBlock(), createBlock("option", {
-                      key: responsible,
-                      value: responsible
-                    }, toDisplayString(responsible), 9, ["value"]);
-                  }), 128))
-                ], 8, ["onUpdate:modelValue"]), [
-                  [vModelSelect, unref(filters).responsible]
-                ])
-              ];
-            }
-          }),
-          _: 1
-        }, _parent));
-        _push(ssrRenderComponent(_component_B24FormField, { label: "Поиск" }, {
-          default: withCtx((_, _push2, _parent2, _scopeId) => {
-            if (_push2) {
-              _push2(ssrRenderComponent(_component_B24Input, {
-                modelValue: unref(filters).query,
-                "onUpdate:modelValue": ($event) => unref(filters).query = $event,
-                placeholder: unref(config).searchPlaceholder
-              }, null, _parent2, _scopeId));
-            } else {
-              return [
-                createVNode(_component_B24Input, {
-                  modelValue: unref(filters).query,
-                  "onUpdate:modelValue": ($event) => unref(filters).query = $event,
-                  placeholder: unref(config).searchPlaceholder
-                }, null, 8, ["modelValue", "onUpdate:modelValue", "placeholder"])
-              ];
-            }
-          }),
-          _: 1
-        }, _parent));
-        _push(`</section>`);
-      }
-      if (__props.mode === "sla-first-contact" && unref(slaAutoControl)) {
-        _push(`<section class="automation-panel"><div><p class="report-kicker">Автоконтроль</p><h2>SLA первого контакта</h2><span> Следующий запуск: ${ssrInterpolate(unref(slaAutoControl).nextRunAt ? formatDateTime(unref(slaAutoControl).nextRunAt) : "отключен")}</span></div><label class="switch-line"><input${ssrIncludeBooleanAttr(Array.isArray(unref(slaAutoControl).enabled) ? ssrLooseContain(unref(slaAutoControl).enabled, null) : unref(slaAutoControl).enabled) ? " checked" : ""} type="checkbox"> Включить </label>`);
-        _push(ssrRenderComponent(_component_B24Input, {
-          modelValue: unref(slaAutoControl).startDate,
-          "onUpdate:modelValue": ($event) => unref(slaAutoControl).startDate = $event,
-          type: "date"
-        }, null, _parent));
-        _push(ssrRenderComponent(_component_B24Input, {
-          modelValue: unref(slaAutoControl).time,
-          "onUpdate:modelValue": ($event) => unref(slaAutoControl).time = $event,
-          type: "time"
-        }, null, _parent));
-        _push(ssrRenderComponent(_component_B24Input, {
-          modelValue: unref(slaAutoControl).intervalDays,
-          "onUpdate:modelValue": ($event) => unref(slaAutoControl).intervalDays = $event,
-          type: "number",
-          min: "1"
-        }, null, _parent));
-        _push(ssrRenderComponent(_component_B24Button, {
-          label: "Сохранить",
-          loading: unref(slaAutoSaving),
-          class: "border border-default bg-default text-label",
-          onClick: saveSlaAutoControl
-        }, null, _parent));
-        _push(ssrRenderComponent(_component_B24Button, {
-          label: "Заполнить CRM за период",
-          class: "brand-action",
-          disabled: unref(isRunning),
-          onClick: () => void runCheck(true)
-        }, null, _parent));
-        _push(`</section>`);
-      } else {
-        _push(`<!---->`);
-      }
-      if (unref(errorMessage)) {
+      _push(`</div>`);
+      if (!__props.dealId) {
         _push(ssrRenderComponent(_component_B24Alert, {
+          class: "mt-4",
           color: "air-primary-alert",
           variant: "soft",
-          title: "Ошибка отчета",
-          description: unref(errorMessage),
-          icon: unref(WarningIcon)
+          title: "Сделка не определена",
+          description: "Откройте виджет из карточки сделки, чтобы загрузить контекст."
+        }, null, _parent));
+      } else if (errorMessage.value) {
+        _push(ssrRenderComponent(_component_B24Alert, {
+          class: "mt-4",
+          color: "air-primary-alert",
+          variant: "soft",
+          title: "Контекст не загружен",
+          description: errorMessage.value
         }, null, _parent));
       } else {
         _push(`<!---->`);
       }
-      if (unref(isRunning)) {
-        _push(`<section class="progress-banner"><div><strong>${ssrInterpolate(unref(job).progress.message)}</strong><span>На экране остаются данные последнего готового лога.</span></div><small>${ssrInterpolate(unref(job).progress.current > 0 ? `${unref(job).progress.current} / ${unref(job).progress.total}` : "выполняется")}</small><i style="${ssrRenderStyle({ width: `${unref(progressPercent)}%` })}"></i></section>`);
+      if (recommendedScenario.value) {
+        _push(`<div class="navigator-match-card mt-4"><p class="eyebrow">Подходит по истории</p><h3 class="mt-1 text-sm font-bold text-label">${ssrInterpolate(recommendedScenario.value.title)}</h3><p class="mt-1 text-xs leading-5 text-description">${ssrInterpolate(context2.value?.recommendation?.reason)}</p>`);
+        _push(ssrRenderComponent(_component_B24Button, {
+          label: "Открыть сценарий",
+          size: "sm",
+          class: "brand-action mt-3",
+          onClick: ($event) => selectScenario(recommendedScenario.value.id)
+        }, null, _parent));
+        _push(`</div>`);
       } else {
         _push(`<!---->`);
       }
-      if (unref(loading)) {
-        _push(`<div class="loading">Загружаю отчет...</div>`);
+      _push(`<section class="mt-4"><p class="mb-2 text-xs font-semibold uppercase text-description">Возражения</p>`);
+      _push(ssrRenderComponent(_component_B24Accordion, {
+        modelValue: expandedScenarioGroups.value,
+        "onUpdate:modelValue": ($event) => expandedScenarioGroups.value = $event,
+        items: scenarioGroups.value,
+        type: "multiple",
+        collapsible: "",
+        "value-key": "id",
+        "label-key": "title",
+        class: "navigator-catalog-accordion"
+      }, {
+        body: withCtx(({ item }, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<div class="grid gap-1"${_scopeId}><!--[-->`);
+            ssrRenderList(item.scenarios, (scenario) => {
+              _push2(ssrRenderComponent(_component_B24Button, {
+                key: scenario.id,
+                label: scenario.title,
+                block: "",
+                class: selectedScenarioId.value === scenario.id ? "navigator-category-active" : "navigator-category",
+                onClick: ($event) => selectScenario(scenario.id)
+              }, null, _parent2, _scopeId));
+            });
+            _push2(`<!--]--></div>`);
+          } else {
+            return [
+              createVNode("div", { class: "grid gap-1" }, [
+                (openBlock(true), createBlock(Fragment, null, renderList(item.scenarios, (scenario) => {
+                  return openBlock(), createBlock(_component_B24Button, {
+                    key: scenario.id,
+                    label: scenario.title,
+                    block: "",
+                    class: selectedScenarioId.value === scenario.id ? "navigator-category-active" : "navigator-category",
+                    onClick: ($event) => selectScenario(scenario.id)
+                  }, null, 8, ["label", "class", "onClick"]);
+                }), 128))
+              ])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`</section></aside><section class="navigator-workspace min-w-0"><section class="navigator-ai-panel work-panel p-5"><div class="flex flex-wrap items-start justify-between gap-4"><div><p class="eyebrow">AI-рекомендация</p><h2 class="mt-1 text-xl font-bold text-label">Рекомендуемый ответ</h2><p class="mt-2 text-sm text-description">Карточка, Wazzup, email и звонки — без изменения CRM.</p></div>`);
+      _push(ssrRenderComponent(_component_B24Button, {
+        label: "Сформировать рекомендацию",
+        loading: aiLoading.value,
+        class: "brand-action",
+        onClick: generateAiRecommendation
+      }, null, _parent));
+      _push(`</div>`);
+      if (aiErrorMessage.value) {
+        _push(ssrRenderComponent(_component_B24Alert, {
+          class: "mt-4",
+          color: "air-primary-alert",
+          variant: "soft",
+          title: "Рекомендация недоступна",
+          description: aiErrorMessage.value
+        }, null, _parent));
       } else {
-        _push(`<!--[--><section class="report-kpis"><!--[-->`);
-        ssrRenderList(unref(kpis), (kpi) => {
-          _push(`<article class="${ssrRenderClass([`tone-${kpi.tone}`, "report-kpi"])}"><span>${ssrInterpolate(kpi.label)}</span><strong>${ssrInterpolate(kpi.value)}</strong></article>`);
-        });
-        _push(`<!--]--></section><section class="report-grid"><article class="report-panel chart-panel"><div class="panel-heading"><div><p class="report-kicker">Сводка</p><h2>Распределение</h2></div>`);
-        _push(ssrRenderComponent(_component_B24Badge, {
-          label: `${unref(filteredRows).length} строк`,
-          class: "brand-soft"
-        }, null, _parent));
-        _push(`</div><div class="donut-chart"><svg viewBox="0 0 120 120" role="img"><circle cx="60" cy="60" r="42" fill="none" stroke="#e5edf5" stroke-width="16"></circle><!--[-->`);
-        ssrRenderList(unref(chartSegments), (segment, index) => {
-          _push(`<circle cx="60" cy="60" r="42" fill="none"${ssrRenderAttr("stroke", segment.color)} stroke-width="16"${ssrRenderAttr("stroke-dasharray", `${Math.max(1, Math.round(segment.value / Math.max(1, unref(filteredRows).length) * 264))} 264`)}${ssrRenderAttr("stroke-dashoffset", -index * 52)} stroke-linecap="round" transform="rotate(-90 60 60)"></circle>`);
-        });
-        _push(`<!--]--><text x="60" y="64" text-anchor="middle">${ssrInterpolate(unref(filteredRows).length)}</text></svg><ul><!--[-->`);
-        ssrRenderList(unref(chartSegments), (segment) => {
-          _push(`<li><i style="${ssrRenderStyle({ backgroundColor: segment.color })}"></i><span>${ssrInterpolate(segment.label)}</span><b>${ssrInterpolate(segment.value)}</b></li>`);
-        });
-        _push(`<!--]--></ul></div></article><article class="report-panel table-panel"><div class="panel-heading"><div><p class="report-kicker">Лог</p><h2>Детализация</h2></div>`);
-        _push(ssrRenderComponent(_component_B24Badge, {
-          label: `${Math.min(unref(page), unref(pageCount))} / ${unref(pageCount)}`,
-          class: "brand-soft"
-        }, null, _parent));
-        _push(`</div><div class="report-table-wrap">`);
-        if (__props.mode === "sla-first-contact") {
-          _push(`<table class="report-table"><thead><tr><th>ID</th><th>Лид</th><th>Создан</th><th>Первый контакт</th><th>Статус</th><th>Ответственный</th><th>Нарушение</th></tr></thead><tbody><!--[-->`);
-          ssrRenderList(unref(pagedRows), (row) => {
-            _push(`<tr><td>${ssrInterpolate(row.leadId)}</td><td>${ssrInterpolate(row.leadTitle)}</td><td>${ssrInterpolate(formatDateTime(row.leadCreatedAt))}</td><td>${ssrInterpolate(formatDateTime(row.firstContactAt))}</td><td><mark>${ssrInterpolate(row.status)}</mark></td><td>${ssrInterpolate(row.responsibleName)}</td><td><b class="${ssrRenderClass(row.violationFlag === "Да" ? "flag-bad" : "flag-good")}">${ssrInterpolate(row.violationFlag)}</b></td></tr>`);
+        _push(`<!---->`);
+      }
+      if (aiRecommendation.value) {
+        _push(`<div class="navigator-ai-result mt-5"><div><p class="result-label">Ситуация</p><p>${ssrInterpolate(aiRecommendation.value.situation)}</p></div><div><p class="result-label">Что сделать</p><p>${ssrInterpolate(aiRecommendation.value.recommendedAction)}</p></div><div class="navigator-script-text">${ssrInterpolate(aiRecommendation.value.responseText)}</div>`);
+        if (aiRecommendation.value.sourceSignals.length) {
+          _push(`<div><p class="result-label">Факты сделки</p><ul><!--[-->`);
+          ssrRenderList(aiRecommendation.value.sourceSignals, (signal) => {
+            _push(`<li>${ssrInterpolate(signal)}</li>`);
           });
-          _push(`<!--]--></tbody></table>`);
-        } else if (__props.mode === "data-quality") {
-          _push(`<table class="report-table"><thead><tr><th>ID</th><th>Контакт</th><th>Создан</th><th>Оценка</th><th>Ошибки</th><th>Ответственный</th><th>Статус</th></tr></thead><tbody><!--[-->`);
-          ssrRenderList(unref(pagedRows), (row) => {
-            _push(`<tr><td>${ssrInterpolate(row.contactId)}</td><td>${ssrInterpolate(row.contactName)}</td><td>${ssrInterpolate(formatDateTime(row.contactCreatedAt))}</td><td>${ssrInterpolate(row.qualityScore)}</td><td>${ssrInterpolate(row.qualityErrors.join("; ") || "—")}</td><td>${ssrInterpolate(row.responsibleName)}</td><td><mark>${ssrInterpolate(normalizeStatus(row))}</mark></td></tr>`);
-          });
-          _push(`<!--]--></tbody></table>`);
-        } else if (__props.mode === "reactivation") {
-          _push(`<table class="report-table"><thead><tr><th>Сотрудник</th><th>Неделя</th><th>План</th><th>Осталось</th><th>Рейтинг месяца</th></tr></thead><tbody><!--[-->`);
-          ssrRenderList(unref(pagedRows), (row) => {
-            _push(`<tr><td class="employee-cell">`);
-            if (row.photoUrl) {
-              _push(`<img${ssrRenderAttr("src", row.photoUrl)}${ssrRenderAttr("alt", employeeName(row))}>`);
-            } else {
-              _push(`<!---->`);
-            }
-            _push(`<span>${ssrInterpolate(employeeName(row))}</span></td><td>${ssrInterpolate(row.weeklyCount)}</td><td>${ssrInterpolate(row.weeklyPlan)}</td><td>${ssrInterpolate(Math.max(0, row.weeklyPlan - row.weeklyCount))}</td><td><strong>${ssrInterpolate(row.monthlyRating)}</strong></td></tr>`);
-          });
-          _push(`<!--]--></tbody></table>`);
-        } else {
-          _push(`<table class="report-table"><thead><tr><th>ID</th><th>Сделка</th><th>Стадия</th><th>Дедлайн</th><th>Ошибки</th><th>Ответственный</th><th>Статус</th></tr></thead><tbody><!--[-->`);
-          ssrRenderList(unref(pagedRows), (row) => {
-            _push(`<tr><td>${ssrInterpolate(row.dealId)}</td><td>${ssrInterpolate(row.dealTitle)}</td><td>${ssrInterpolate(row.stageName)}</td><td>${ssrInterpolate(formatDateTime(row.activityDeadline))}</td><td>${ssrInterpolate(row.nextStepErrors.join("; ") || "—")}</td><td>${ssrInterpolate(row.responsibleName)}</td><td><mark>${ssrInterpolate(row.status)}</mark></td></tr>`);
-          });
-          _push(`<!--]--></tbody></table>`);
-        }
-        if (unref(filteredRows).length === 0) {
-          _push(`<div class="empty-report">`);
-          _push(ssrRenderComponent(unref(CircleCheckIcon$1), { class: "h-6 w-6" }, null, _parent));
-          _push(` Нет строк для выбранных фильтров </div>`);
+          _push(`<!--]--></ul></div>`);
         } else {
           _push(`<!---->`);
         }
-        _push(`</div><div class="report-pagination"><span>${ssrInterpolate(unref(filteredRows).length)} строк</span><div>`);
+        _push(`<div class="flex flex-wrap gap-2">`);
         _push(ssrRenderComponent(_component_B24Button, {
-          label: "Назад",
-          size: "sm",
-          class: "border border-default bg-default text-label",
-          disabled: unref(page) <= 1,
-          onClick: ($event) => page.value = Math.max(1, unref(page) - 1)
+          label: "Скопировать текст",
+          class: "brand-action",
+          onClick: copyAiRecommendation
         }, null, _parent));
-        _push(ssrRenderComponent(_component_B24Button, {
-          label: "Вперед",
-          size: "sm",
-          class: "border border-default bg-default text-label",
-          disabled: unref(page) >= unref(pageCount),
-          onClick: ($event) => page.value = Math.min(unref(pageCount), unref(page) + 1)
+        _push(ssrRenderComponent(_component_B24Badge, {
+          label: "Отправка вручную в Wazzup",
+          class: "brand-soft"
         }, null, _parent));
-        _push(`</div></div></article></section><!--]-->`);
+        _push(`</div></div>`);
+      } else {
+        _push(`<!---->`);
       }
-      _push(`</main>`);
+      if (transcriptStats.value) {
+        _push(ssrRenderComponent(_component_B24Alert, {
+          class: "mt-4",
+          color: "air-primary",
+          variant: "soft",
+          title: "Звонки в анализе",
+          description: "Найдено: " + transcriptStats.value.calls + "; готовых: " + transcriptStats.value.native + "; из кэша: " + transcriptStats.value.cached + "; расшифровано: " + transcriptStats.value.transcribed + "."
+        }, null, _parent));
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`</section>`);
+      if (selectedScenario.value && selectedStep.value) {
+        _push(`<article class="navigator-scenario-panel work-panel min-w-0 p-5"><div class="flex flex-wrap items-start justify-between gap-3 border-b border-default pb-4"><div><p class="eyebrow">Сценарий</p><h2 class="mt-1 text-xl font-bold text-label">${ssrInterpolate(selectedScenario.value.title)}</h2><p class="mt-1 text-sm text-description">${ssrInterpolate(selectedScenario.value.description)}</p></div>`);
+        _push(ssrRenderComponent(_component_B24Badge, {
+          label: `Шаг ${selectedScenario.value.steps.findIndex((step) => step.id === selectedStep.value?.id) + 1} из ${selectedScenario.value.steps.length}`,
+          class: "brand-soft"
+        }, null, _parent));
+        _push(`</div><div class="mt-5 grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1fr)_280px]"><div class="navigator-main-column grid min-w-0 gap-4"><div><p class="result-label">Цель шага</p><p class="mt-1 text-sm leading-6 text-description">${ssrInterpolate(selectedStep.value.goal)}</p></div><div class="navigator-channel" role="tablist" aria-label="Канал коммуникации"><!--[-->`);
+        ssrRenderList(selectedStepChannels.value, (item) => {
+          _push(ssrRenderComponent(_component_B24Button, {
+            key: item,
+            label: channelLabel(item),
+            size: "sm",
+            class: channel.value === item ? "brand-action" : "mode-switch-button",
+            onClick: ($event) => channel.value = item
+          }, null, _parent));
+        });
+        _push(`<!--]--></div><div class="navigator-script-text">${ssrInterpolate(renderedText.value)}</div>`);
+        if (missingVariables.value.length) {
+          _push(ssrRenderComponent(_component_B24Alert, {
+            color: "air-primary-alert",
+            variant: "soft",
+            title: "Заполните данные в сделке",
+            description: missingVariables.value.map((name) => unref(NAVIGATOR_VARIABLE_LABELS)[name] || name).join(", ")
+          }, null, _parent));
+        } else {
+          _push(`<!---->`);
+        }
+        if (selectedStep.value.answers?.length) {
+          _push(`<div class="grid gap-2 border-t border-default pt-4"><p class="text-sm font-semibold text-label">Ответ клиента</p><div class="flex flex-wrap gap-2"><!--[-->`);
+          ssrRenderList(selectedStep.value.answers, (answer) => {
+            _push(ssrRenderComponent(_component_B24Button, {
+              key: answer.label,
+              label: answer.label,
+              class: "border border-default bg-default text-label",
+              onClick: ($event) => chooseAnswer(answer.nextStepId)
+            }, null, _parent));
+          });
+          _push(`<!--]--></div></div>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`<div class="flex flex-wrap items-center justify-between gap-3 border-t border-default pt-4">`);
+        _push(ssrRenderComponent(_component_B24Button, {
+          label: "К каталогу",
+          class: "mode-switch-button border border-default",
+          onClick: ($event) => {
+            selectedScenarioId.value = null;
+            selectedStepId.value = null;
+          }
+        }, null, _parent));
+        _push(ssrRenderComponent(_component_B24Button, {
+          label: "Скопировать текст",
+          disabled: !canCopy.value,
+          class: "brand-action",
+          onClick: copyCurrentText
+        }, null, _parent));
+        _push(`</div></div><aside class="navigator-history"><p class="text-sm font-bold text-label">Последние коммуникации</p>`);
+        if (context2.value?.communications.length) {
+          _push(`<div class="mt-3 grid gap-2"><!--[-->`);
+          ssrRenderList(context2.value.communications, (item) => {
+            _push(`<div class="navigator-history-item"><div class="flex items-center justify-between gap-2"><span class="text-xs font-semibold text-label">${ssrInterpolate(item.channel)} · ${ssrInterpolate(directionLabel(item.direction))}</span><span class="text-xs text-description">${ssrInterpolate(item.at)}</span></div><p class="mt-1 truncate text-xs text-description">${ssrInterpolate(item.title || item.preview)}</p></div>`);
+          });
+          _push(`<!--]--></div>`);
+        } else {
+          _push(`<p class="mt-2 text-sm text-description">Коммуникации не найдены.</p>`);
+        }
+        _push(`</aside></div></article>`);
+      } else {
+        _push(`<article class="navigator-empty-state work-panel p-8"><h2 class="text-xl font-bold text-label">Выберите возражение</h2><p class="mt-2 text-sm leading-6 text-description">Каталог слева поможет открыть ветку для текущей переписки или звонка.</p></article>`);
+      }
+      _push(`</section></main>`);
     };
   }
 });
 const _sfc_setup$3 = _sfc_main$3.setup;
 _sfc_main$3.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
-  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("components/AdminReportsPanel.vue");
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("components/ObjectionNavigator.vue");
   return _sfc_setup$3 ? _sfc_setup$3(props, ctx) : void 0;
 };
-const __nuxt_component_10 = Object.assign(_sfc_main$3, { __name: "AdminReportsPanel" });
+const __nuxt_component_10 = Object.assign(_sfc_main$3, { __name: "ObjectionNavigator" });
 const _imports_0 = publicAssetsURL("/favicon.png");
+const intervalError = "[nuxt] `setInterval` should not be used on the server. Consider wrapping it with an `onNuxtReady`, `onBeforeMount` or `onMounted` lifecycle hook, or ensure you only call it in the browser by checking `false`.";
+const setInterval = (() => {
+  console.error(intervalError);
+});
 const _sfc_main$2 = /* @__PURE__ */ defineComponent({
   __name: "app",
   __ssrInlineRender: true,
   setup(__props) {
     const toast = useToast();
-    const activeShellSection = ref("manager-assistant");
-    const dashboardAccess = ref(null);
-    const accessLoading = ref(false);
-    const accessError = ref("");
     const workspaceMode = ref("reactivation");
     const agentName = ref("Елена");
     const clientName = ref("Александр");
@@ -16362,17 +17227,17 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     const tripDate = ref("в сентябре прошлого года");
     const season = ref("Прошлой осенью");
     const destinationLead = ref("Египет");
-    const travelContext = ref("предстоящий летний сезон");
+    const travelContext = ref(getSeasonalTravelContexts(/* @__PURE__ */ new Date())[0]?.value || "предстоящий сезон");
+    const isNewEmployee = ref(false);
     const activeStep = ref(1);
     const interest = ref(null);
     const crmNotes = ref("");
     const isCallFinished = ref(false);
-    const accessToken = ref("");
     const b24DealId = ref(null);
     ref(null);
     const dealCategoryName = ref("");
     const assignedById = ref(null);
-    const b24Initializing = ref(false);
+    const b24Initializing = ref(true);
     const b24Loading = ref(false);
     const b24Saving = ref(false);
     ref("");
@@ -16383,6 +17248,8 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     const timerSeconds = ref(0);
     const bx24Instance = ref(null);
     const bx24Ready = ref(false);
+    ref(null);
+    const appShell = ref(null);
     let timerId = null;
     const formattedTimer = computed(() => {
       const mins = String(Math.floor(timerSeconds.value / 60)).padStart(2, "0");
@@ -16403,26 +17270,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     const normalizedDealCategoryName = computed(() => dealCategoryName.value.trim().toLowerCase());
     const isReactivationFunnel = computed(() => normalizedDealCategoryName.value.includes("реактивац"));
     const isQualityLeadFunnel = computed(() => normalizedDealCategoryName.value.includes("качественный лид"));
-    const isDashboardAdmin = computed(() => dashboardAccess.value?.isAdmin === true);
-    const shellNavItems = computed(() => {
-      const items = [
-        { id: "manager-assistant", label: "Manager-Assistant", description: "Скрипты и планирование дел" }
-      ];
-      if (isDashboardAdmin.value) {
-        items.push(
-          { id: "sla-first-contact", label: "Первичный контакт", description: "SLA по лидам" },
-          { id: "data-quality", label: "Качество данных", description: "Контакты CRM" },
-          { id: "reactivation-report", label: "Реактивация", description: "План и рейтинг" },
-          { id: "next-step-control", label: "Контроль шагов", description: "Качество дел" }
-        );
-      }
-      return items;
-    });
-    const adminReportMode = computed(() => {
-      if (activeShellSection.value === "reactivation-report") return "reactivation";
-      if (activeShellSection.value === "manager-assistant") return "sla-first-contact";
-      return activeShellSection.value;
-    });
+    const seasonalTravelContexts = computed(() => getSeasonalTravelContexts(/* @__PURE__ */ new Date()));
     const contactDateValue = computed({
       get() {
         if (!nextContactDate.value) {
@@ -16464,6 +17312,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
       }
       return "";
     });
+    const newEmployeeStep3Text = computed(() => `Давайте я передам информацию вашему менеджеру ${agentName.value}, она свяжется с вами, задаст пару уточняющих вопросов и сделает подборку, от которой вы будете в восторге. ^_^ Когда вам удобно, чтобы она вас набрала?`);
     const crmNotesReport = computed(() => [
       `Менеджер: ${agentName.value}`,
       `Клиент: ${clientName.value}`,
@@ -16479,14 +17328,6 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
         duration: 3e3
       });
     }
-    function switchShellSection(section) {
-      const allowed = shellNavItems.value.some((item) => item.id === section);
-      if (!allowed) {
-        activeShellSection.value = "manager-assistant";
-        return;
-      }
-      activeShellSection.value = section;
-    }
     function startTimer() {
       clearTimer();
       timerSeconds.value = 0;
@@ -16498,11 +17339,16 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
         timerId = null;
       }
     }
+    function requestBitrixFrameFit(force = false) {
+      {
+        return;
+      }
+    }
     function switchWorkspaceMode(mode) {
       if (mode === "reactivation" && !isReactivationFunnel.value) {
         return;
       }
-      if (mode === "ai-next-step" && !isQualityLeadFunnel.value) {
+      if ((mode === "ai-next-step" || mode === "objection-navigator") && !isQualityLeadFunnel.value) {
         return;
       }
       workspaceMode.value = mode;
@@ -16530,6 +17376,31 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     }
     function buildDeadlineForB24(dateValue) {
       return /^\d{4}-\d{2}-\d{2}$/.test(dateValue) ? `${dateValue}T10:00:00+03:00` : dateValue;
+    }
+    async function createAiNextStepTodo(recommendation) {
+      if (!b24DealId.value) {
+        throw new Error("Сделка не определена. Откройте вкладку из карточки сделки заново.");
+      }
+      const BX24 = bx24Instance.value || null;
+      if (!BX24?.callMethod) {
+        throw new Error("Bitrix24 SDK ещё не готов. Обновите вкладку сделки и повторите попытку.");
+      }
+      bx24Instance.value = BX24;
+      const result = await bx24Call("crm.activity.todo.add", {
+        ownerTypeId: 2,
+        ownerId: b24DealId.value,
+        deadline: recommendation.deadline,
+        title: recommendation.title,
+        description: recommendation.description,
+        responsibleId: recommendation.responsibleId,
+        pingOffsets: [0, 15],
+        colorId: "red"
+      });
+      const activityId = result?.id ?? result?.ID ?? result;
+      if (activityId === null || activityId === void 0 || activityId === "") {
+        throw new Error("Bitrix24 не вернул ID созданного дела.");
+      }
+      return activityId;
     }
     async function createTodoViaBitrixSdk() {
       const BX24 = bx24Instance.value || null;
@@ -16589,7 +17460,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
       try {
         const response = await $fetch("/api/b24/create-call-activity", {
           method: "POST",
-          headers: accessToken.value ? { Authorization: `Bearer ${accessToken.value}` } : {},
+          credentials: "same-origin",
           body: {
             dealId: b24DealId.value,
             crmNotes: crmNotes.value,
@@ -16632,6 +17503,35 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     function setPresetContext(text) {
       travelContext.value = text;
     }
+    function getSeasonalTravelContexts(date) {
+      const month = date.getMonth() + 1;
+      if (month >= 1 && month <= 4) {
+        return [
+          { label: "Майские праздники", value: "майские праздники" },
+          { label: "Летний сезон", value: "предстоящий летний сезон" },
+          { label: "Бархатный сезон", value: "бархатный сезон" }
+        ];
+      }
+      if (month >= 5 && month <= 7) {
+        return [
+          { label: "Бархатный сезон", value: "бархатный сезон" },
+          { label: "Осенние каникулы", value: "осенние школьные каникулы" },
+          { label: "Новогодние каникулы", value: "новогодние каникулы" }
+        ];
+      }
+      if (month <= 9) {
+        return [
+          { label: "Бархатный сезон", value: "бархатный сезон" },
+          { label: "Осенние каникулы", value: "осенние школьные каникулы" },
+          { label: "Новогодние каникулы", value: "новогодние каникулы" }
+        ];
+      }
+      return [
+        { label: "Новогодние каникулы", value: "новогодние каникулы" },
+        { label: "Зимние каникулы", value: "зимние школьные каникулы" },
+        { label: "Майские праздники", value: "майские праздники" }
+      ];
+    }
     function scrollToStep(step) {
       activeStep.value = step;
       setTimeout(() => {
@@ -16642,44 +17542,31 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
       await (void 0).clipboard?.writeText(text || "");
       showToast("Текст скопирован");
     }
+    watch([workspaceMode, b24Loading, b24Initializing, isCallFinished], () => {
+      void nextTick(requestBitrixFrameFit);
+    }, { flush: "post" });
     return (_ctx, _push, _parent, _attrs) => {
       const _component_B24App = __nuxt_component_0;
-      const _component_B24Badge = _sfc_main$b;
-      const _component_B24Progress = _sfc_main$g;
-      const _component_B24Button = _sfc_main$h;
-      const _component_B24FormField = _sfc_main$a;
-      const _component_B24Input = _sfc_main$9;
-      const _component_B24Popover = _sfc_main$8;
-      const _component_B24Calendar = _sfc_main$7;
-      const _component_B24Textarea = _sfc_main$6;
+      const _component_B24Progress = _sfc_main$h;
+      const _component_B24Button = _sfc_main$i;
+      const _component_B24Badge = _sfc_main$c;
+      const _component_B24FormField = _sfc_main$b;
+      const _component_B24Input = _sfc_main$a;
+      const _component_B24Popover = _sfc_main$9;
+      const _component_B24Calendar = _sfc_main$8;
+      const _component_B24Textarea = _sfc_main$7;
       const _component_AiNextStepPanel = __nuxt_component_9;
-      const _component_AdminReportsPanel = __nuxt_component_10;
+      const _component_ObjectionNavigator = __nuxt_component_10;
       _push(ssrRenderComponent(_component_B24App, _attrs, {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<div class="unified-shell"${_scopeId}><aside class="unified-sidebar"${_scopeId}><div class="unified-brand"${_scopeId}><img class="brand-logo"${ssrRenderAttr("src", _imports_0)} alt="Русский Экспресс"${_scopeId}><div${_scopeId}><strong${_scopeId}>Русский Экспресс</strong><span${_scopeId}>Bitrix24 dashboard</span></div></div><nav class="unified-nav" aria-label="Разделы дашборда"${_scopeId}><!--[-->`);
-            ssrRenderList(shellNavItems.value, (item) => {
-              _push2(`<button type="button" class="${ssrRenderClass({ active: activeShellSection.value === item.id })}"${_scopeId}><strong${_scopeId}>${ssrInterpolate(item.label)}</strong><span${_scopeId}>${ssrInterpolate(item.description)}</span></button>`);
-            });
-            _push2(`<!--]--></nav><div class="unified-access"${_scopeId}>`);
-            _push2(ssrRenderComponent(_component_B24Badge, {
-              label: accessLoading.value ? "Проверяем права" : isDashboardAdmin.value ? "Администратор" : "Сотрудник",
-              class: isDashboardAdmin.value ? "brand-soft" : "border border-default bg-muted text-description"
-            }, null, _parent2, _scopeId));
-            if (dashboardAccess.value?.user.name) {
-              _push2(`<span${_scopeId}>${ssrInterpolate(dashboardAccess.value.user.name)}</span>`);
-            } else if (accessError.value) {
-              _push2(`<span${_scopeId}>${ssrInterpolate(accessError.value)}</span>`);
-            } else {
-              _push2(`<span${_scopeId}>Доступ к отчетам скрыт для рядовых пользователей</span>`);
-            }
-            _push2(`</div></aside><div class="app-shell unified-content"${_scopeId}>`);
-            if (activeShellSection.value === "manager-assistant" && b24Loading.value) {
+            _push2(`<div class="app-shell"${_scopeId}>`);
+            if (b24Loading.value) {
               _push2(`<div class="fixed left-0 right-0 top-0 z-50 h-1 bg-red-100"${_scopeId}><div class="h-full w-1/2 animate-pulse brand-action"${_scopeId}></div></div>`);
             } else {
               _push2(`<!---->`);
             }
-            if (activeShellSection.value === "manager-assistant" && dealContextOverlayVisible.value) {
+            if (dealContextOverlayVisible.value) {
               _push2(`<div class="deal-loading-overlay"${_scopeId}><div class="deal-loading-panel"${_scopeId}><div class="deal-loading-spinner" aria-hidden="true"${_scopeId}></div><div${_scopeId}><p class="text-sm font-bold text-label"${_scopeId}>${ssrInterpolate(dealContextLoadingText.value)}</p><p class="mt-1 text-xs text-description"${_scopeId}>Поля будут доступны после подстановки данных из CRM.</p></div>`);
               _push2(ssrRenderComponent(_component_B24Progress, {
                 "model-value": null,
@@ -16691,67 +17578,65 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
             } else {
               _push2(`<!---->`);
             }
-            if (activeShellSection.value === "manager-assistant") {
-              _push2(`<header class="sticky top-0 z-40 border-b border-default bg-default/95 px-4 py-3 backdrop-blur"${_scopeId}><div class="flex flex-wrap items-center justify-between gap-3"${_scopeId}><div class="flex items-center gap-3"${_scopeId}><img class="brand-logo"${ssrRenderAttr("src", _imports_0)} alt="Русский Экспресс"${_scopeId}><div${_scopeId}><h1 class="text-base font-bold leading-tight text-label"${_scopeId}>Русский Экспресс</h1><p class="text-xs text-description"${_scopeId}>Ассистент менеджера в карточке Bitrix24</p></div>`);
+            _push2(`<header class="app-header assistant-header sticky top-0 z-40 border-b border-default bg-default/95 px-4 py-3 backdrop-blur"${_scopeId}><div class="flex flex-wrap items-center justify-between gap-3"${_scopeId}><div class="flex items-center gap-3"${_scopeId}><img class="brand-logo"${ssrRenderAttr("src", _imports_0)} alt="Русский Экспресс"${_scopeId}><div${_scopeId}><h1 class="text-base font-bold leading-tight text-label"${_scopeId}>Русский Экспресс</h1><p class="text-xs text-description"${_scopeId}>Ассистент менеджера в карточке Bitrix24</p></div></div><div class="flex flex-wrap items-center gap-2"${_scopeId}><div class="mode-switch" role="tablist" aria-label="Режим работы"${_scopeId}>`);
+            _push2(ssrRenderComponent(_component_B24Button, {
+              label: "Скрипт по реактивации",
+              size: "sm",
+              disabled: !isReactivationFunnel.value,
+              class: workspaceMode.value === "reactivation" ? "brand-action" : "mode-switch-button",
+              onClick: ($event) => switchWorkspaceMode("reactivation")
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(_component_B24Button, {
+              label: "AI следующий шаг",
+              size: "sm",
+              disabled: !isQualityLeadFunnel.value,
+              class: workspaceMode.value === "ai-next-step" ? "brand-action" : "mode-switch-button",
+              onClick: ($event) => switchWorkspaceMode("ai-next-step")
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(_component_B24Button, {
+              label: "Навигатор возражений",
+              size: "sm",
+              disabled: !isQualityLeadFunnel.value,
+              class: workspaceMode.value === "objection-navigator" ? "brand-action" : "mode-switch-button",
+              onClick: ($event) => switchWorkspaceMode("objection-navigator")
+            }, null, _parent2, _scopeId));
+            _push2(`</div>`);
+            if (b24DealId.value) {
               _push2(ssrRenderComponent(_component_B24Badge, {
-                label: "B24 UI",
+                label: `Сделка #${b24DealId.value}`,
                 class: "brand-soft"
               }, null, _parent2, _scopeId));
-              _push2(`</div><div class="flex flex-wrap items-center gap-2"${_scopeId}><div class="mode-switch" role="tablist" aria-label="Режим работы"${_scopeId}>`);
-              _push2(ssrRenderComponent(_component_B24Button, {
-                label: "Скрипт по реактивации",
-                size: "sm",
-                disabled: !isReactivationFunnel.value,
-                class: workspaceMode.value === "reactivation" ? "brand-action" : "mode-switch-button",
-                onClick: ($event) => switchWorkspaceMode("reactivation")
+            } else {
+              _push2(ssrRenderComponent(_component_B24Badge, {
+                label: "Контекст сделки не найден",
+                class: "border border-amber-200 bg-amber-50 text-amber-900"
               }, null, _parent2, _scopeId));
-              _push2(ssrRenderComponent(_component_B24Button, {
-                label: "AI следующий шаг",
-                size: "sm",
-                disabled: !isQualityLeadFunnel.value,
-                class: workspaceMode.value === "ai-next-step" ? "brand-action" : "mode-switch-button",
-                onClick: ($event) => switchWorkspaceMode("ai-next-step")
+            }
+            if (isCallCardPlacement.value) {
+              _push2(ssrRenderComponent(_component_B24Badge, {
+                label: `Длительность разговора: ${formattedTimer.value}`,
+                class: "border border-default bg-muted text-label"
               }, null, _parent2, _scopeId));
-              _push2(`</div>`);
-              if (b24DealId.value) {
-                _push2(ssrRenderComponent(_component_B24Badge, {
-                  label: `Сделка #${b24DealId.value}`,
-                  class: "brand-soft"
-                }, null, _parent2, _scopeId));
-              } else {
-                _push2(ssrRenderComponent(_component_B24Badge, {
-                  label: "Контекст сделки не найден",
-                  class: "border border-amber-200 bg-amber-50 text-amber-900"
-                }, null, _parent2, _scopeId));
-              }
-              if (isCallCardPlacement.value) {
-                _push2(ssrRenderComponent(_component_B24Badge, {
-                  label: `Длительность разговора: ${formattedTimer.value}`,
-                  class: "border border-default bg-muted text-label"
-                }, null, _parent2, _scopeId));
-              } else {
-                _push2(`<!---->`);
-              }
-              _push2(ssrRenderComponent(_component_B24Button, {
-                label: "Сбросить",
-                class: "border border-default bg-default text-label",
-                onClick: resetCall
-              }, null, _parent2, _scopeId));
-              _push2(`</div></div></header>`);
             } else {
               _push2(`<!---->`);
             }
-            if (activeShellSection.value === "manager-assistant" && workspaceMode.value === "reactivation") {
-              _push2(`<main class="grid gap-4 p-4 lg:grid-cols-[460px_minmax(0,1fr)]"${_scopeId}><aside class="sidebar-sticky work-panel p-4 workspace-scroll"${_scopeId}><div class="mb-4 border-b border-default pb-3"${_scopeId}><div class="flex items-center justify-between gap-3"${_scopeId}><h2 class="text-base font-bold text-label"${_scopeId}>Данные для подстановки</h2>`);
+            _push2(ssrRenderComponent(_component_B24Button, {
+              label: "Сбросить",
+              class: "border border-default bg-default text-label",
+              onClick: resetCall
+            }, null, _parent2, _scopeId));
+            _push2(`</div></div></header><section class="deal-context-strip" aria-label="Контекст текущей сделки"${_scopeId}><div class="deal-context-item"${_scopeId}><span${_scopeId}>Сделка</span><strong${_scopeId}>${ssrInterpolate(b24DealId.value ? `#${b24DealId.value}` : "не определена")}</strong></div><div class="deal-context-item"${_scopeId}><span${_scopeId}>Клиент</span><strong${_scopeId}>${ssrInterpolate(clientName.value || "не указан")}</strong></div><div class="deal-context-item"${_scopeId}><span${_scopeId}>Ответственный</span><strong${_scopeId}>${ssrInterpolate(agentName.value || "не указан")}</strong></div><div class="deal-context-item"${_scopeId}><span${_scopeId}>Воронка</span><strong${_scopeId}>${ssrInterpolate(dealCategoryName.value || "загружается")}</strong></div></section>`);
+            if (workspaceMode.value === "reactivation") {
+              _push2(`<main class="workspace-layout workspace-reactivation gap-4 p-4"${_scopeId}><aside class="reactivation-command-surface work-panel p-4"${_scopeId}><div class="mb-4 border-b border-default pb-3"${_scopeId}><div class="flex items-center justify-between gap-3"${_scopeId}><h2 class="text-base font-bold text-label"${_scopeId}>Данные для подстановки</h2>`);
               if (b24Debug.value) {
                 _push2(ssrRenderComponent(_component_B24Badge, {
                   label: b24Debug.value,
-                  class: "border border-default bg-muted text-description"
+                  class: "reactivation-debug-badge border border-default bg-muted text-description"
                 }, null, _parent2, _scopeId));
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`</div><p class="mt-1 text-xs text-description"${_scopeId}>Поля синхронизируются с карточкой сделки и сразу обновляют скрипт.</p></div><div class="field-stack"${_scopeId}>`);
+              _push2(`</div><p class="mt-1 text-xs text-description"${_scopeId}>Поля синхронизируются с карточкой сделки и сразу обновляют скрипт.</p></div><div class="reactivation-fields-grid"${_scopeId}>`);
               _push2(ssrRenderComponent(_component_B24FormField, { label: "Ваше имя" }, {
                 default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
@@ -16792,7 +17677,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                 }),
                 _: 1
               }, _parent2, _scopeId));
-              _push2(`<div class="grid grid-cols-2 gap-2"${_scopeId}>`);
+              _push2(`<div class="grid min-w-0 grid-cols-2 gap-2"${_scopeId}>`);
               _push2(ssrRenderComponent(_component_B24Button, {
                 label: "Покупал ранее",
                 class: historyType.value === "buyer" ? "brand-action" : "border border-default bg-default text-label",
@@ -16911,26 +17796,17 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                 }),
                 _: 1
               }, _parent2, _scopeId));
-              _push2(`<div class="flex flex-wrap gap-2"${_scopeId}>`);
-              _push2(ssrRenderComponent(_component_B24Button, {
-                size: "xs",
-                label: "Летний сезон",
-                class: travelContext.value === "предстоящий летний сезон" ? "brand-action" : "border border-default bg-default text-label",
-                onClick: ($event) => setPresetContext("предстоящий летний сезон")
-              }, null, _parent2, _scopeId));
-              _push2(ssrRenderComponent(_component_B24Button, {
-                size: "xs",
-                label: "Майские",
-                class: travelContext.value === "майские праздники" ? "brand-action" : "border border-default bg-default text-label",
-                onClick: ($event) => setPresetContext("майские праздники")
-              }, null, _parent2, _scopeId));
-              _push2(ssrRenderComponent(_component_B24Button, {
-                size: "xs",
-                label: "Бархатный",
-                class: travelContext.value === "бархатный сезон осенью" ? "brand-action" : "border border-default bg-default text-label",
-                onClick: ($event) => setPresetContext("бархатный сезон осенью")
-              }, null, _parent2, _scopeId));
-              _push2(`</div><div class="border-t border-default pt-3 field-stack"${_scopeId}>`);
+              _push2(`<div class="flex flex-wrap gap-2"${_scopeId}><!--[-->`);
+              ssrRenderList(seasonalTravelContexts.value, (option) => {
+                _push2(ssrRenderComponent(_component_B24Button, {
+                  key: option.value,
+                  size: "xs",
+                  label: option.label,
+                  class: travelContext.value === option.value ? "brand-action" : "border border-default bg-default text-label",
+                  onClick: ($event) => setPresetContext(option.value)
+                }, null, _parent2, _scopeId));
+              });
+              _push2(`<!--]--></div><div class="reactivation-followup border-t border-default pt-3 field-stack"${_scopeId}>`);
               _push2(ssrRenderComponent(_component_B24FormField, { label: "Дата следующего контакта" }, {
                 default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
@@ -17064,7 +17940,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                 class: "brand-action",
                 onClick: () => void saveActivityToB24()
               }, null, _parent2, _scopeId));
-              _push2(`</div></div></div></aside><section class="script-scroll workspace-scroll"${_scopeId}><div class="work-panel mb-4 p-3"${_scopeId}><div class="grid gap-2 sm:grid-cols-3"${_scopeId}>`);
+              _push2(`</div></div></div></aside><section class="reactivation-script-workspace script-scroll workspace-scroll"${_scopeId}><div class="work-panel mb-4 p-3"${_scopeId}><div class="grid gap-2 sm:grid-cols-3"${_scopeId}>`);
               _push2(ssrRenderComponent(_component_B24Button, {
                 label: "1 Присоединение",
                 block: "",
@@ -17121,15 +17997,39 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                 class: interest.value === false ? "brand-action" : "border border-default bg-default text-label",
                 onClick: ($event) => interest.value = false
               }, null, _parent2, _scopeId));
-              _push2(`</div><div class="mt-4 rounded-lg border border-default bg-muted p-4"${_scopeId}>`);
+              _push2(`</div>`);
               if (interest.value === true) {
-                _push2(`<p class="text-xl font-semibold leading-relaxed text-label"${_scopeId}> «Давайте задам пару уточняющих вопросов и после этого обсудим конкретные отели. <span class="variable"${_scopeId}>${ssrInterpolate(clientName.value)}</span>, с кем поедете?» </p>`);
-              } else if (interest.value === false) {
-                _push2(`<p class="text-xl font-semibold leading-relaxed text-label"${_scopeId}> «Хорошо, <span class="variable"${_scopeId}>${ssrInterpolate(clientName.value)}</span>. Когда вопрос с поездкой может стать для вас актуален?» </p>`);
+                _push2(`<div class="mt-4 grid gap-3"${_scopeId}><div class="rounded-lg border border-default bg-muted p-4"${_scopeId}><p class="text-xs font-bold uppercase text-description"${_scopeId}>Стандартный сценарий</p><p class="mt-2 text-xl font-semibold leading-relaxed text-label"${_scopeId}> «Давайте задам пару уточняющих вопросов и после этого обсудим конкретные отели. <span class="variable"${_scopeId}>${ssrInterpolate(clientName.value)}</span>, с кем поедете?» </p>`);
+                _push2(ssrRenderComponent(_component_B24Button, {
+                  size: "xs",
+                  label: "Копировать сценарий",
+                  class: "mt-3 border border-default bg-default text-label",
+                  onClick: ($event) => copyText(step3Text.value)
+                }, null, _parent2, _scopeId));
+                _push2(`</div>`);
+                if (isNewEmployee.value) {
+                  _push2(`<div class="rounded-lg border border-red-100 bg-red-50/30 p-4"${_scopeId}><p class="text-xs font-bold uppercase text-[var(--brand-red)]"${_scopeId}>Сценарий для нового сотрудника</p><p class="mt-2 text-xl font-semibold leading-relaxed text-label"${_scopeId}> «Давайте я передам информацию вашему менеджеру <span class="variable"${_scopeId}>${ssrInterpolate(agentName.value)}</span>, она свяжется с вами, задаст пару уточняющих вопросов и сделает подборку, от которой вы будете в восторге. ^_^ Когда вам удобно, чтобы она вас набрала?» </p>`);
+                  _push2(ssrRenderComponent(_component_B24Button, {
+                    size: "xs",
+                    label: "Копировать сценарий",
+                    class: "mt-3 border border-default bg-default text-label",
+                    onClick: ($event) => copyText(newEmployeeStep3Text.value)
+                  }, null, _parent2, _scopeId));
+                  _push2(`</div>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                _push2(`</div>`);
               } else {
-                _push2(`<p class="text-center text-description"${_scopeId}>Выберите реакцию клиента, чтобы показать нужный речевой модуль.</p>`);
+                _push2(`<div class="mt-4 rounded-lg border border-default bg-muted p-4"${_scopeId}>`);
+                if (interest.value === false) {
+                  _push2(`<p class="text-xl font-semibold leading-relaxed text-label"${_scopeId}> «Хорошо, <span class="variable"${_scopeId}>${ssrInterpolate(clientName.value)}</span>. Когда вопрос с поездкой может стать для вас актуален?» </p>`);
+                } else {
+                  _push2(`<p class="text-center text-description"${_scopeId}>Выберите реакцию клиента, чтобы показать нужный речевой модуль.</p>`);
+                }
+                _push2(`</div>`);
               }
-              _push2(`</div><div class="mt-4 flex justify-between border-t border-default pt-4"${_scopeId}>`);
+              _push2(`<div class="mt-4 flex justify-between border-t border-default pt-4"${_scopeId}>`);
               _push2(ssrRenderComponent(_component_B24Button, {
                 label: "Копировать модуль",
                 class: "border border-default bg-default text-label",
@@ -17166,568 +18066,581 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                 _push2(`<!---->`);
               }
               _push2(`</div></section></main>`);
-            } else if (activeShellSection.value === "manager-assistant") {
+            } else if (workspaceMode.value === "ai-next-step") {
               _push2(ssrRenderComponent(_component_AiNextStepPanel, {
                 "deal-id": b24DealId.value,
                 "agent-name": agentName.value,
                 "client-name": clientName.value,
-                "access-token": accessToken.value,
-                "loading-context": dealContextOverlayVisible.value
+                "loading-context": dealContextOverlayVisible.value,
+                "create-todo": createAiNextStepTodo
               }, null, _parent2, _scopeId));
             } else {
-              _push2(ssrRenderComponent(_component_AdminReportsPanel, {
-                mode: adminReportMode.value,
-                "access-token": accessToken.value
+              _push2(ssrRenderComponent(_component_ObjectionNavigator, {
+                "deal-id": b24DealId.value,
+                "agent-name": agentName.value,
+                "client-name": clientName.value,
+                "loading-context": dealContextOverlayVisible.value
               }, null, _parent2, _scopeId));
             }
-            _push2(`</div></div>`);
+            _push2(`</div>`);
           } else {
             return [
-              createVNode("div", { class: "unified-shell" }, [
-                createVNode("aside", { class: "unified-sidebar" }, [
-                  createVNode("div", { class: "unified-brand" }, [
-                    createVNode("img", {
-                      class: "brand-logo",
-                      src: _imports_0,
-                      alt: "Русский Экспресс"
+              createVNode("div", {
+                ref_key: "appShell",
+                ref: appShell,
+                class: "app-shell"
+              }, [
+                b24Loading.value ? (openBlock(), createBlock("div", {
+                  key: 0,
+                  class: "fixed left-0 right-0 top-0 z-50 h-1 bg-red-100"
+                }, [
+                  createVNode("div", { class: "h-full w-1/2 animate-pulse brand-action" })
+                ])) : createCommentVNode("", true),
+                dealContextOverlayVisible.value ? (openBlock(), createBlock("div", {
+                  key: 1,
+                  class: "deal-loading-overlay"
+                }, [
+                  createVNode("div", { class: "deal-loading-panel" }, [
+                    createVNode("div", {
+                      class: "deal-loading-spinner",
+                      "aria-hidden": "true"
                     }),
                     createVNode("div", null, [
-                      createVNode("strong", null, "Русский Экспресс"),
-                      createVNode("span", null, "Bitrix24 dashboard")
-                    ])
-                  ]),
-                  createVNode("nav", {
-                    class: "unified-nav",
-                    "aria-label": "Разделы дашборда"
-                  }, [
-                    (openBlock(true), createBlock(Fragment, null, renderList(shellNavItems.value, (item) => {
-                      return openBlock(), createBlock("button", {
-                        key: item.id,
-                        type: "button",
-                        class: { active: activeShellSection.value === item.id },
-                        onClick: ($event) => switchShellSection(item.id)
-                      }, [
-                        createVNode("strong", null, toDisplayString(item.label), 1),
-                        createVNode("span", null, toDisplayString(item.description), 1)
-                      ], 10, ["onClick"]);
-                    }), 128))
-                  ]),
-                  createVNode("div", { class: "unified-access" }, [
-                    createVNode(_component_B24Badge, {
-                      label: accessLoading.value ? "Проверяем права" : isDashboardAdmin.value ? "Администратор" : "Сотрудник",
-                      class: isDashboardAdmin.value ? "brand-soft" : "border border-default bg-muted text-description"
-                    }, null, 8, ["label", "class"]),
-                    dashboardAccess.value?.user.name ? (openBlock(), createBlock("span", { key: 0 }, toDisplayString(dashboardAccess.value.user.name), 1)) : accessError.value ? (openBlock(), createBlock("span", { key: 1 }, toDisplayString(accessError.value), 1)) : (openBlock(), createBlock("span", { key: 2 }, "Доступ к отчетам скрыт для рядовых пользователей"))
+                      createVNode("p", { class: "text-sm font-bold text-label" }, toDisplayString(dealContextLoadingText.value), 1),
+                      createVNode("p", { class: "mt-1 text-xs text-description" }, "Поля будут доступны после подстановки данных из CRM.")
+                    ]),
+                    createVNode(_component_B24Progress, {
+                      "model-value": null,
+                      color: "air-primary",
+                      animation: "loading",
+                      class: "deal-loading-progress"
+                    })
                   ])
-                ]),
-                createVNode("div", { class: "app-shell unified-content" }, [
-                  activeShellSection.value === "manager-assistant" && b24Loading.value ? (openBlock(), createBlock("div", {
-                    key: 0,
-                    class: "fixed left-0 right-0 top-0 z-50 h-1 bg-red-100"
-                  }, [
-                    createVNode("div", { class: "h-full w-1/2 animate-pulse brand-action" })
-                  ])) : createCommentVNode("", true),
-                  activeShellSection.value === "manager-assistant" && dealContextOverlayVisible.value ? (openBlock(), createBlock("div", {
-                    key: 1,
-                    class: "deal-loading-overlay"
-                  }, [
-                    createVNode("div", { class: "deal-loading-panel" }, [
-                      createVNode("div", {
-                        class: "deal-loading-spinner",
-                        "aria-hidden": "true"
+                ])) : createCommentVNode("", true),
+                createVNode("header", { class: "app-header assistant-header sticky top-0 z-40 border-b border-default bg-default/95 px-4 py-3 backdrop-blur" }, [
+                  createVNode("div", { class: "flex flex-wrap items-center justify-between gap-3" }, [
+                    createVNode("div", { class: "flex items-center gap-3" }, [
+                      createVNode("img", {
+                        class: "brand-logo",
+                        src: _imports_0,
+                        alt: "Русский Экспресс"
                       }),
                       createVNode("div", null, [
-                        createVNode("p", { class: "text-sm font-bold text-label" }, toDisplayString(dealContextLoadingText.value), 1),
-                        createVNode("p", { class: "mt-1 text-xs text-description" }, "Поля будут доступны после подстановки данных из CRM.")
+                        createVNode("h1", { class: "text-base font-bold leading-tight text-label" }, "Русский Экспресс"),
+                        createVNode("p", { class: "text-xs text-description" }, "Ассистент менеджера в карточке Bitrix24")
+                      ])
+                    ]),
+                    createVNode("div", { class: "flex flex-wrap items-center gap-2" }, [
+                      createVNode("div", {
+                        class: "mode-switch",
+                        role: "tablist",
+                        "aria-label": "Режим работы"
+                      }, [
+                        createVNode(_component_B24Button, {
+                          label: "Скрипт по реактивации",
+                          size: "sm",
+                          disabled: !isReactivationFunnel.value,
+                          class: workspaceMode.value === "reactivation" ? "brand-action" : "mode-switch-button",
+                          onClick: ($event) => switchWorkspaceMode("reactivation")
+                        }, null, 8, ["disabled", "class", "onClick"]),
+                        createVNode(_component_B24Button, {
+                          label: "AI следующий шаг",
+                          size: "sm",
+                          disabled: !isQualityLeadFunnel.value,
+                          class: workspaceMode.value === "ai-next-step" ? "brand-action" : "mode-switch-button",
+                          onClick: ($event) => switchWorkspaceMode("ai-next-step")
+                        }, null, 8, ["disabled", "class", "onClick"]),
+                        createVNode(_component_B24Button, {
+                          label: "Навигатор возражений",
+                          size: "sm",
+                          disabled: !isQualityLeadFunnel.value,
+                          class: workspaceMode.value === "objection-navigator" ? "brand-action" : "mode-switch-button",
+                          onClick: ($event) => switchWorkspaceMode("objection-navigator")
+                        }, null, 8, ["disabled", "class", "onClick"])
                       ]),
-                      createVNode(_component_B24Progress, {
-                        "model-value": null,
-                        color: "air-primary",
-                        animation: "loading",
-                        class: "deal-loading-progress"
+                      b24DealId.value ? (openBlock(), createBlock(_component_B24Badge, {
+                        key: 0,
+                        label: `Сделка #${b24DealId.value}`,
+                        class: "brand-soft"
+                      }, null, 8, ["label"])) : (openBlock(), createBlock(_component_B24Badge, {
+                        key: 1,
+                        label: "Контекст сделки не найден",
+                        class: "border border-amber-200 bg-amber-50 text-amber-900"
+                      })),
+                      isCallCardPlacement.value ? (openBlock(), createBlock(_component_B24Badge, {
+                        key: 2,
+                        label: `Длительность разговора: ${formattedTimer.value}`,
+                        class: "border border-default bg-muted text-label"
+                      }, null, 8, ["label"])) : createCommentVNode("", true),
+                      createVNode(_component_B24Button, {
+                        label: "Сбросить",
+                        class: "border border-default bg-default text-label",
+                        onClick: resetCall
                       })
                     ])
-                  ])) : createCommentVNode("", true),
-                  activeShellSection.value === "manager-assistant" ? (openBlock(), createBlock("header", {
-                    key: 2,
-                    class: "sticky top-0 z-40 border-b border-default bg-default/95 px-4 py-3 backdrop-blur"
-                  }, [
-                    createVNode("div", { class: "flex flex-wrap items-center justify-between gap-3" }, [
-                      createVNode("div", { class: "flex items-center gap-3" }, [
-                        createVNode("img", {
-                          class: "brand-logo",
-                          src: _imports_0,
-                          alt: "Русский Экспресс"
-                        }),
-                        createVNode("div", null, [
-                          createVNode("h1", { class: "text-base font-bold leading-tight text-label" }, "Русский Экспресс"),
-                          createVNode("p", { class: "text-xs text-description" }, "Ассистент менеджера в карточке Bitrix24")
-                        ]),
-                        createVNode(_component_B24Badge, {
-                          label: "B24 UI",
-                          class: "brand-soft"
-                        })
-                      ]),
-                      createVNode("div", { class: "flex flex-wrap items-center gap-2" }, [
-                        createVNode("div", {
-                          class: "mode-switch",
-                          role: "tablist",
-                          "aria-label": "Режим работы"
-                        }, [
-                          createVNode(_component_B24Button, {
-                            label: "Скрипт по реактивации",
-                            size: "sm",
-                            disabled: !isReactivationFunnel.value,
-                            class: workspaceMode.value === "reactivation" ? "brand-action" : "mode-switch-button",
-                            onClick: ($event) => switchWorkspaceMode("reactivation")
-                          }, null, 8, ["disabled", "class", "onClick"]),
-                          createVNode(_component_B24Button, {
-                            label: "AI следующий шаг",
-                            size: "sm",
-                            disabled: !isQualityLeadFunnel.value,
-                            class: workspaceMode.value === "ai-next-step" ? "brand-action" : "mode-switch-button",
-                            onClick: ($event) => switchWorkspaceMode("ai-next-step")
-                          }, null, 8, ["disabled", "class", "onClick"])
-                        ]),
-                        b24DealId.value ? (openBlock(), createBlock(_component_B24Badge, {
+                  ])
+                ]),
+                createVNode("section", {
+                  class: "deal-context-strip",
+                  "aria-label": "Контекст текущей сделки"
+                }, [
+                  createVNode("div", { class: "deal-context-item" }, [
+                    createVNode("span", null, "Сделка"),
+                    createVNode("strong", null, toDisplayString(b24DealId.value ? `#${b24DealId.value}` : "не определена"), 1)
+                  ]),
+                  createVNode("div", { class: "deal-context-item" }, [
+                    createVNode("span", null, "Клиент"),
+                    createVNode("strong", null, toDisplayString(clientName.value || "не указан"), 1)
+                  ]),
+                  createVNode("div", { class: "deal-context-item" }, [
+                    createVNode("span", null, "Ответственный"),
+                    createVNode("strong", null, toDisplayString(agentName.value || "не указан"), 1)
+                  ]),
+                  createVNode("div", { class: "deal-context-item" }, [
+                    createVNode("span", null, "Воронка"),
+                    createVNode("strong", null, toDisplayString(dealCategoryName.value || "загружается"), 1)
+                  ])
+                ]),
+                workspaceMode.value === "reactivation" ? (openBlock(), createBlock("main", {
+                  key: 2,
+                  class: "workspace-layout workspace-reactivation gap-4 p-4"
+                }, [
+                  createVNode("aside", { class: "reactivation-command-surface work-panel p-4" }, [
+                    createVNode("div", { class: "mb-4 border-b border-default pb-3" }, [
+                      createVNode("div", { class: "flex items-center justify-between gap-3" }, [
+                        createVNode("h2", { class: "text-base font-bold text-label" }, "Данные для подстановки"),
+                        b24Debug.value ? (openBlock(), createBlock(_component_B24Badge, {
                           key: 0,
-                          label: `Сделка #${b24DealId.value}`,
-                          class: "brand-soft"
-                        }, null, 8, ["label"])) : (openBlock(), createBlock(_component_B24Badge, {
-                          key: 1,
-                          label: "Контекст сделки не найден",
-                          class: "border border-amber-200 bg-amber-50 text-amber-900"
-                        })),
-                        isCallCardPlacement.value ? (openBlock(), createBlock(_component_B24Badge, {
-                          key: 2,
-                          label: `Длительность разговора: ${formattedTimer.value}`,
-                          class: "border border-default bg-muted text-label"
-                        }, null, 8, ["label"])) : createCommentVNode("", true),
-                        createVNode(_component_B24Button, {
-                          label: "Сбросить",
-                          class: "border border-default bg-default text-label",
-                          onClick: resetCall
-                        })
-                      ])
-                    ])
-                  ])) : createCommentVNode("", true),
-                  activeShellSection.value === "manager-assistant" && workspaceMode.value === "reactivation" ? (openBlock(), createBlock("main", {
-                    key: 3,
-                    class: "grid gap-4 p-4 lg:grid-cols-[460px_minmax(0,1fr)]"
-                  }, [
-                    createVNode("aside", { class: "sidebar-sticky work-panel p-4 workspace-scroll" }, [
-                      createVNode("div", { class: "mb-4 border-b border-default pb-3" }, [
-                        createVNode("div", { class: "flex items-center justify-between gap-3" }, [
-                          createVNode("h2", { class: "text-base font-bold text-label" }, "Данные для подстановки"),
-                          b24Debug.value ? (openBlock(), createBlock(_component_B24Badge, {
-                            key: 0,
-                            label: b24Debug.value,
-                            class: "border border-default bg-muted text-description"
-                          }, null, 8, ["label"])) : createCommentVNode("", true)
-                        ]),
-                        createVNode("p", { class: "mt-1 text-xs text-description" }, "Поля синхронизируются с карточкой сделки и сразу обновляют скрипт.")
+                          label: b24Debug.value,
+                          class: "reactivation-debug-badge border border-default bg-muted text-description"
+                        }, null, 8, ["label"])) : createCommentVNode("", true)
                       ]),
-                      createVNode("div", { class: "field-stack" }, [
-                        createVNode(_component_B24FormField, { label: "Ваше имя" }, {
+                      createVNode("p", { class: "mt-1 text-xs text-description" }, "Поля синхронизируются с карточкой сделки и сразу обновляют скрипт.")
+                    ]),
+                    createVNode("div", { class: "reactivation-fields-grid" }, [
+                      createVNode(_component_B24FormField, { label: "Ваше имя" }, {
+                        default: withCtx(() => [
+                          createVNode(_component_B24Input, {
+                            modelValue: agentName.value,
+                            "onUpdate:modelValue": ($event) => agentName.value = $event,
+                            class: "field-control"
+                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(_component_B24FormField, { label: "Имя клиента" }, {
+                        default: withCtx(() => [
+                          createVNode(_component_B24Input, {
+                            modelValue: clientName.value,
+                            "onUpdate:modelValue": ($event) => clientName.value = $event,
+                            class: "field-control"
+                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                        ]),
+                        _: 1
+                      }),
+                      createVNode("div", { class: "grid min-w-0 grid-cols-2 gap-2" }, [
+                        createVNode(_component_B24Button, {
+                          label: "Покупал ранее",
+                          class: historyType.value === "buyer" ? "brand-action" : "border border-default bg-default text-label",
+                          onClick: ($event) => historyType.value = "buyer"
+                        }, null, 8, ["class", "onClick"]),
+                        createVNode(_component_B24Button, {
+                          label: "Не покупал",
+                          disabled: "",
+                          class: "scenario-disabled"
+                        })
+                      ]),
+                      historyType.value === "buyer" ? (openBlock(), createBlock("div", {
+                        key: 0,
+                        class: "brand-soft rounded-lg border p-3 field-stack"
+                      }, [
+                        createVNode(_component_B24FormField, { label: "Направление поездки" }, {
                           default: withCtx(() => [
                             createVNode(_component_B24Input, {
-                              modelValue: agentName.value,
-                              "onUpdate:modelValue": ($event) => agentName.value = $event,
+                              modelValue: destination.value,
+                              "onUpdate:modelValue": ($event) => destination.value = $event,
                               class: "field-control"
                             }, null, 8, ["modelValue", "onUpdate:modelValue"])
                           ]),
                           _: 1
                         }),
-                        createVNode(_component_B24FormField, { label: "Имя клиента" }, {
+                        createVNode(_component_B24FormField, { label: "Когда состоялась поездка" }, {
                           default: withCtx(() => [
                             createVNode(_component_B24Input, {
-                              modelValue: clientName.value,
-                              "onUpdate:modelValue": ($event) => clientName.value = $event,
+                              modelValue: tripDate.value,
+                              "onUpdate:modelValue": ($event) => tripDate.value = $event,
                               class: "field-control"
+                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                          ]),
+                          _: 1
+                        })
+                      ])) : (openBlock(), createBlock("div", {
+                        key: 1,
+                        class: "rounded-lg border border-default bg-muted p-3 field-stack"
+                      }, [
+                        createVNode(_component_B24FormField, { label: "Когда подбирали тур" }, {
+                          default: withCtx(() => [
+                            createVNode(_component_B24Input, {
+                              modelValue: season.value,
+                              "onUpdate:modelValue": ($event) => season.value = $event,
+                              class: "field-control"
+                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(_component_B24FormField, { label: "Направление подбора" }, {
+                          default: withCtx(() => [
+                            createVNode(_component_B24Input, {
+                              modelValue: destinationLead.value,
+                              "onUpdate:modelValue": ($event) => destinationLead.value = $event,
+                              class: "field-control"
+                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                          ]),
+                          _: 1
+                        })
+                      ])),
+                      createVNode(_component_B24FormField, { label: "Контекст предстоящего путешествия" }, {
+                        default: withCtx(() => [
+                          createVNode(_component_B24Input, {
+                            modelValue: travelContext.value,
+                            "onUpdate:modelValue": ($event) => travelContext.value = $event,
+                            class: "field-control"
+                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                        ]),
+                        _: 1
+                      }),
+                      createVNode("div", { class: "flex flex-wrap gap-2" }, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(seasonalTravelContexts.value, (option) => {
+                          return openBlock(), createBlock(_component_B24Button, {
+                            key: option.value,
+                            size: "xs",
+                            label: option.label,
+                            class: travelContext.value === option.value ? "brand-action" : "border border-default bg-default text-label",
+                            onClick: ($event) => setPresetContext(option.value)
+                          }, null, 8, ["label", "class", "onClick"]);
+                        }), 128))
+                      ]),
+                      createVNode("div", { class: "reactivation-followup border-t border-default pt-3 field-stack" }, [
+                        createVNode(_component_B24FormField, { label: "Дата следующего контакта" }, {
+                          default: withCtx(() => [
+                            createVNode(_component_B24Popover, { content: { side: "bottom", align: "start", sideOffset: 8 } }, {
+                              content: withCtx(({ close }) => [
+                                createVNode("div", { class: "calendar-surface" }, [
+                                  createVNode(_component_B24Calendar, {
+                                    modelValue: contactDateValue.value,
+                                    "onUpdate:modelValue": [($event) => contactDateValue.value = $event, close],
+                                    locale: "ru-RU",
+                                    color: "air-primary",
+                                    size: "sm",
+                                    "year-controls": true,
+                                    "week-starts-on": 1,
+                                    b24ui: {
+                                      root: "reactivation-calendar",
+                                      cellTrigger: "reactivation-calendar-day"
+                                    }
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                ])
+                              ]),
+                              default: withCtx(() => [
+                                createVNode(_component_B24Button, {
+                                  label: contactDateLabel.value,
+                                  block: "",
+                                  "use-dropdown": "",
+                                  class: "date-trigger"
+                                }, null, 8, ["label"])
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(_component_B24FormField, { label: "Заметка для CRM" }, {
+                          default: withCtx(() => [
+                            createVNode(_component_B24Textarea, {
+                              modelValue: crmNotes.value,
+                              "onUpdate:modelValue": ($event) => crmNotes.value = $event,
+                              rows: 4,
+                              class: "field-control",
+                              placeholder: "Итоги созвона, пожелания, бюджет, даты, следующий шаг..."
                             }, null, 8, ["modelValue", "onUpdate:modelValue"])
                           ]),
                           _: 1
                         }),
                         createVNode("div", { class: "grid grid-cols-2 gap-2" }, [
                           createVNode(_component_B24Button, {
-                            label: "Покупал ранее",
-                            class: historyType.value === "buyer" ? "brand-action" : "border border-default bg-default text-label",
-                            onClick: ($event) => historyType.value = "buyer"
-                          }, null, 8, ["class", "onClick"]),
+                            label: "Копировать",
+                            class: "border border-default bg-default text-label",
+                            onClick: ($event) => copyText(crmNotes.value)
+                          }, null, 8, ["onClick"]),
                           createVNode(_component_B24Button, {
-                            label: "Не покупал",
-                            disabled: "",
-                            class: "scenario-disabled"
-                          })
-                        ]),
-                        historyType.value === "buyer" ? (openBlock(), createBlock("div", {
-                          key: 0,
-                          class: "brand-soft rounded-lg border p-3 field-stack"
-                        }, [
-                          createVNode(_component_B24FormField, { label: "Направление поездки" }, {
-                            default: withCtx(() => [
-                              createVNode(_component_B24Input, {
-                                modelValue: destination.value,
-                                "onUpdate:modelValue": ($event) => destination.value = $event,
-                                class: "field-control"
-                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
-                            ]),
-                            _: 1
-                          }),
-                          createVNode(_component_B24FormField, { label: "Когда состоялась поездка" }, {
-                            default: withCtx(() => [
-                              createVNode(_component_B24Input, {
-                                modelValue: tripDate.value,
-                                "onUpdate:modelValue": ($event) => tripDate.value = $event,
-                                class: "field-control"
-                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
-                            ]),
-                            _: 1
-                          })
-                        ])) : (openBlock(), createBlock("div", {
-                          key: 1,
-                          class: "rounded-lg border border-default bg-muted p-3 field-stack"
-                        }, [
-                          createVNode(_component_B24FormField, { label: "Когда подбирали тур" }, {
-                            default: withCtx(() => [
-                              createVNode(_component_B24Input, {
-                                modelValue: season.value,
-                                "onUpdate:modelValue": ($event) => season.value = $event,
-                                class: "field-control"
-                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
-                            ]),
-                            _: 1
-                          }),
-                          createVNode(_component_B24FormField, { label: "Направление подбора" }, {
-                            default: withCtx(() => [
-                              createVNode(_component_B24Input, {
-                                modelValue: destinationLead.value,
-                                "onUpdate:modelValue": ($event) => destinationLead.value = $event,
-                                class: "field-control"
-                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
-                            ]),
-                            _: 1
-                          })
-                        ])),
-                        createVNode(_component_B24FormField, { label: "Контекст предстоящего путешествия" }, {
-                          default: withCtx(() => [
-                            createVNode(_component_B24Input, {
-                              modelValue: travelContext.value,
-                              "onUpdate:modelValue": ($event) => travelContext.value = $event,
-                              class: "field-control"
-                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
-                          ]),
-                          _: 1
-                        }),
-                        createVNode("div", { class: "flex flex-wrap gap-2" }, [
-                          createVNode(_component_B24Button, {
-                            size: "xs",
-                            label: "Летний сезон",
-                            class: travelContext.value === "предстоящий летний сезон" ? "brand-action" : "border border-default bg-default text-label",
-                            onClick: ($event) => setPresetContext("предстоящий летний сезон")
-                          }, null, 8, ["class", "onClick"]),
-                          createVNode(_component_B24Button, {
-                            size: "xs",
-                            label: "Майские",
-                            class: travelContext.value === "майские праздники" ? "brand-action" : "border border-default bg-default text-label",
-                            onClick: ($event) => setPresetContext("майские праздники")
-                          }, null, 8, ["class", "onClick"]),
-                          createVNode(_component_B24Button, {
-                            size: "xs",
-                            label: "Бархатный",
-                            class: travelContext.value === "бархатный сезон осенью" ? "brand-action" : "border border-default bg-default text-label",
-                            onClick: ($event) => setPresetContext("бархатный сезон осенью")
-                          }, null, 8, ["class", "onClick"])
-                        ]),
-                        createVNode("div", { class: "border-t border-default pt-3 field-stack" }, [
-                          createVNode(_component_B24FormField, { label: "Дата следующего контакта" }, {
-                            default: withCtx(() => [
-                              createVNode(_component_B24Popover, { content: { side: "bottom", align: "start", sideOffset: 8 } }, {
-                                content: withCtx(({ close }) => [
-                                  createVNode("div", { class: "calendar-surface" }, [
-                                    createVNode(_component_B24Calendar, {
-                                      modelValue: contactDateValue.value,
-                                      "onUpdate:modelValue": [($event) => contactDateValue.value = $event, close],
-                                      locale: "ru-RU",
-                                      color: "air-primary",
-                                      size: "sm",
-                                      "year-controls": true,
-                                      "week-starts-on": 1,
-                                      b24ui: {
-                                        root: "reactivation-calendar",
-                                        cellTrigger: "reactivation-calendar-day"
-                                      }
-                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
-                                  ])
-                                ]),
-                                default: withCtx(() => [
-                                  createVNode(_component_B24Button, {
-                                    label: contactDateLabel.value,
-                                    block: "",
-                                    "use-dropdown": "",
-                                    class: "date-trigger"
-                                  }, null, 8, ["label"])
-                                ]),
-                                _: 1
-                              })
-                            ]),
-                            _: 1
-                          }),
-                          createVNode(_component_B24FormField, { label: "Заметка для CRM" }, {
-                            default: withCtx(() => [
-                              createVNode(_component_B24Textarea, {
-                                modelValue: crmNotes.value,
-                                "onUpdate:modelValue": ($event) => crmNotes.value = $event,
-                                rows: 4,
-                                class: "field-control",
-                                placeholder: "Итоги созвона, пожелания, бюджет, даты, следующий шаг..."
-                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
-                            ]),
-                            _: 1
-                          }),
-                          createVNode("div", { class: "grid grid-cols-2 gap-2" }, [
-                            createVNode(_component_B24Button, {
-                              label: "Копировать",
-                              class: "border border-default bg-default text-label",
-                              onClick: ($event) => copyText(crmNotes.value)
-                            }, null, 8, ["onClick"]),
-                            createVNode(_component_B24Button, {
-                              label: b24Saving.value ? "Создаем..." : "Создать дело",
-                              loading: b24Saving.value,
-                              class: "brand-action",
-                              onClick: () => void saveActivityToB24()
-                            }, null, 8, ["label", "loading", "onClick"])
-                          ])
+                            label: b24Saving.value ? "Создаем..." : "Создать дело",
+                            loading: b24Saving.value,
+                            class: "brand-action",
+                            onClick: () => void saveActivityToB24()
+                          }, null, 8, ["label", "loading", "onClick"])
                         ])
                       ])
+                    ])
+                  ]),
+                  createVNode("section", { class: "reactivation-script-workspace script-scroll workspace-scroll" }, [
+                    createVNode("div", { class: "work-panel mb-4 p-3" }, [
+                      createVNode("div", { class: "grid gap-2 sm:grid-cols-3" }, [
+                        createVNode(_component_B24Button, {
+                          label: "1 Присоединение",
+                          block: "",
+                          class: ["step-tab", { active: activeStep.value === 1 }],
+                          onClick: ($event) => scrollToStep(1)
+                        }, null, 8, ["class", "onClick"]),
+                        createVNode(_component_B24Button, {
+                          label: "2 Крючок",
+                          block: "",
+                          class: ["step-tab", { active: activeStep.value === 2 }],
+                          onClick: ($event) => scrollToStep(2)
+                        }, null, 8, ["class", "onClick"]),
+                        createVNode(_component_B24Button, {
+                          label: "3 Сделка",
+                          block: "",
+                          class: ["step-tab", { active: activeStep.value === 3 }],
+                          onClick: ($event) => scrollToStep(3)
+                        }, null, 8, ["class", "onClick"])
+                      ])
                     ]),
-                    createVNode("section", { class: "script-scroll workspace-scroll" }, [
-                      createVNode("div", { class: "work-panel mb-4 p-3" }, [
-                        createVNode("div", { class: "grid gap-2 sm:grid-cols-3" }, [
+                    createVNode("div", { class: "grid gap-4" }, [
+                      createVNode("article", {
+                        id: "step-1",
+                        class: ["script-card p-5", { active: activeStep.value === 1, "opacity-70": activeStep.value !== 1 }]
+                      }, [
+                        createVNode("div", { class: "mb-4 flex items-start justify-between gap-3 border-b border-default pb-3" }, [
+                          createVNode("div", null, [
+                            createVNode("p", { class: "text-xs font-bold uppercase text-[var(--brand-red)]" }, "Шаг 1 из 3"),
+                            createVNode("h2", { class: "text-xl font-bold text-label" }, "Присоединение")
+                          ]),
+                          createVNode(_component_B24Badge, {
+                            label: "Начало разговора",
+                            class: "brand-soft"
+                          })
+                        ]),
+                        createVNode("div", { class: "grid gap-3" }, [
+                          createVNode("div", { class: "script-line p-4" }, [
+                            createVNode("p", { class: "text-xs font-bold uppercase text-description" }, "Приветствие"),
+                            createVNode("p", { class: "mt-1 text-lg text-label" }, [
+                              createTextVNode("— "),
+                              createVNode("span", { class: "variable" }, toDisplayString(clientName.value || "[Имя клиента]"), 1),
+                              createTextVNode("?")
+                            ])
+                          ]),
+                          createVNode("div", { class: "script-line p-4" }, [
+                            createVNode("p", { class: "text-xs font-bold uppercase text-description" }, "Представление"),
+                            createVNode("p", { class: "mt-1 text-lg text-label" }, [
+                              createTextVNode("— Меня зовут "),
+                              createVNode("span", { class: "variable" }, toDisplayString(agentName.value), 1),
+                              createTextVNode(", компания "),
+                              createVNode("strong", null, "Русский Экспресс"),
+                              createTextVNode(".")
+                            ])
+                          ]),
+                          createVNode("div", { class: "rounded-lg border border-red-100 bg-red-50/40 p-4" }, [
+                            createVNode("p", { class: "text-xs font-bold uppercase text-[var(--brand-red-hover)]" }, "Установление контакта"),
+                            createVNode("p", { class: "mt-2 text-xl font-medium leading-relaxed text-label" }, [
+                              createTextVNode(" «Мы помогали вам организовать поездку в "),
+                              createVNode("span", { class: "variable" }, toDisplayString(destination.value), 1),
+                              createTextVNode(),
+                              createVNode("span", { class: "variable" }, toDisplayString(tripDate.value), 1),
+                              createTextVNode(", помните?» ")
+                            ])
+                          ]),
+                          createVNode("div", { class: "script-line p-4" }, [
+                            createVNode("p", { class: "text-xs font-bold uppercase text-description" }, "Проверка готовности"),
+                            createVNode("p", { class: "mt-1 text-lg font-semibold text-label" }, "— Вам удобно сейчас говорить?")
+                          ])
+                        ]),
+                        createVNode("div", { class: "mt-4 flex justify-between border-t border-default pt-4" }, [
                           createVNode(_component_B24Button, {
-                            label: "1 Присоединение",
-                            block: "",
-                            class: ["step-tab", { active: activeStep.value === 1 }],
-                            onClick: ($event) => scrollToStep(1)
-                          }, null, 8, ["class", "onClick"]),
+                            label: "Копировать шаг",
+                            class: "border border-default bg-default text-label",
+                            onClick: ($event) => copyText(step1Text.value)
+                          }, null, 8, ["onClick"]),
                           createVNode(_component_B24Button, {
-                            label: "2 Крючок",
-                            block: "",
-                            class: ["step-tab", { active: activeStep.value === 2 }],
+                            label: "Далее",
+                            class: "brand-action",
                             onClick: ($event) => scrollToStep(2)
+                          }, null, 8, ["onClick"])
+                        ])
+                      ], 2),
+                      createVNode("article", {
+                        id: "step-2",
+                        class: ["script-card p-5", { active: activeStep.value === 2, "opacity-70": activeStep.value !== 2 }]
+                      }, [
+                        createVNode("div", { class: "mb-4 border-b border-default pb-3" }, [
+                          createVNode("p", { class: "text-xs font-bold uppercase text-[var(--brand-red)]" }, "Шаг 2 из 3"),
+                          createVNode("h2", { class: "text-xl font-bold text-label" }, "Вбиваем крючок")
+                        ]),
+                        createVNode("div", { class: "rounded-lg border border-red-100 bg-red-50/30 p-4" }, [
+                          createVNode("p", { class: "text-xl font-semibold leading-relaxed text-label" }, [
+                            createTextVNode(" «Звоню сказать, что у нас сейчас активно идет раннее бронирование на "),
+                            createVNode("span", { class: "variable" }, toDisplayString(travelContext.value), 1),
+                            createTextVNode(". Пока еще есть интересные варианты. Есть ли у вас планы на "),
+                            createVNode("span", { class: "variable" }, toDisplayString(travelContext.value), 1),
+                            createTextVNode("?» ")
+                          ])
+                        ]),
+                        createVNode("div", { class: "mt-4 flex justify-between border-t border-default pt-4" }, [
+                          createVNode(_component_B24Button, {
+                            label: "Копировать шаг",
+                            class: "border border-default bg-default text-label",
+                            onClick: ($event) => copyText(step2Text.value)
+                          }, null, 8, ["onClick"]),
+                          createVNode(_component_B24Button, {
+                            label: "Далее",
+                            class: "brand-action",
+                            onClick: ($event) => scrollToStep(3)
+                          }, null, 8, ["onClick"])
+                        ])
+                      ], 2),
+                      createVNode("article", {
+                        id: "step-3",
+                        class: ["script-card p-5", { active: activeStep.value === 3, "opacity-70": activeStep.value !== 3 }]
+                      }, [
+                        createVNode("div", { class: "mb-4 border-b border-default pb-3" }, [
+                          createVNode("p", { class: "text-xs font-bold uppercase text-[var(--brand-red)]" }, "Шаг 3 из 3"),
+                          createVNode("h2", { class: "text-xl font-bold text-label" }, "Подводим к сделке")
+                        ]),
+                        createVNode("div", { class: "grid gap-3 sm:grid-cols-2" }, [
+                          createVNode(_component_B24Button, {
+                            label: "Есть интерес",
+                            class: interest.value === true ? "brand-action" : "border border-default bg-default text-label",
+                            onClick: ($event) => interest.value = true
                           }, null, 8, ["class", "onClick"]),
                           createVNode(_component_B24Button, {
-                            label: "3 Сделка",
-                            block: "",
-                            class: ["step-tab", { active: activeStep.value === 3 }],
-                            onClick: ($event) => scrollToStep(3)
+                            label: "Нет интереса",
+                            class: interest.value === false ? "brand-action" : "border border-default bg-default text-label",
+                            onClick: ($event) => interest.value = false
                           }, null, 8, ["class", "onClick"])
-                        ])
-                      ]),
-                      createVNode("div", { class: "grid gap-4" }, [
-                        createVNode("article", {
-                          id: "step-1",
-                          class: ["script-card p-5", { active: activeStep.value === 1, "opacity-70": activeStep.value !== 1 }]
+                        ]),
+                        interest.value === true ? (openBlock(), createBlock("div", {
+                          key: 0,
+                          class: "mt-4 grid gap-3"
                         }, [
-                          createVNode("div", { class: "mb-4 flex items-start justify-between gap-3 border-b border-default pb-3" }, [
-                            createVNode("div", null, [
-                              createVNode("p", { class: "text-xs font-bold uppercase text-[var(--brand-red)]" }, "Шаг 1 из 3"),
-                              createVNode("h2", { class: "text-xl font-bold text-label" }, "Присоединение")
-                            ]),
-                            createVNode(_component_B24Badge, {
-                              label: "Начало разговора",
-                              class: "brand-soft"
-                            })
-                          ]),
-                          createVNode("div", { class: "grid gap-3" }, [
-                            createVNode("div", { class: "script-line p-4" }, [
-                              createVNode("p", { class: "text-xs font-bold uppercase text-description" }, "Приветствие"),
-                              createVNode("p", { class: "mt-1 text-lg text-label" }, [
-                                createTextVNode("— "),
-                                createVNode("span", { class: "variable" }, toDisplayString(clientName.value || "[Имя клиента]"), 1),
-                                createTextVNode("?")
-                              ])
-                            ]),
-                            createVNode("div", { class: "script-line p-4" }, [
-                              createVNode("p", { class: "text-xs font-bold uppercase text-description" }, "Представление"),
-                              createVNode("p", { class: "mt-1 text-lg text-label" }, [
-                                createTextVNode("— Меня зовут "),
-                                createVNode("span", { class: "variable" }, toDisplayString(agentName.value), 1),
-                                createTextVNode(", компания "),
-                                createVNode("strong", null, "Русский Экспресс"),
-                                createTextVNode(".")
-                              ])
-                            ]),
-                            createVNode("div", { class: "rounded-lg border border-red-100 bg-red-50/40 p-4" }, [
-                              createVNode("p", { class: "text-xs font-bold uppercase text-[var(--brand-red-hover)]" }, "Установление контакта"),
-                              createVNode("p", { class: "mt-2 text-xl font-medium leading-relaxed text-label" }, [
-                                createTextVNode(" «Мы помогали вам организовать поездку в "),
-                                createVNode("span", { class: "variable" }, toDisplayString(destination.value), 1),
-                                createTextVNode(),
-                                createVNode("span", { class: "variable" }, toDisplayString(tripDate.value), 1),
-                                createTextVNode(", помните?» ")
-                              ])
-                            ]),
-                            createVNode("div", { class: "script-line p-4" }, [
-                              createVNode("p", { class: "text-xs font-bold uppercase text-description" }, "Проверка готовности"),
-                              createVNode("p", { class: "mt-1 text-lg font-semibold text-label" }, "— Вам удобно сейчас говорить?")
-                            ])
-                          ]),
-                          createVNode("div", { class: "mt-4 flex justify-between border-t border-default pt-4" }, [
-                            createVNode(_component_B24Button, {
-                              label: "Копировать шаг",
-                              class: "border border-default bg-default text-label",
-                              onClick: ($event) => copyText(step1Text.value)
-                            }, null, 8, ["onClick"]),
-                            createVNode(_component_B24Button, {
-                              label: "Далее",
-                              class: "brand-action",
-                              onClick: ($event) => scrollToStep(2)
-                            }, null, 8, ["onClick"])
-                          ])
-                        ], 2),
-                        createVNode("article", {
-                          id: "step-2",
-                          class: ["script-card p-5", { active: activeStep.value === 2, "opacity-70": activeStep.value !== 2 }]
-                        }, [
-                          createVNode("div", { class: "mb-4 border-b border-default pb-3" }, [
-                            createVNode("p", { class: "text-xs font-bold uppercase text-[var(--brand-red)]" }, "Шаг 2 из 3"),
-                            createVNode("h2", { class: "text-xl font-bold text-label" }, "Вбиваем крючок")
-                          ]),
-                          createVNode("div", { class: "rounded-lg border border-red-100 bg-red-50/30 p-4" }, [
-                            createVNode("p", { class: "text-xl font-semibold leading-relaxed text-label" }, [
-                              createTextVNode(" «Звоню сказать, что у нас сейчас активно идет раннее бронирование на "),
-                              createVNode("span", { class: "variable" }, toDisplayString(travelContext.value), 1),
-                              createTextVNode(". Пока еще есть интересные варианты. Есть ли у вас планы на "),
-                              createVNode("span", { class: "variable" }, toDisplayString(travelContext.value), 1),
-                              createTextVNode("?» ")
-                            ])
-                          ]),
-                          createVNode("div", { class: "mt-4 flex justify-between border-t border-default pt-4" }, [
-                            createVNode(_component_B24Button, {
-                              label: "Копировать шаг",
-                              class: "border border-default bg-default text-label",
-                              onClick: ($event) => copyText(step2Text.value)
-                            }, null, 8, ["onClick"]),
-                            createVNode(_component_B24Button, {
-                              label: "Далее",
-                              class: "brand-action",
-                              onClick: ($event) => scrollToStep(3)
-                            }, null, 8, ["onClick"])
-                          ])
-                        ], 2),
-                        createVNode("article", {
-                          id: "step-3",
-                          class: ["script-card p-5", { active: activeStep.value === 3, "opacity-70": activeStep.value !== 3 }]
-                        }, [
-                          createVNode("div", { class: "mb-4 border-b border-default pb-3" }, [
-                            createVNode("p", { class: "text-xs font-bold uppercase text-[var(--brand-red)]" }, "Шаг 3 из 3"),
-                            createVNode("h2", { class: "text-xl font-bold text-label" }, "Подводим к сделке")
-                          ]),
-                          createVNode("div", { class: "grid gap-3 sm:grid-cols-2" }, [
-                            createVNode(_component_B24Button, {
-                              label: "Есть интерес",
-                              class: interest.value === true ? "brand-action" : "border border-default bg-default text-label",
-                              onClick: ($event) => interest.value = true
-                            }, null, 8, ["class", "onClick"]),
-                            createVNode(_component_B24Button, {
-                              label: "Нет интереса",
-                              class: interest.value === false ? "brand-action" : "border border-default bg-default text-label",
-                              onClick: ($event) => interest.value = false
-                            }, null, 8, ["class", "onClick"])
-                          ]),
-                          createVNode("div", { class: "mt-4 rounded-lg border border-default bg-muted p-4" }, [
-                            interest.value === true ? (openBlock(), createBlock("p", {
-                              key: 0,
-                              class: "text-xl font-semibold leading-relaxed text-label"
-                            }, [
+                          createVNode("div", { class: "rounded-lg border border-default bg-muted p-4" }, [
+                            createVNode("p", { class: "text-xs font-bold uppercase text-description" }, "Стандартный сценарий"),
+                            createVNode("p", { class: "mt-2 text-xl font-semibold leading-relaxed text-label" }, [
                               createTextVNode(" «Давайте задам пару уточняющих вопросов и после этого обсудим конкретные отели. "),
                               createVNode("span", { class: "variable" }, toDisplayString(clientName.value), 1),
                               createTextVNode(", с кем поедете?» ")
-                            ])) : interest.value === false ? (openBlock(), createBlock("p", {
-                              key: 1,
-                              class: "text-xl font-semibold leading-relaxed text-label"
-                            }, [
-                              createTextVNode(" «Хорошо, "),
-                              createVNode("span", { class: "variable" }, toDisplayString(clientName.value), 1),
-                              createTextVNode(". Когда вопрос с поездкой может стать для вас актуален?» ")
-                            ])) : (openBlock(), createBlock("p", {
-                              key: 2,
-                              class: "text-center text-description"
-                            }, "Выберите реакцию клиента, чтобы показать нужный речевой модуль."))
-                          ]),
-                          createVNode("div", { class: "mt-4 flex justify-between border-t border-default pt-4" }, [
+                            ]),
                             createVNode(_component_B24Button, {
-                              label: "Копировать модуль",
-                              class: "border border-default bg-default text-label",
-                              disabled: interest.value === null,
+                              size: "xs",
+                              label: "Копировать сценарий",
+                              class: "mt-3 border border-default bg-default text-label",
                               onClick: ($event) => copyText(step3Text.value)
-                            }, null, 8, ["disabled", "onClick"]),
-                            createVNode(_component_B24Button, {
-                              label: finishActionLabel.value,
-                              loading: b24Saving.value,
-                              class: "brand-action",
-                              onClick: finishCall
-                            }, null, 8, ["label", "loading"])
-                          ])
-                        ], 2),
-                        isCallFinished.value ? (openBlock(), createBlock("article", {
-                          key: 0,
-                          id: "summary-panel",
-                          class: "rounded-lg border border-red-200 bg-[var(--brand-red)] p-5 text-white"
-                        }, [
-                          createVNode("h2", { class: "text-xl font-bold" }, toDisplayString(completionTitle.value), 1),
-                          createVNode("div", { class: "mt-4 grid gap-2 rounded-lg bg-white/12 p-4 text-sm" }, [
-                            createVNode("p", null, [
-                              createVNode("strong", null, "Менеджер:"),
-                              createTextVNode(" " + toDisplayString(agentName.value), 1)
-                            ]),
-                            createVNode("p", null, [
-                              createVNode("strong", null, "Клиент:"),
-                              createTextVNode(" " + toDisplayString(clientName.value), 1)
-                            ]),
-                            createVNode("p", null, [
-                              createVNode("strong", null, "Дата выполнения:"),
-                              createTextVNode(" " + toDisplayString(nextContactDate.value), 1)
-                            ]),
-                            createdActivityId.value ? (openBlock(), createBlock("p", { key: 0 }, [
-                              createVNode("strong", null, "Дело в CRM:"),
-                              createTextVNode(" #" + toDisplayString(createdActivityId.value), 1)
-                            ])) : createCommentVNode("", true),
-                            createVNode("p", null, [
-                              createVNode("strong", null, "Заметка:"),
-                              createTextVNode(" " + toDisplayString(crmNotes.value), 1)
-                            ])
+                            }, null, 8, ["onClick"])
                           ]),
-                          createVNode("div", { class: "mt-4 flex gap-2" }, [
+                          isNewEmployee.value ? (openBlock(), createBlock("div", {
+                            key: 0,
+                            class: "rounded-lg border border-red-100 bg-red-50/30 p-4"
+                          }, [
+                            createVNode("p", { class: "text-xs font-bold uppercase text-[var(--brand-red)]" }, "Сценарий для нового сотрудника"),
+                            createVNode("p", { class: "mt-2 text-xl font-semibold leading-relaxed text-label" }, [
+                              createTextVNode(" «Давайте я передам информацию вашему менеджеру "),
+                              createVNode("span", { class: "variable" }, toDisplayString(agentName.value), 1),
+                              createTextVNode(", она свяжется с вами, задаст пару уточняющих вопросов и сделает подборку, от которой вы будете в восторге. ^_^ Когда вам удобно, чтобы она вас набрала?» ")
+                            ]),
                             createVNode(_component_B24Button, {
-                              label: "Копировать отчет",
-                              class: "bg-white text-[var(--brand-red-hover)]",
-                              onClick: ($event) => copyText(crmNotesReport.value)
-                            }, null, 8, ["onClick"]),
-                            createVNode(_component_B24Button, {
-                              label: resetActionLabel.value,
-                              class: "border border-white/50 bg-transparent text-white",
-                              onClick: resetCall
-                            }, null, 8, ["label"])
+                              size: "xs",
+                              label: "Копировать сценарий",
+                              class: "mt-3 border border-default bg-default text-label",
+                              onClick: ($event) => copyText(newEmployeeStep3Text.value)
+                            }, null, 8, ["onClick"])
+                          ])) : createCommentVNode("", true)
+                        ])) : (openBlock(), createBlock("div", {
+                          key: 1,
+                          class: "mt-4 rounded-lg border border-default bg-muted p-4"
+                        }, [
+                          interest.value === false ? (openBlock(), createBlock("p", {
+                            key: 0,
+                            class: "text-xl font-semibold leading-relaxed text-label"
+                          }, [
+                            createTextVNode(" «Хорошо, "),
+                            createVNode("span", { class: "variable" }, toDisplayString(clientName.value), 1),
+                            createTextVNode(". Когда вопрос с поездкой может стать для вас актуален?» ")
+                          ])) : (openBlock(), createBlock("p", {
+                            key: 1,
+                            class: "text-center text-description"
+                          }, "Выберите реакцию клиента, чтобы показать нужный речевой модуль."))
+                        ])),
+                        createVNode("div", { class: "mt-4 flex justify-between border-t border-default pt-4" }, [
+                          createVNode(_component_B24Button, {
+                            label: "Копировать модуль",
+                            class: "border border-default bg-default text-label",
+                            disabled: interest.value === null,
+                            onClick: ($event) => copyText(step3Text.value)
+                          }, null, 8, ["disabled", "onClick"]),
+                          createVNode(_component_B24Button, {
+                            label: finishActionLabel.value,
+                            loading: b24Saving.value,
+                            class: "brand-action",
+                            onClick: finishCall
+                          }, null, 8, ["label", "loading"])
+                        ])
+                      ], 2),
+                      isCallFinished.value ? (openBlock(), createBlock("article", {
+                        key: 0,
+                        id: "summary-panel",
+                        class: "rounded-lg border border-red-200 bg-[var(--brand-red)] p-5 text-white"
+                      }, [
+                        createVNode("h2", { class: "text-xl font-bold" }, toDisplayString(completionTitle.value), 1),
+                        createVNode("div", { class: "mt-4 grid gap-2 rounded-lg bg-white/12 p-4 text-sm" }, [
+                          createVNode("p", null, [
+                            createVNode("strong", null, "Менеджер:"),
+                            createTextVNode(" " + toDisplayString(agentName.value), 1)
+                          ]),
+                          createVNode("p", null, [
+                            createVNode("strong", null, "Клиент:"),
+                            createTextVNode(" " + toDisplayString(clientName.value), 1)
+                          ]),
+                          createVNode("p", null, [
+                            createVNode("strong", null, "Дата выполнения:"),
+                            createTextVNode(" " + toDisplayString(nextContactDate.value), 1)
+                          ]),
+                          createdActivityId.value ? (openBlock(), createBlock("p", { key: 0 }, [
+                            createVNode("strong", null, "Дело в CRM:"),
+                            createTextVNode(" #" + toDisplayString(createdActivityId.value), 1)
+                          ])) : createCommentVNode("", true),
+                          createVNode("p", null, [
+                            createVNode("strong", null, "Заметка:"),
+                            createTextVNode(" " + toDisplayString(crmNotes.value), 1)
                           ])
-                        ])) : createCommentVNode("", true)
-                      ])
+                        ]),
+                        createVNode("div", { class: "mt-4 flex gap-2" }, [
+                          createVNode(_component_B24Button, {
+                            label: "Копировать отчет",
+                            class: "bg-white text-[var(--brand-red-hover)]",
+                            onClick: ($event) => copyText(crmNotesReport.value)
+                          }, null, 8, ["onClick"]),
+                          createVNode(_component_B24Button, {
+                            label: resetActionLabel.value,
+                            class: "border border-white/50 bg-transparent text-white",
+                            onClick: resetCall
+                          }, null, 8, ["label"])
+                        ])
+                      ])) : createCommentVNode("", true)
                     ])
-                  ])) : activeShellSection.value === "manager-assistant" ? (openBlock(), createBlock(_component_AiNextStepPanel, {
-                    key: 4,
-                    "deal-id": b24DealId.value,
-                    "agent-name": agentName.value,
-                    "client-name": clientName.value,
-                    "access-token": accessToken.value,
-                    "loading-context": dealContextOverlayVisible.value
-                  }, null, 8, ["deal-id", "agent-name", "client-name", "access-token", "loading-context"])) : (openBlock(), createBlock(_component_AdminReportsPanel, {
-                    key: 5,
-                    mode: adminReportMode.value,
-                    "access-token": accessToken.value
-                  }, null, 8, ["mode", "access-token"]))
-                ])
-              ])
+                  ])
+                ])) : workspaceMode.value === "ai-next-step" ? (openBlock(), createBlock(_component_AiNextStepPanel, {
+                  key: 3,
+                  "deal-id": b24DealId.value,
+                  "agent-name": agentName.value,
+                  "client-name": clientName.value,
+                  "loading-context": dealContextOverlayVisible.value,
+                  "create-todo": createAiNextStepTodo
+                }, null, 8, ["deal-id", "agent-name", "client-name", "loading-context"])) : (openBlock(), createBlock(_component_ObjectionNavigator, {
+                  key: 4,
+                  "deal-id": b24DealId.value,
+                  "agent-name": agentName.value,
+                  "client-name": clientName.value,
+                  "loading-context": dealContextOverlayVisible.value
+                }, null, 8, ["deal-id", "agent-name", "client-name", "loading-context"]))
+              ], 512)
             ];
           }
         }),
@@ -17756,8 +18669,8 @@ const _sfc_main$1 = {
     const statusText = _error.statusMessage ?? (is404 ? "Page Not Found" : "Internal Server Error");
     const description = _error.message || _error.toString();
     const stack = void 0;
-    const _Error404 = defineAsyncComponent(() => import('./error-404-CbAJpx8O.mjs'));
-    const _Error = defineAsyncComponent(() => import('./error-500-DB746uDh.mjs'));
+    const _Error404 = defineAsyncComponent(() => import('./error-404-DoSXOe6Q.mjs'));
+    const _Error = defineAsyncComponent(() => import('./error-500-Dy7IIm6N.mjs'));
     const ErrorTemplate = is404 ? _Error404 : _Error;
     return (_ctx, _push, _parent, _attrs) => {
       _push(ssrRenderComponent(unref(ErrorTemplate), mergeProps({ status: unref(status), statusText: unref(statusText), statusCode: unref(status), statusMessage: unref(statusText), description: unref(description), stack: unref(stack) }, _attrs), null, _parent));
@@ -17849,5 +18762,5 @@ let entry;
 }
 const entry_default = ((ssrContext) => entry(ssrContext));
 
-export { ImageComponent as I, Presence_default as P, Teleport_default as T, __nuxt_component_0$1 as _, Primitive as a, _sfc_main$i as b, _sfc_main$b as c, _sfc_main$h as d, entry_default as default, _sfc_main$k as e, createContext as f, extractPromptText as g, get as h, getActiveElement as i, icons as j, isNullish as k, resolveIcon as l, tv as m, useCollection as n, useComponentProps as o, useDirection as p, useForwardExpose as q, resolveBaseURL as r, useForwardProps as s, transformUI as t, useAppConfig as u, useHead as v, useId as w, useLocale as x, useRuntimeConfig as y };
+export { useRuntimeConfig as A, CollapsibleContent_default as C, ImageComponent as I, Presence_default as P, Teleport_default as T, __nuxt_component_0$1 as _, CollapsibleRoot_default as a, CollapsibleTrigger_default as b, Primitive as c, _sfc_main$j as d, entry_default as default, _sfc_main$4 as e, _sfc_main$c as f, _sfc_main$i as g, _sfc_main$l as h, createContext as i, extractPromptText as j, get as k, getActiveElement as l, icons as m, resolveIcon as n, tv as o, useCollection as p, useComponentProps as q, resolveBaseURL as r, useDirection as s, transformUI as t, useAppConfig as u, useForwardExpose as v, useForwardProps as w, useHead as x, useId as y, useLocale as z };
 //# sourceMappingURL=server.mjs.map
