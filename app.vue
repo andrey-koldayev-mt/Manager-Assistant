@@ -527,19 +527,32 @@ async function initB24Integration() {
 
     try {
       const BX24 = await loadBitrixSdk();
-      BX24.init(async () => {
-        bx24Instance.value = BX24;
-        bx24Ready.value = true;
+      await new Promise<void>((resolve, reject) => {
+        const timeout = window.setTimeout(() => {
+          reject(new Error('Bitrix24 SDK did not initialize in the placement context.'));
+        }, 15000);
 
-        const placementInfo = BX24.placement?.info ? BX24.placement.info() : null;
-        const sdkDealId = extractDealIdFromPlacementOptions(placementInfo?.options || placementInfo?.OPTIONS || placementInfo);
-        if (sdkDealId && sdkDealId !== b24DealId.value) {
-          b24DealId.value = sdkDealId;
-          await loadDealContextFromServer();
-        }
+        BX24.init(async () => {
+          try {
+            bx24Instance.value = BX24;
+            bx24Ready.value = true;
 
-        reportClientContext('bx24-init-callback', { placementInfo });
-        requestBitrixFrameFit();
+            const placementInfo = BX24.placement?.info ? BX24.placement.info() : null;
+            const sdkDealId = extractDealIdFromPlacementOptions(placementInfo?.options || placementInfo?.OPTIONS || placementInfo);
+            if (sdkDealId && sdkDealId !== b24DealId.value) {
+              b24DealId.value = sdkDealId;
+              await loadDealContextFromServer();
+            }
+
+            reportClientContext('bx24-init-callback', { placementInfo });
+            requestBitrixFrameFit();
+            resolve();
+          } catch (error) {
+            reject(error);
+          } finally {
+            window.clearTimeout(timeout);
+          }
+        });
       });
     } catch (error) {
       reportClientContext('bx24-init-error', {
@@ -565,6 +578,9 @@ async function createAiNextStepTodo(recommendation: {
 }): Promise<number | string> {
   if (!b24DealId.value) {
     throw new Error('Сделка не определена. Откройте вкладку из карточки сделки заново.');
+  }
+  if (!bx24Ready.value) {
+    throw new Error('Bitrix24 SDK ещё подключается к карточке сделки. Подождите несколько секунд.');
   }
 
   const BX24 = bx24Instance.value || (import.meta.client ? (window as any).BX24 : null);
@@ -1117,6 +1133,7 @@ onUnmounted(() => {
         :agent-name="agentName"
         :client-name="clientName"
         :loading-context="dealContextOverlayVisible"
+        :sdk-ready="bx24Ready"
         :create-todo="createAiNextStepTodo"
       />
 

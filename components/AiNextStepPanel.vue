@@ -50,6 +50,7 @@ const props = defineProps<{
   agentName: string;
   clientName: string;
   loadingContext?: boolean;
+  sdkReady?: boolean;
   createTodo: (recommendation: TodoRecommendation) => Promise<number | string>;
 }>();
 
@@ -64,7 +65,7 @@ const chatMessages = ref<ChatMessage[]>([]);
 const chatScroll = ref<HTMLElement | null>(null);
 
 const canAnalyze = computed(() => Boolean(props.dealId) && !pending.value && !creating.value && !props.loadingContext);
-const canCreate = computed(() => Boolean(result.value?.recommendation) && !creating.value && !pending.value);
+const canCreate = computed(() => Boolean(result.value?.recommendation) && Boolean(props.sdkReady) && !creating.value && !pending.value);
 const canAskAi = computed(() => Boolean(props.dealId && result.value?.recommendation && question.value.trim() && !asking.value));
 const activityLabel = 'дело';
 
@@ -333,6 +334,7 @@ async function copyRecommendation() {
             <B24Button :loading="creating" :disabled="!canCreate" :label="`Создать ${activityLabel}`" class="brand-action" @click="createActivity" />
             <B24Button :disabled="!result" label="Копировать текст" class="mode-switch-button border border-default" @click="copyRecommendation" />
           </div>
+          <p v-if="!sdkReady" class="text-xs text-description">Подключаемся к Bitrix24, создание дела станет доступно автоматически.</p>
           <B24Alert
             v-if="result.context?.transcriptStats"
             color="air-primary"
