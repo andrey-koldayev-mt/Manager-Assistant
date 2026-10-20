@@ -1,6 +1,6 @@
 import {
   CRM_ACTIVITY_RECOMMENDATION_TOOL,
-  buildActivityPayload,
+  buildLinkedTaskPayload,
   buildDealContext,
   buildPromptMessages,
   buildTimelineLogPayload,
@@ -70,13 +70,11 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    let activityPayload: Record<string, unknown> | null = null;
+    let taskPayload: Record<string, unknown> | null = null;
     try {
-      activityPayload = buildActivityPayload({
+      taskPayload = buildLinkedTaskPayload({
         dealId,
-        contactId: context.deal.contactId,
-        recommendation: validated,
-        communications: context.deal.communications
+        recommendation: validated
       });
     } catch (error: any) {
       throw createError({
@@ -84,8 +82,8 @@ export default defineEventHandler(async (event) => {
         statusMessage: error?.message || 'Не удалось подготовить действие в CRM.'
       });
     }
-    const created = await createCrmActivity({ activityPayload: activityPayload!, headers });
-    const createdId = created?.id ?? created?.ID ?? created?.activity?.id ?? created?.activityId ?? null;
+    const created = await createCrmTask({ taskPayload: taskPayload!, headers });
+    const createdId = created?.id ?? created?.ID ?? created?.task?.id ?? created?.taskId ?? null;
     const logPayload = buildTimelineLogPayload({ dealId, recommendation: validated, activityId: createdId });
     const timelineLog = await safeCreateTimelineLog({ payload: logPayload, headers });
 
@@ -95,10 +93,10 @@ export default defineEventHandler(async (event) => {
         mode: 'live',
         context: { ...context, transcriptStats },
         recommendation: validated,
-        activityPayload,
+        activityPayload: taskPayload,
         timelineLogPayload: logPayload,
         createdActivityId: createdId,
-        createdEntityType: 'activity',
+        createdEntityType: 'task',
         pinnedTimelineLogId: timelineLog?.id ?? timelineLog?.ID ?? null
       }
     };
@@ -145,11 +143,11 @@ async function getAiRecommendation({ context, headers }: { context: unknown; hea
   throw new Error('AI response does not contain a CRM activity recommendation');
 }
 
-async function createCrmActivity({ activityPayload, headers }: { activityPayload: Record<string, unknown>; headers: Record<string, string> }) {
-  return requestVibe('/activities', {
+async function createCrmTask({ taskPayload, headers }: { taskPayload: Record<string, unknown>; headers: Record<string, string> }) {
+  return requestVibe('/tasks', {
     method: 'POST',
     headers,
-    body: activityPayload
+    body: taskPayload
   });
 }
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  buildActivityPayload,
+  buildLinkedTaskPayload,
   buildDealContext,
   type AiRecommendation
 } from './deal-analysis';
@@ -16,46 +16,30 @@ const recommendation = (activityType: AiRecommendation['activityType']): AiRecom
   sourceSignals: ['wazzup:2026-07-26']
 });
 
-describe('buildActivityPayload', () => {
-  it('creates a generic CRM action rather than a task activity', () => {
-    const payload = buildActivityPayload({
+describe('buildLinkedTaskPayload', () => {
+  it('creates a task linked to the deal timeline', () => {
+    const payload = buildLinkedTaskPayload({
       dealId: 123,
-      contactId: 456,
-      recommendation: recommendation('Todo'),
-      communications: [
-        { type: 'EMAIL', value: 'client@example.com' },
-        { type: 'PHONE', value: '+79990000000' }
-      ]
+      recommendation: recommendation('Todo')
     });
 
     expect(payload).toMatchObject({
-      ownerTypeId: 2,
-      ownerId: 123,
-      subject: 'Связаться с клиентом',
-      typeId: 5,
-      completed: false
+      title: 'Связаться с клиентом',
+      responsibleId: 42,
+      priority: 1,
+      UF_CRM_TASK: ['D_123']
     });
-    expect(payload.communications).toEqual([{
-      VALUE: '+79990000000',
-      ENTITY_TYPE_ID: 3,
-      ENTITY_ID: 456
-    }]);
-    expect(payload.startTime).toBe('2026-07-27T08:30:00.000Z');
-    expect(payload.endTime).toBe('2026-07-27T09:00:00.000Z');
-    expect(payload.deadline).toBe('2026-07-27T09:00:00.000Z');
+    expect(payload.deadline).toBe('2026-07-27T12:00:00+03:00');
   });
 
-  it('normalizes a stale recommendation to a generic CRM action', () => {
+  it('normalizes a stale recommendation to a linked task', () => {
     const staleRecommendation = { ...recommendation('Todo'), activityType: 'Call' };
-    const payload = buildActivityPayload({
+    const payload = buildLinkedTaskPayload({
       dealId: 123,
-      contactId: null,
-      recommendation: staleRecommendation as AiRecommendation,
-      communications: []
+      recommendation: staleRecommendation as AiRecommendation
     });
 
-    expect(payload.typeId).toBe(5);
-    expect(payload.communications).toEqual([]);
+    expect(payload.UF_CRM_TASK).toEqual(['D_123']);
   });
 });
 

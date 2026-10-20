@@ -147,11 +147,9 @@ export function ensureFutureRecommendationDeadline(value: any, now = new Date())
   };
 }
 
-export function buildActivityPayload({ dealId, contactId, recommendation, communications }: {
+export function buildLinkedTaskPayload({ dealId, recommendation }: {
   dealId: number | string;
-  contactId: number | string | null;
   recommendation: AiRecommendation;
-  communications: ContactCommunication[];
 }) {
   const numericDealId = Number(dealId);
   if (!Number.isFinite(numericDealId) || numericDealId <= 0) {
@@ -159,34 +157,15 @@ export function buildActivityPayload({ dealId, contactId, recommendation, commun
   }
 
   const validated = validateAiRecommendation(recommendation, new Date(0));
-  const endTime = new Date(validated.deadline);
-  const startTime = new Date(endTime.getTime() - 30 * 60 * 1000);
-  const numericContactId = Number(contactId);
-  const communication = communications.find((item) => item.type === 'PHONE') ?? communications[0];
-  const activityCommunications = communication && Number.isFinite(numericContactId) && numericContactId > 0
-    ? [{
-      VALUE: communication.value,
-      ENTITY_TYPE_ID: 3,
-      ENTITY_ID: numericContactId
-    }]
-    : [];
-
   return {
-    ownerTypeId: DEAL_ENTITY_TYPE_ID,
-    ownerId: numericDealId,
-    subject: validated.title,
-    // typeId 3 is a Bitrix24 Task and cannot be created through the CRM
-    // activities endpoint. Type 5 is a generic CRM action, so it appears as
-    // a linked activity in the deal timeline with the AI text as its body.
-    typeId: activityTypeId(),
-    startTime: startTime.toISOString(),
-    endTime: endTime.toISOString(),
-    deadline: endTime.toISOString(),
+    title: validated.title,
     description: validated.description,
     responsibleId: validated.responsibleId,
-    completed: false,
-    // VibeCode requires the field even for a generic CRM activity.
-    communications: activityCommunications
+    deadline: validated.deadline,
+    priority: 1,
+    // VibeCode Tasks API is the supported way to create a task-type action
+    // and links it to the deal timeline.
+    UF_CRM_TASK: [`D_${numericDealId}`]
   };
 }
 
@@ -305,10 +284,6 @@ function extractCommunicationValues(value: unknown, type: ContactCommunication['
       : item)
     .filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
     .map((item) => ({ type, value: item.trim() }));
-}
-
-function activityTypeId(): number {
-  return 5;
 }
 
 function isWazzupComment(item: Record<string, any>) {

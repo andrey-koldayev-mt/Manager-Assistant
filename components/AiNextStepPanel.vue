@@ -33,7 +33,7 @@ type AnalyzeResult = {
     };
   };
   createdActivityId?: number | string | null;
-  createdEntityType?: 'activity';
+  createdEntityType?: 'activity' | 'task';
   pinnedTimelineLogId?: number | string | null;
 };
 
