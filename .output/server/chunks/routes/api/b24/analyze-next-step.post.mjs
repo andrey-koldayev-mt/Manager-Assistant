@@ -1,5 +1,5 @@
 import { a as defineEventHandler, y as readBody, c as createError } from '../../../_/nitro.mjs';
-import { l as loadDealBundle, b as buildDealContext, e as ensureFutureRecommendationDeadline, v as validateAiRecommendation, d as buildTimelineLogPayload, a as buildLinkedTaskPayload, f as requestVibeRaw, C as CRM_ACTIVITY_RECOMMENDATION_TOOL, c as buildPromptMessages, r as requestVibe } from '../../../_/deal-bundle.mjs';
+import { l as loadDealBundle, b as buildDealContext, e as ensureFutureRecommendationDeadline, v as validateAiRecommendation, a as buildLinkedTaskPayload, d as requestVibeRaw, C as CRM_ACTIVITY_RECOMMENDATION_TOOL, c as buildPromptMessages, r as requestVibe } from '../../../_/deal-bundle.mjs';
 import { e as enrichCallTranscripts } from '../../../_/call-transcripts.mjs';
 import { d as getVibeAuthorizationHeader, e as ensureVibeApiKey, B as B24_API_KEY } from '../../../_/b24.mjs';
 import 'node:http';
@@ -31,7 +31,7 @@ const NEXT_STEP_SYSTEM_PROMPT = `\u0422\u044B AI CRM Sales Assistant \u0434\u043
 
 const DEFAULT_AI_MODEL = "bitrix/bitrixgpt-5.5";
 const analyzeNextStep_post = defineEventHandler(async (event) => {
-  var _a, _b, _c, _d, _e, _f, _g;
+  var _a, _b, _c, _d, _e;
   const authHeader = getVibeAuthorizationHeader(event);
   const body = await readBody(event);
   if (!(body == null ? void 0 : body.dealId)) {
@@ -57,15 +57,13 @@ const analyzeNextStep_post = defineEventHandler(async (event) => {
     const rawRecommendation = body.recommendation || await getAiRecommendation({ context, headers });
     const recommendation = ensureFutureRecommendationDeadline(rawRecommendation);
     const validated = validateAiRecommendation(recommendation);
-    const timelineLogPayload = buildTimelineLogPayload({ dealId, recommendation: validated });
     if (body.mode !== "live") {
       return {
         success: true,
         data: {
           mode: "preview",
           context: { ...context, transcriptStats },
-          recommendation: validated,
-          timelineLogPayload
+          recommendation: validated
         }
       };
     }
@@ -83,8 +81,6 @@ const analyzeNextStep_post = defineEventHandler(async (event) => {
     }
     const created = await createCrmTask({ taskPayload, headers });
     const createdId = (_e = (_d = (_c = (_a = created == null ? void 0 : created.id) != null ? _a : created == null ? void 0 : created.ID) != null ? _c : (_b = created == null ? void 0 : created.task) == null ? void 0 : _b.id) != null ? _d : created == null ? void 0 : created.taskId) != null ? _e : null;
-    const logPayload = buildTimelineLogPayload({ dealId, recommendation: validated, activityId: createdId });
-    const timelineLog = await safeCreateTimelineLog({ payload: logPayload, headers });
     return {
       success: true,
       data: {
@@ -92,10 +88,8 @@ const analyzeNextStep_post = defineEventHandler(async (event) => {
         context: { ...context, transcriptStats },
         recommendation: validated,
         activityPayload: taskPayload,
-        timelineLogPayload: logPayload,
         createdActivityId: createdId,
-        createdEntityType: "task",
-        pinnedTimelineLogId: (_g = (_f = timelineLog == null ? void 0 : timelineLog.id) != null ? _f : timelineLog == null ? void 0 : timelineLog.ID) != null ? _g : null
+        createdEntityType: "task"
       }
     };
   } catch (error) {
@@ -150,18 +144,6 @@ async function createCrmTask({ taskPayload, headers }) {
     headers,
     body: taskPayload
   });
-}
-async function safeCreateTimelineLog({ payload, headers }) {
-  try {
-    return await requestVibe("/timeline-logs", {
-      method: "POST",
-      headers,
-      body: payload
-    });
-  } catch (error) {
-    console.warn("AI timeline log creation failed:", error);
-    return null;
-  }
 }
 
 export { analyzeNextStep_post as default };

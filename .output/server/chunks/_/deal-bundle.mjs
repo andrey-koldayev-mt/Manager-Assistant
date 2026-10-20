@@ -1,4 +1,3 @@
-const DEAL_ENTITY_TYPE_ID = 2;
 const AI_ACTIVITY_TYPES = ["Todo"];
 function buildDealContext({ deal, linkedLead = null, timelines = [], activities = [], messages = [], contact = null }) {
   var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E;
@@ -93,22 +92,11 @@ function buildLinkedTaskPayload({ dealId, recommendation }) {
     responsibleId: validated.responsibleId,
     deadline: validated.deadline,
     priority: 1,
+    // The manager must be able to adjust the proposed deadline in Bitrix24.
+    allowChangeDeadline: true,
     // VibeCode Tasks API is the supported way to create a task-type action
     // and links it to the deal timeline.
     UF_CRM_TASK: [`D_${numericDealId}`]
-  };
-}
-function buildTimelineLogPayload({ dealId, recommendation, activityId }) {
-  return {
-    entityTypeId: DEAL_ENTITY_TYPE_ID,
-    entityId: Number(dealId),
-    title: "AI: \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0439 \u0448\u0430\u0433 \u043C\u0435\u043D\u0435\u0434\u0436\u0435\u0440\u0430",
-    text: [
-      `\u0420\u0435\u043A\u043E\u043C\u0435\u043D\u0434\u043E\u0432\u0430\u043D\u043D\u043E\u0435 \u0434\u0435\u043B\u043E${activityId ? ` #${activityId}` : ""}: ${recommendation.title}`,
-      "",
-      recommendation.description
-    ].join("\n"),
-    iconCode: "ai"
   };
 }
 function buildPromptMessages({ context, systemPrompt }) {
@@ -350,5 +338,5 @@ function positiveId(value) {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
-export { CRM_ACTIVITY_RECOMMENDATION_TOOL as C, buildLinkedTaskPayload as a, buildDealContext as b, buildPromptMessages as c, buildTimelineLogPayload as d, ensureFutureRecommendationDeadline as e, requestVibeRaw as f, loadDealBundle as l, requestVibe as r, validateAiRecommendation as v };
+export { CRM_ACTIVITY_RECOMMENDATION_TOOL as C, buildLinkedTaskPayload as a, buildDealContext as b, buildPromptMessages as c, requestVibeRaw as d, ensureFutureRecommendationDeadline as e, loadDealBundle as l, requestVibe as r, validateAiRecommendation as v };
 //# sourceMappingURL=deal-bundle.mjs.map

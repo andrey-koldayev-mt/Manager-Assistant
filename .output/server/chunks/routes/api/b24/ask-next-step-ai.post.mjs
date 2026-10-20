@@ -1,5 +1,5 @@
 import { a as defineEventHandler, y as readBody, c as createError } from '../../../_/nitro.mjs';
-import { l as loadDealBundle, b as buildDealContext, f as requestVibeRaw } from '../../../_/deal-bundle.mjs';
+import { l as loadDealBundle, b as buildDealContext, d as requestVibeRaw } from '../../../_/deal-bundle.mjs';
 import { e as enrichCallTranscripts } from '../../../_/call-transcripts.mjs';
 import { d as getVibeAuthorizationHeader, e as ensureVibeApiKey, B as B24_API_KEY } from '../../../_/b24.mjs';
 import 'node:http';

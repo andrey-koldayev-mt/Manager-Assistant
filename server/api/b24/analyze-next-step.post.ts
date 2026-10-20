@@ -3,7 +3,6 @@ import {
   buildLinkedTaskPayload,
   buildDealContext,
   buildPromptMessages,
-  buildTimelineLogPayload,
   ensureFutureRecommendationDeadline,
   validateAiRecommendation,
   type AiRecommendation
@@ -56,16 +55,13 @@ export default defineEventHandler(async (event) => {
 
     const recommendation = ensureFutureRecommendationDeadline(rawRecommendation);
     const validated = validateAiRecommendation(recommendation);
-    const timelineLogPayload = buildTimelineLogPayload({ dealId, recommendation: validated });
-
     if (body.mode !== 'live') {
       return {
         success: true,
         data: {
           mode: 'preview',
           context: { ...context, transcriptStats },
-          recommendation: validated,
-          timelineLogPayload
+          recommendation: validated
         }
       };
     }
@@ -84,8 +80,6 @@ export default defineEventHandler(async (event) => {
     }
     const created = await createCrmTask({ taskPayload: taskPayload!, headers });
     const createdId = created?.id ?? created?.ID ?? created?.task?.id ?? created?.taskId ?? null;
-    const logPayload = buildTimelineLogPayload({ dealId, recommendation: validated, activityId: createdId });
-    const timelineLog = await safeCreateTimelineLog({ payload: logPayload, headers });
 
     return {
       success: true,
@@ -94,10 +88,8 @@ export default defineEventHandler(async (event) => {
         context: { ...context, transcriptStats },
         recommendation: validated,
         activityPayload: taskPayload,
-        timelineLogPayload: logPayload,
         createdActivityId: createdId,
-        createdEntityType: 'task',
-        pinnedTimelineLogId: timelineLog?.id ?? timelineLog?.ID ?? null
+        createdEntityType: 'task'
       }
     };
   } catch (error: any) {
@@ -149,17 +141,4 @@ async function createCrmTask({ taskPayload, headers }: { taskPayload: Record<str
     headers,
     body: taskPayload
   });
-}
-
-async function safeCreateTimelineLog({ payload, headers }: { payload: Record<string, unknown>; headers: Record<string, string> }) {
-  try {
-    return await requestVibe('/timeline-logs', {
-      method: 'POST',
-      headers,
-      body: payload
-    });
-  } catch (error) {
-    console.warn('AI timeline log creation failed:', error);
-    return null;
-  }
 }

@@ -27,6 +27,7 @@ describe('buildLinkedTaskPayload', () => {
       title: 'Связаться с клиентом',
       responsibleId: 42,
       priority: 1,
+      allowChangeDeadline: true,
       UF_CRM_TASK: ['D_123']
     });
     expect(payload.deadline).toBe('2026-07-27T12:00:00+03:00');

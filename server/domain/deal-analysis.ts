@@ -1,5 +1,3 @@
-const DEAL_ENTITY_TYPE_ID = 2;
-
 export const AI_ACTIVITY_TYPES = ['Todo'] as const;
 
 export type AiActivityType = typeof AI_ACTIVITY_TYPES[number];
@@ -163,27 +161,11 @@ export function buildLinkedTaskPayload({ dealId, recommendation }: {
     responsibleId: validated.responsibleId,
     deadline: validated.deadline,
     priority: 1,
+    // The manager must be able to adjust the proposed deadline in Bitrix24.
+    allowChangeDeadline: true,
     // VibeCode Tasks API is the supported way to create a task-type action
     // and links it to the deal timeline.
     UF_CRM_TASK: [`D_${numericDealId}`]
-  };
-}
-
-export function buildTimelineLogPayload({ dealId, recommendation, activityId }: {
-  dealId: number | string;
-  recommendation: AiRecommendation;
-  activityId?: number | string | null;
-}) {
-  return {
-    entityTypeId: DEAL_ENTITY_TYPE_ID,
-    entityId: Number(dealId),
-    title: 'AI: следующий шаг менеджера',
-    text: [
-      `Рекомендованное дело${activityId ? ` #${activityId}` : ''}: ${recommendation.title}`,
-      '',
-      recommendation.description
-    ].join('\n'),
-    iconCode: 'ai'
   };
 }
 

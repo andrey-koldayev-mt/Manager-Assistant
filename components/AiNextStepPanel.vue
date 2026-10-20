@@ -34,7 +34,6 @@ type AnalyzeResult = {
   };
   createdActivityId?: number | string | null;
   createdEntityType?: 'activity' | 'task';
-  pinnedTimelineLogId?: number | string | null;
 };
 
 type ChatMessage = {
