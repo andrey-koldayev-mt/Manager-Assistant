@@ -1,31 +1,37 @@
-# Design QA — AI следующий шаг
+# Design QA — Навигатор возражений
 
 ## Evidence
 
-- Source visual truth: `C:\Users\andrey.koldayev\.codex\generated_images\01a159c4-6f75-76e1-9fa6-1cdcd18d2bc0\exec-ca08c808-15cf-41eb-a50e-ed93be2207ec.png`.
-- Design-system reference: `C:\Users\andrey.koldayev\PortableGit\cc-b24\uploads\design_handoff_b2c_website\preview_screenshot.png` and its `DESIGN_SYSTEM.md`.
-- Intended viewport: desktop, 1440 × 1024.
-- Implementation capture: local browser opened at `http://localhost:3000/`.
+- Source visual truth: `C:\Users\andrey.koldayev\.codex\generated_images\01a159c4-6f75-76e1-9fa6-1cdcd18d2bc0\exec-3ef06ccd-1662-46b2-8330-c72faca922fb.png`.
+- Implementation URL: `http://localhost:3000/`.
+- Intended viewport and state: desktop 1440 × 1024, selected objection «Дорого».
+- Browser evidence: local app opens, but the CRM context overlay disables the «Навигатор возражений» tab; no same-state implementation screenshot can be captured.
 
 ## Findings
 
-- [P1] The implementation cannot be visually compared in the target state locally.
-  - Evidence: the app remains behind the CRM-context overlay and disables the `AI следующий шаг` tab because no deal/session is available at localhost.
-  - Impact: the redesigned task editor, recommendation and AI sidebar cannot be captured in the same state as the source visual.
-  - Fix: open the widget from a real deal card, generate a recommendation, and capture the desktop state at 1440 × 1024.
+- [P1] Browser comparison is blocked by the local CRM context gate.
+  - Location: app shell before the Navigator tab.
+  - Evidence: in the local browser the overlay says «Контекст сделки не найден», and the Navigator control is disabled.
+  - Impact: the selected static knowledge-base state cannot be viewed or compared with the chosen visual target in-browser.
+  - Fix: open the deployed widget from a Bitrix24 deal card and capture the Navigator at 1440 × 1024 with «Дорого» selected.
 
 ## Required fidelity surfaces
 
-- Fonts and typography: implemented with Montserrat Alternates for display headings, Onest for body text, and Golos Text for field labels.
-- Spacing and layout rhythm: implemented on the Russian Express 8px scale, with 16/20px radii and 20–24px panel padding.
-- Colors and visual tokens: implemented with Russian Express red `#D63F3F`, white, `#F3F3F7`, `#EEF0F2`, and neutral dividers.
-- Image quality and asset fidelity: no new raster imagery is introduced into the task workflow; the existing Russian Express mark remains app-owned.
-- Copy and content: implemented in Russian with a task-first manager workflow.
+- Fonts and typography: display headings use the existing Russian Express display-font stack; body and label sizing follow the existing application styles.
+- Spacing and layout rhythm: recreated as a three-column desktop layout with 16px gaps, 16px panels and compact 10px catalogue controls; it collapses to two and then one column.
+- Colors and visual tokens: uses Russian Express red, its soft red treatment, white cards, neutral borders and the existing brand action class.
+- Image quality and asset fidelity: the selected UI contains no product imagery that needs recreation; the existing app-owned brand mark remains unchanged.
+- Copy and content: the screen contains static Russian knowledge-base copy, not deal signals, AI output or chat.
 
 ## Verification
 
 - `npx vue-tsc --noEmit`: passed.
-- `npm run build`: completed far enough to generate the Nuxt build output; build artifacts were restored and removed from the worktree afterward.
-- Browser console / active workflow: blocked by unavailable Bitrix24 deal context.
+- Primary interaction covered in code: search filters the catalog, selecting an objection changes the response, and «Скопировать ответ» copies an editable script.
+- Browser console / selected-state visual comparison: blocked by unavailable Bitrix24 deal context.
+
+**Implementation Checklist**
+
+- Open the deployed widget from any deal card after deploy.
+- Verify the selected answer, search, category selection and copy control at desktop and mobile widths.
 
 final result: blocked

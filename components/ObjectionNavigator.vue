@@ -1,318 +1,105 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
-import {
-  NAVIGATOR_VARIABLE_LABELS,
-  OBJECTION_CATALOG_GROUPS,
-  OBJECTION_SCENARIOS,
-  getScenario,
-  getScenarioChannels,
-  getScenarioStep,
-  type NavigatorChannel
-} from '~/shared/objection-navigator';
+import { computed, ref } from 'vue';
 
-type NavigatorContext = {
-  deal: {
-    id: number;
-    title: string;
-    stage: string;
-    contactName: string;
-    responsibleName: string;
-    lastActivityAt: string | null;
-    variables: Record<string, string>;
-  };
-  communications: Array<{
-    id: string;
-    at: string;
-    channel: string;
-    direction: 'client' | 'manager' | 'unknown';
-    title: string;
-    preview: string;
-  }>;
-  recommendation: { scenarioId: string; reason: string } | null;
-};
-
-type AiRecommendation = {
-  scenarioId: string;
-  channel: NavigatorChannel;
-  situation: string;
-  recommendedAction: string;
-  responseText: string;
-  rationale: string[];
-  sourceSignals: string[];
-};
-
-type TranscriptStats = {
-  calls: number;
-  native: number;
-  cached: number;
-  transcribed: number;
-  unavailable: number;
-};
-
-const props = defineProps<{
-  dealId: number | null;
-  agentName: string;
-  clientName: string;
-  loadingContext?: boolean;
-}>();
+type Objection = { id: string; group: string; title: string; clientPhrase: string; purpose: string; steps: Array<{ title: string; text: string }>; nextStep: string; tip: string; examples: string[] };
+defineProps<{ dealId: number | null; agentName: string; clientName: string; loadingContext?: boolean }>();
 
 const toast = useToast();
-const loading = ref(false);
-const errorMessage = ref('');
-const context = ref<NavigatorContext | null>(null);
-const selectedScenarioId = ref<string | null>(null);
-const selectedStepId = ref<string | null>(null);
-const channel = ref<NavigatorChannel>('message');
-const aiRecommendation = ref<AiRecommendation | null>(null);
-const transcriptStats = ref<TranscriptStats | null>(null);
-const aiLoading = ref(false);
-const aiErrorMessage = ref('');
-const expandedScenarioGroups = ref<string[]>(['choice']);
+const search = ref('');
+const activeId = ref('expensive');
 
-const selectedScenario = computed(() => getScenario(selectedScenarioId.value));
-const selectedStep = computed(() => getScenarioStep(selectedScenarioId.value, selectedStepId.value));
-const selectedStepChannels = computed(() => Object.keys(selectedStep.value?.text || {}) as NavigatorChannel[]);
-const scenarioGroups = computed(() => OBJECTION_CATALOG_GROUPS.map((group) => ({
-  ...group,
-  scenarios: OBJECTION_SCENARIOS.filter((item) => item.group === group.id)
-})));
-const contextVariables = computed<Record<string, string>>(() => ({
-  clientName: context.value ? (context.value.deal.contactName || props.clientName.trim()) : '',
-  agentName: context.value ? (context.value.deal.responsibleName || props.agentName.trim()) : '',
-  dealTitle: context.value?.deal.title || '',
-  ...(context.value?.deal.variables || {})
-}));
-const missingVariables = computed(() => (selectedStep.value?.requiredVariables || []).filter((name) => !contextVariables.value[name]?.trim()));
-const renderedText = computed(() => {
-  const text = selectedStep.value?.text[channel.value]
-    || selectedStep.value?.text[selectedStepChannels.value[0] || 'message']
-    || '';
-  return renderTemplate(text, contextVariables.value);
-});
-const canCopy = computed(() => Boolean(selectedStep.value && !missingVariables.value.length));
-const recommendedScenario = computed(() => context.value?.recommendation
-  ? getScenario(context.value.recommendation.scenarioId)
-  : null);
+const objections: Objection[] = [
+  { id: 'expensive', group: 'Цена', title: 'Дорого', clientPhrase: '«Для меня это дорого»', purpose: 'Понять, с чем клиент сравнивает цену, и вернуть разговор к ценности отдыха.', steps: [
+    { title: 'Присоединитесь', text: 'Понимаю вас — хочется выбрать отдых, который действительно будет стоить своих денег.' },
+    { title: 'Уточните ориентир', text: 'Подскажите, пожалуйста, какая сумма была для вас комфортной и что обязательно должно быть в поездке?' },
+    { title: 'Покажите ценность', text: 'Тогда я отберу варианты, где бюджет работает на важное для вас: локацию, питание, пляж или уровень отеля.' },
+    { title: 'Договоритесь о шаге', text: 'Сравним два-три подходящих варианта и выберем тот, за который вам будет спокойно платить.' }
+  ], nextStep: 'Уточнить бюджет и два главных критерия выбора.', tip: 'Не спорьте с оценкой клиента и не предлагайте скидку до уточняющих вопросов.', examples: ['«Это дорого»', '«Я рассчитывал на меньшую сумму»'] },
+  { id: 'cheaper-elsewhere', group: 'Цена', title: 'В другом месте дешевле', clientPhrase: '«В другом месте мне назвали цену ниже»', purpose: 'Сопоставить предложения по составу, а не соревноваться только цифрой.', steps: [
+    { title: 'Поблагодарите за ориентир', text: 'Спасибо, что сказали — давайте честно сравним предложения.' },
+    { title: 'Попросите детали', text: 'Пришлите, пожалуйста, ссылку или название варианта: проверю даты, тип номера, питание и условия оплаты.' },
+    { title: 'Сравните состав', text: 'Иногда разница появляется из-за другого номера, перелёта, трансфера или условий отмены.' },
+    { title: 'Предложите выбор', text: 'Я вернусь с понятным сравнением и подскажу, где предложение действительно выгоднее.' }
+  ], nextStep: 'Получить ссылку или параметры альтернативного предложения.', tip: 'Не обесценивайте конкурента: сначала проверьте, одинаковы ли условия.', examples: ['«Там дешевле на 20 тысяч»', '«Мне уже прислали вариант выгоднее»'] },
+  { id: 'discount', group: 'Цена', title: 'Дайте скидку', clientPhrase: '«А скидку можете сделать?»', purpose: 'Сохранить ценность подбора и понять, что поможет клиенту принять решение.', steps: [
+    { title: 'Поддержите интерес', text: 'Понимаю, хочется выбрать на самых выгодных условиях.' },
+    { title: 'Выясните решение', text: 'Если условия вас устроят, сможете сегодня определиться с бронированием?' },
+    { title: 'Проверьте возможности', text: 'Я уточню актуальные предложения у партнёров и вернусь только с реальным вариантом выгоды.' },
+    { title: 'Зафиксируйте договорённость', text: 'Как только получу ответ, сразу напишу вам и вместе решим, бронируем ли.' }
+  ], nextStep: 'Понять, является ли стоимость единственным препятствием к бронированию.', tip: 'Не обещайте скидку заранее: сначала договоритесь о следующем решении клиента.', examples: ['«Сделаете скидочку?»', '«Какие у вас есть бонусы?»'] },
+  { id: 'think', group: 'Решение', title: 'Надо подумать', clientPhrase: '«Мне нужно подумать»', purpose: 'Мягко выяснить реальную причину паузы и назначить конкретный контакт.', steps: [
+    { title: 'Дайте пространство', text: 'Конечно, решение лучше принять спокойно.' },
+    { title: 'Уточните сомнение', text: 'Чтобы не отвлекать вас лишним, подскажите: хотите сравнить варианты, обсудить бюджет или остались вопросы по самому отдыху?' },
+    { title: 'Помогите выбрать', text: 'Я могу коротко собрать главное по каждому варианту, чтобы вам было проще обсудить его дома.' },
+    { title: 'Назначьте время', text: 'Когда вам будет удобно вернуться к разговору: сегодня вечером или завтра днём?' }
+  ], nextStep: 'Зафиксировать причину паузы и точное время следующего контакта.', tip: '«Подумаю» — не финальный отказ. Не завершайте диалог без договорённости о времени.', examples: ['«Я подумаю и напишу»', '«Мне надо переварить варианты»'] },
+  { id: 'decision-maker', group: 'Решение', title: 'Надо посоветоваться', clientPhrase: '«Мне нужно посоветоваться с мужем / семьёй»', purpose: 'Сделать клиента уверенным проводником информации для второго участника решения.', steps: [
+    { title: 'Поддержите', text: 'Да, это важное решение — здорово обсудить его вместе.' },
+    { title: 'Уточните критерии', text: 'Что для вашего близкого будет особенно важно: бюджет, перелёт, пляж, питание или сам отель?' },
+    { title: 'Подготовьте материал', text: 'Я соберу короткое сравнение с фотографиями и ключевыми отличиями, чтобы вам было удобно показать варианты.' },
+    { title: 'Договоритесь о связи', text: 'Давайте завтра после обсуждения созвонимся на пять минут и выберем направление дальше.' }
+  ], nextStep: 'Уточнить критерии второго участника и согласовать время обратной связи.', tip: 'Не просите номер второго участника в первом же ответе — помогите клиенту подготовиться к разговору.', examples: ['«Надо обсудить с мужем»', '«Посоветуюсь с семьёй»'] },
+  { id: 'send-more', group: 'Выбор', title: 'Пришлите ещё варианты', clientPhrase: '«А можно посмотреть ещё?»', purpose: 'Сузить поиск и не превратить подборку в бесконечный список.', steps: [
+    { title: 'Поддержите интерес', text: 'Конечно, хочу, чтобы у вас было с чем сравнить.' },
+    { title: 'Поймите, чего не хватило', text: 'В текущих вариантах что хотелось бы изменить в первую очередь: бюджет, отель, район или время вылета?' },
+    { title: 'Сузьте выбор', text: 'Подберу ещё два варианта именно по этому критерию, чтобы сравнение было понятным.' },
+    { title: 'Назначьте просмотр', text: 'Отправлю подборку и напишу, когда будет удобно обсудить впечатления.' }
+  ], nextStep: 'Зафиксировать один главный критерий для новой подборки.', tip: 'Лучше 2–3 релевантных варианта, чем длинный каталог без рекомендации.', examples: ['«Давайте ещё посмотрим»', '«Есть что-нибудь другое?»'] },
+  { id: 'final-price', group: 'Выбор', title: 'Нужна итоговая цена', clientPhrase: '«Почему цена предварительная? Скажите итоговую»', purpose: 'Объяснить изменение цены спокойно и предложить быстрый способ зафиксировать актуальные условия.', steps: [
+    { title: 'Подтвердите запрос', text: 'Понимаю, итоговая сумма важна, чтобы спокойно принять решение.' },
+    { title: 'Объясните кратко', text: 'Стоимость у туроператора меняется по наличию мест и актуальна в момент бронирования.' },
+    { title: 'Дайте опору', text: 'Я проверю цену прямо перед оформлением и заранее напишу вам финальную сумму.' },
+    { title: 'Предложите действие', text: 'Если вариант вам подходит, давайте проверим его сейчас — так увидим точные условия.' }
+  ], nextStep: 'Проверить актуальную стоимость выбранного варианта.', tip: 'Избегайте длинного объяснения механики ценообразования — клиенту нужен ясный план.', examples: ['«Мне нужна окончательная цена»', '«Почему завтра может быть дороже?»'] },
+  { id: 'reviews', group: 'Доверие', title: 'Хочу почитать отзывы', clientPhrase: '«Сначала посмотрю отзывы в интернете»', purpose: 'Помочь клиенту читать отзывы по своим критериям и остаться полезным источником.', steps: [
+    { title: 'Согласитесь', text: 'Это разумно: отзывы помогают увидеть отдых глазами гостей.' },
+    { title: 'Подскажите фокус', text: 'Смотрите, пожалуйста, свежие отзывы именно по вашим датам и обратите внимание на пляж, номера и питание.' },
+    { title: 'Добавьте экспертный взгляд', text: 'Я тоже отмечу, на что обычно жалуются и что гости особенно хвалят в этом отеле.' },
+    { title: 'Вернитесь к диалогу', text: 'Когда посмотрите, пришлите любые сомнения — разберём их вместе.' }
+  ], nextStep: 'Отправить ссылку на отель и договориться о времени обратной связи.', tip: 'Не спорьте с отзывами: помогите отделить актуальные факты от единичных эмоций.', examples: ['«Я сама всё почитаю»', '«Хочу посмотреть рейтинг»'] },
+  { id: 'wait-hot', group: 'Сроки', title: 'Будем ждать горящие', clientPhrase: '«Подождём горящие предложения»', purpose: 'Объяснить компромисс между ценой, выбором и определённостью без давления.', steps: [
+    { title: 'Признайте желание сэкономить', text: 'Понимаю, хочется поймать максимально выгодное предложение.' },
+    { title: 'Сверьте гибкость', text: 'Насколько вы готовы быть гибкими по датам, отелю и аэропорту вылета?' },
+    { title: 'Объясните выбор', text: 'Горящие варианты появляются при остатках мест, поэтому выбор отелей и рейсов может быть ограничен.' },
+    { title: 'Предложите план', text: 'Можем оставить текущий вариант как ориентир и параллельно мониторить предложения в вашем диапазоне.' }
+  ], nextStep: 'Зафиксировать допустимые даты, бюджет и степень гибкости клиента.', tip: 'Не обещайте «горящую» цену — формулируйте ожидания честно.', examples: ['«Подождём ближе к вылету»', '«Вдруг появится горящий тур?»'] },
+  { id: 'why-you', group: 'Доверие', title: 'Почему купить у вас?', clientPhrase: '«Почему я должен бронировать именно у вас?»', purpose: 'Показать ценность сопровождения и прозрачность работы без громких обещаний.', steps: [
+    { title: 'Поблагодарите за вопрос', text: 'Хороший вопрос — вам важно понимать, кому доверяете поездку.' },
+    { title: 'Расскажите по делу', text: 'Я подбираю варианты под ваши критерии, объясняю отличия и остаюсь на связи до возвращения из поездки.' },
+    { title: 'Добавьте прозрачность', text: 'Перед бронированием вы видите состав услуги, условия оплаты и отмены — без неожиданностей.' },
+    { title: 'Верните к выбору', text: 'Давайте покажу, почему из текущих вариантов я выделил именно этот.' }
+  ], nextStep: 'Связать ценность сопровождения с конкретным выбранным вариантом.', tip: 'Говорите о конкретной пользе для этой поездки, а не только о компании в целом.', examples: ['«Чем вы отличаетесь?»', '«Почему не купить самому?»'] }
+];
 
-const formattedLastActivity = computed(() => {
-  const value = context.value?.deal.lastActivityAt;
-  if (!value) return 'не найдена';
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? 'не найдена' : new Intl.DateTimeFormat('ru-RU', {
-    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-  }).format(date);
-});
+const groupOrder = ['Цена', 'Решение', 'Выбор', 'Доверие', 'Сроки'];
+const active = computed<Objection>(() => objections.find((item) => item.id === activeId.value) || objections[0]!);
+const normalizedSearch = computed(() => search.value.trim().toLocaleLowerCase('ru-RU'));
+const filtered = computed(() => objections.filter((item) => !normalizedSearch.value || [item.title, item.clientPhrase, item.group, ...item.examples].join(' ').toLocaleLowerCase('ru-RU').includes(normalizedSearch.value)));
+const groups = computed(() => groupOrder.map((title) => ({ title, items: filtered.value.filter((item) => item.group === title) })).filter((group) => group.items.length));
+const copyText = computed(() => [active.value.title, ...active.value.steps.map((step) => step.text)].join('\n\n'));
 
-function selectScenario(scenarioId: string, stepId?: string) {
-  const scenario = getScenario(scenarioId);
-  if (!scenario) return;
-  selectedScenarioId.value = scenarioId;
-  selectedStepId.value = stepId || scenario.steps[0]?.id || null;
-  if (!expandedScenarioGroups.value.includes(scenario.group)) {
-    expandedScenarioGroups.value = [...expandedScenarioGroups.value, scenario.group];
-  }
-  const availableChannels = getScenarioChannels(scenario);
-  if (!availableChannels.includes(channel.value)) channel.value = availableChannels[0] || 'message';
-}
-
-function chooseAnswer(nextStepId?: string) {
-  if (!nextStepId) return;
-  selectedStepId.value = nextStepId;
-  const nextStep = getScenarioStep(selectedScenarioId.value, nextStepId);
-  const availableChannels = Object.keys(nextStep?.text || {}) as NavigatorChannel[];
-  if (!availableChannels.includes(channel.value)) channel.value = availableChannels[0] || 'message';
-}
-
-async function loadContext() {
-  if (!props.dealId) {
-    context.value = null;
-    return;
-  }
-
-  loading.value = true;
-  errorMessage.value = '';
+function selectObjection(id: string) { activeId.value = id; }
+async function copyAnswer() {
   try {
-    const response = await $fetch(`/api/b24/load-navigator-context?dealId=${props.dealId}`, {
-      credentials: 'same-origin'
-    }) as { success: boolean; data: NavigatorContext };
-    if (!response.success || !response.data) throw new Error('Контекст сценариев недоступен.');
-
-    context.value = response.data;
-    if (!selectedScenarioId.value && response.data.recommendation?.scenarioId) {
-      selectScenario(response.data.recommendation.scenarioId);
+    if (navigator.clipboard?.writeText && window.isSecureContext) await navigator.clipboard.writeText(copyText.value);
+    else {
+      const textarea = document.createElement('textarea'); textarea.value = copyText.value; textarea.style.cssText = 'position:fixed;opacity:0;pointer-events:none'; document.body.appendChild(textarea); textarea.select(); const copied = document.execCommand('copy'); textarea.remove(); if (!copied) throw new Error('Clipboard unavailable');
     }
-  } catch (error: any) {
-    errorMessage.value = error?.statusMessage || error?.message || 'Не удалось загрузить контекст сценариев.';
-  } finally {
-    loading.value = false;
-  }
+    toast.add({ title: 'Ответ скопирован', description: 'Текст можно отредактировать перед отправкой клиенту.', color: 'air-primary-success', duration: 2600 });
+  } catch { toast.add({ title: 'Не удалось скопировать ответ', description: 'Выделите текст и скопируйте его вручную.', color: 'air-primary-alert' }); }
 }
-
-async function copyCurrentText() {
-  if (!canCopy.value) return;
-  try {
-    await copyText(renderedText.value);
-    toast.add({ title: 'Текст скопирован', description: 'Отправьте его клиенту вручную в Wazzup.', color: 'air-primary-success', duration: 2600 });
-  } catch {
-    toast.add({ title: 'Не удалось скопировать текст', description: 'Выделите текст и скопируйте его вручную.', color: 'air-primary-alert' });
-  }
-}
-
-async function generateAiRecommendation() {
-  if (!props.dealId) return;
-  aiLoading.value = true;
-  aiErrorMessage.value = '';
-  try {
-    const response = await $fetch('/api/b24/recommend-objection', {
-      method: 'POST',
-      credentials: 'same-origin',
-      body: { dealId: props.dealId, scenarioId: selectedScenarioId.value || undefined }
-    }) as { success: boolean; data: { recommendation: AiRecommendation; transcriptStats: TranscriptStats } };
-    if (!response.success || !response.data?.recommendation) throw new Error('AI-рекомендация недоступна.');
-    aiRecommendation.value = response.data.recommendation;
-    transcriptStats.value = response.data.transcriptStats || null;
-    selectScenario(response.data.recommendation.scenarioId);
-    channel.value = response.data.recommendation.channel;
-  } catch (error: any) {
-    aiErrorMessage.value = error?.statusMessage || error?.message || 'Не удалось подготовить AI-рекомендацию.';
-  } finally {
-    aiLoading.value = false;
-  }
-}
-
-async function copyAiRecommendation() {
-  if (!aiRecommendation.value?.responseText) return;
-  try {
-    await copyText(aiRecommendation.value.responseText);
-    toast.add({ title: 'Рекомендация скопирована', description: 'Отправьте текст клиенту вручную в Wazzup.', color: 'air-primary-success', duration: 2600 });
-  } catch {
-    toast.add({ title: 'Не удалось скопировать текст', description: 'Выделите текст и скопируйте его вручную.', color: 'air-primary-alert' });
-  }
-}
-
-async function copyText(value: string) {
-  if (!value) throw new Error('Text is empty');
-
-  // Bitrix24 renders the app in an iframe. In that context Clipboard API can be
-  // exposed but reject writes because the host has not granted clipboard-write.
-  // Fall through to the user-gesture based legacy path instead of surfacing it
-  // as a failed copy operation.
-  if (navigator.clipboard?.writeText && window.isSecureContext) {
-    try {
-      await navigator.clipboard.writeText(value);
-      return;
-    } catch {
-      // Continue with document.execCommand('copy') below.
-    }
-  }
-
-  const textarea = document.createElement('textarea');
-  textarea.value = value;
-  textarea.setAttribute('readonly', '');
-  textarea.style.position = 'fixed';
-  textarea.style.top = '0';
-  textarea.style.left = '0';
-  textarea.style.width = '1px';
-  textarea.style.height = '1px';
-  textarea.style.padding = '0';
-  textarea.style.border = '0';
-  textarea.style.opacity = '0';
-  textarea.style.pointerEvents = 'none';
-  document.body.appendChild(textarea);
-  textarea.focus({ preventScroll: true });
-  textarea.select();
-  textarea.setSelectionRange(0, value.length);
-
-  let copied = false;
-  try {
-    copied = document.execCommand('copy');
-  } finally {
-    textarea.remove();
-  }
-
-  if (!copied) throw new Error('Clipboard is unavailable');
-}
-
-function renderTemplate(template: string, values: Record<string, string>) {
-  return template.replace(/{{(\w+)}}/g, (_, key: string) => values[key]?.trim() || `{{${key}}}`);
-}
-
-function channelLabel(value: NavigatorChannel) {
-  if (value === 'message') return 'Мессенджер';
-  if (value === 'remote') return 'Удаленная продажа';
-  return 'Звонок';
-}
-
-function directionLabel(value: NavigatorContext['communications'][number]['direction']) {
-  if (value === 'client') return 'Клиент';
-  if (value === 'manager') return 'Менеджер';
-  return 'Не определено';
-}
-
-watch(() => props.dealId, () => {
-  context.value = null;
-  selectedScenarioId.value = null;
-  selectedStepId.value = null;
-  aiRecommendation.value = null;
-  transcriptStats.value = null;
-  aiErrorMessage.value = '';
-  void loadContext();
-}, { immediate: true });
 </script>
 
 <template>
-  <main class="objection-navigator-layout workspace-layout workspace-navigator gap-4 p-4">
-    <aside class="navigator-sidebar work-panel p-4">
-      <div class="flex items-center justify-between gap-2 border-b border-default pb-3">
-        <div><p class="eyebrow">Навигатор возражений</p><h2 class="mt-1 text-base font-bold text-label">Каталог сценариев</h2></div>
-        <B24Button label="Обновить" size="xs" :loading="loading" class="mode-switch-button" @click="loadContext" />
-      </div>
-      <B24Alert v-if="!dealId" class="mt-4" color="air-primary-alert" variant="soft" title="Сделка не определена" description="Откройте виджет из карточки сделки, чтобы загрузить контекст." />
-      <B24Alert v-else-if="errorMessage" class="mt-4" color="air-primary-alert" variant="soft" title="Контекст не загружен" :description="errorMessage" />
-      <div v-if="recommendedScenario" class="navigator-match-card mt-4">
-        <p class="eyebrow">Подходит по истории</p><h3 class="mt-1 text-sm font-bold text-label">{{ recommendedScenario.title }}</h3>
-        <p class="mt-1 text-xs leading-5 text-description">{{ context?.recommendation?.reason }}</p>
-        <B24Button label="Открыть сценарий" size="sm" class="brand-action mt-3" @click="selectScenario(recommendedScenario.id)" />
-      </div>
-      <section class="mt-4"><p class="mb-2 text-xs font-semibold uppercase text-description">Возражения</p>
-        <B24Accordion v-model="expandedScenarioGroups" :items="scenarioGroups" type="multiple" collapsible value-key="id" label-key="title" class="navigator-catalog-accordion">
-          <template #body="{ item }"><div class="grid gap-1"><B24Button v-for="scenario in item.scenarios" :key="scenario.id" :label="scenario.title" block :class="selectedScenarioId === scenario.id ? 'navigator-category-active' : 'navigator-category'" @click="selectScenario(scenario.id)" /></div></template>
-        </B24Accordion>
-      </section>
-    </aside>
-
-    <section class="navigator-workspace min-w-0">
-      <section class="navigator-ai-panel work-panel p-5">
-        <div class="flex flex-wrap items-start justify-between gap-4">
-          <div><p class="eyebrow">AI-рекомендация</p><h2 class="mt-1 text-xl font-bold text-label">Рекомендуемый ответ</h2><p class="mt-2 text-sm text-description">Карточка, Wazzup, email и звонки — без изменения CRM.</p></div>
-          <B24Button label="Сформировать рекомендацию" :loading="aiLoading" class="brand-action" @click="generateAiRecommendation" />
-        </div>
-        <B24Alert v-if="aiErrorMessage" class="mt-4" color="air-primary-alert" variant="soft" title="Рекомендация недоступна" :description="aiErrorMessage" />
-        <div v-if="aiRecommendation" class="navigator-ai-result mt-5">
-          <div><p class="result-label">Ситуация</p><p>{{ aiRecommendation.situation }}</p></div>
-          <div><p class="result-label">Что сделать</p><p>{{ aiRecommendation.recommendedAction }}</p></div>
-          <div class="navigator-script-text">{{ aiRecommendation.responseText }}</div>
-          <div v-if="aiRecommendation.sourceSignals.length"><p class="result-label">Факты сделки</p><ul><li v-for="signal in aiRecommendation.sourceSignals" :key="signal">{{ signal }}</li></ul></div>
-          <div class="flex flex-wrap gap-2"><B24Button label="Скопировать текст" class="brand-action" @click="copyAiRecommendation" /><B24Badge label="Отправка вручную в Wazzup" class="brand-soft" /></div>
-        </div>
-        <B24Alert v-if="transcriptStats" class="mt-4" color="air-primary" variant="soft" title="Звонки в анализе" :description="'Найдено: ' + transcriptStats.calls + '; готовых: ' + transcriptStats.native + '; из кэша: ' + transcriptStats.cached + '; расшифровано: ' + transcriptStats.transcribed + '.'" />
-      </section>
-
-      <article v-if="selectedScenario && selectedStep" class="navigator-scenario-panel work-panel min-w-0 p-5">
-        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-default pb-4"><div><p class="eyebrow">Сценарий</p><h2 class="mt-1 text-xl font-bold text-label">{{ selectedScenario.title }}</h2><p class="mt-1 text-sm text-description">{{ selectedScenario.description }}</p></div><B24Badge :label="`Шаг ${selectedScenario.steps.findIndex((step) => step.id === selectedStep?.id) + 1} из ${selectedScenario.steps.length}`" class="brand-soft" /></div>
-        <div class="mt-5 grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
-          <div class="navigator-main-column grid min-w-0 gap-4">
-            <div><p class="result-label">Цель шага</p><p class="mt-1 text-sm leading-6 text-description">{{ selectedStep.goal }}</p></div>
-            <div class="navigator-channel" role="tablist" aria-label="Канал коммуникации"><B24Button v-for="item in selectedStepChannels" :key="item" :label="channelLabel(item)" size="sm" :class="channel === item ? 'brand-action' : 'mode-switch-button'" @click="channel = item" /></div>
-            <div class="navigator-script-text">{{ renderedText }}</div>
-            <B24Alert v-if="missingVariables.length" color="air-primary-alert" variant="soft" title="Заполните данные в сделке" :description="missingVariables.map((name) => NAVIGATOR_VARIABLE_LABELS[name] || name).join(', ')" />
-            <div v-if="selectedStep.answers?.length" class="grid gap-2 border-t border-default pt-4"><p class="text-sm font-semibold text-label">Ответ клиента</p><div class="flex flex-wrap gap-2"><B24Button v-for="answer in selectedStep.answers" :key="answer.label" :label="answer.label" class="border border-default bg-default text-label" @click="chooseAnswer(answer.nextStepId)" /></div></div>
-            <div class="flex flex-wrap items-center justify-between gap-3 border-t border-default pt-4"><B24Button label="К каталогу" class="mode-switch-button border border-default" @click="selectedScenarioId = null; selectedStepId = null" /><B24Button label="Скопировать текст" :disabled="!canCopy" class="brand-action" @click="copyCurrentText" /></div>
-          </div>
-          <aside class="navigator-history"><p class="text-sm font-bold text-label">Последние коммуникации</p><div v-if="context?.communications.length" class="mt-3 grid gap-2"><div v-for="item in context.communications" :key="item.id" class="navigator-history-item"><div class="flex items-center justify-between gap-2"><span class="text-xs font-semibold text-label">{{ item.channel }} · {{ directionLabel(item.direction) }}</span><span class="text-xs text-description">{{ item.at }}</span></div><p class="mt-1 truncate text-xs text-description">{{ item.title || item.preview }}</p></div></div><p v-else class="mt-2 text-sm text-description">Коммуникации не найдены.</p></aside>
-        </div>
-      </article>
-      <article v-else class="navigator-empty-state work-panel p-8"><h2 class="text-xl font-bold text-label">Выберите возражение</h2><p class="mt-2 text-sm leading-6 text-description">Каталог слева поможет открыть ветку для текущей переписки или звонка.</p></article>
+  <main class="re-objection-workspace workspace-layout p-4">
+    <header class="re-objection-hero">
+      <div><p class="eyebrow">База знаний</p><h1>Навигатор возражений</h1><p>Готовые отработки для спокойного и уверенного разговора с клиентом.</p></div>
+      <label class="re-objection-search"><span class="sr-only">Поиск возражения</span><input v-model="search" type="search" placeholder="Найти возражение" /></label>
+    </header>
+    <section class="re-objection-layout" aria-label="База знаний по возражениям">
+      <aside class="re-objection-catalog work-panel"><p class="re-objection-catalog-title">Все возражения</p><nav v-if="groups.length" aria-label="Каталог возражений"><section v-for="group in groups" :key="group.title" class="re-objection-group"><h2>{{ group.title }}</h2><button v-for="item in group.items" :key="item.id" type="button" class="re-objection-link" :class="{ 'is-active': item.id === active.id }" :aria-current="item.id === active.id ? 'page' : undefined" @click="selectObjection(item.id)"><span>{{ item.title }}</span><small>{{ item.clientPhrase }}</small></button></section></nav><p v-else class="re-objection-no-results">По этому запросу ничего не найдено.</p></aside>
+      <article class="re-objection-answer work-panel"><p class="eyebrow">Возражение клиента</p><h2>{{ active.title }}</h2><blockquote>{{ active.clientPhrase }}</blockquote><p class="re-objection-purpose">{{ active.purpose }}</p><ol class="re-objection-steps"><li v-for="(step, index) in active.steps" :key="step.title"><span>{{ index + 1 }}</span><div><h3>{{ step.title }}</h3><p>{{ step.text }}</p></div></li></ol></article>
+      <aside class="re-objection-actions work-panel"><B24Button label="Скопировать ответ" class="brand-action w-full" @click="copyAnswer" /><section><p class="eyebrow">Следующий шаг</p><p>{{ active.nextStep }}</p></section><section class="re-objection-tip"><p class="eyebrow">Помните</p><p>{{ active.tip }}</p></section><section><p class="eyebrow">Как это звучит</p><ul><li v-for="example in active.examples" :key="example">{{ example }}</li></ul></section></aside>
     </section>
   </main>
 </template>
