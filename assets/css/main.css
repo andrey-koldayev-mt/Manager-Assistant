@@ -805,6 +805,18 @@ textarea:focus-visible {
 .re-ai-overline { margin: 0; color: #637381; font-family: "Golos Text", sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .06em; line-height: 1; text-transform: uppercase; }
 .re-ai-primary { min-height: 44px; border-radius: 16px !important; box-shadow: none; }
 .re-ai-primary:hover { box-shadow: 0 8px 24px rgba(214, 63, 63, .28); }
+.re-ai-primary svg { color: #fff !important; }
+.re-ai-primary[data-loading='true'] { cursor: progress; }
+.re-ai-primary[data-loading='true']::after {
+  width: 12px;
+  height: 12px;
+  margin-left: 2px;
+  border: 2px solid rgba(255, 255, 255, .45);
+  border-top-color: #fff;
+  border-radius: 50%;
+  content: '';
+  animation: deal-loading-spin 800ms linear infinite;
+}
 
 .re-ai-layout { display: grid; grid-template-columns: minmax(0, 1.68fr) minmax(300px, .72fr); gap: 20px; align-items: start; }
 .re-ai-main, .re-ai-sidebar { display: grid; gap: 20px; min-width: 0; }

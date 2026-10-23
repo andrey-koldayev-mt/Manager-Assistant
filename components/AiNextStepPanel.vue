@@ -296,7 +296,7 @@ async function copyRecommendation() {
         <h2>Подготовьте следующее касание</h2>
         <p>AI изучит историю сделки, коммуникации и звонки, чтобы предложить одно своевременное действие.</p>
       </div>
-      <B24Button :icon="RocketIcon" :loading="pending" :disabled="!canAnalyze" :label="result ? 'Сформировать заново' : 'Сформировать следующий шаг'" class="brand-action re-ai-primary" @click="analyze" />
+      <B24Button :icon="RocketIcon" :disabled="!canAnalyze" :label="result ? 'Сформировать заново' : 'Сформировать следующий шаг'" :aria-busy="pending" :data-loading="pending ? 'true' : 'false'" class="brand-action re-ai-primary" @click="analyze" />
     </section>
 
     <B24Alert v-if="!dealId" color="air-primary-alert" variant="soft" title="Сделка не определена" description="Откройте виджет из карточки сделки, чтобы AI получил рабочий контекст." />
