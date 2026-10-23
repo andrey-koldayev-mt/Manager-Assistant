@@ -7,6 +7,11 @@ const DEFAULT_RECORDINGS_FOLDER_ID = 259146;
 const MAX_ALLOWED_AUDIO_BYTES = 25 * 1024 * 1024;
 const TRANSCRIPT_MARKER = 'AI_CALL_TRANSCRIPT';
 const AUDIO_EXTENSIONS = /\.(mp3|mp4|mpeg|mpga|m4a|wav|webm|flac|ogg)(?:$|[?#])/i;
+// Transcription can download up to 25 MB and invoke a second AI model. It must
+// never run in the synchronous "AI next step" request unless explicitly
+// enabled, otherwise Vibe Gateway reaches its request timeout before the chat
+// model receives the deal context.
+const ENABLE_INLINE_TRANSCRIPTION = process.env.VIBE_ENABLE_INLINE_TRANSCRIPTION === 'true';
 
 type Headers = Record<string, string>;
 type RecordValue = Record<string, any>;
@@ -54,6 +59,11 @@ export async function enrichCallTranscripts({ dealId, bundle, headers }: {
     if (cached) {
       attachTranscript(activity, cached, 'cache');
       stats.cached += 1;
+      continue;
+    }
+
+    if (!ENABLE_INLINE_TRANSCRIPTION) {
+      stats.unavailable += 1;
       continue;
     }
 
