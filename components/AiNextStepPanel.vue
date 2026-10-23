@@ -58,11 +58,32 @@ const result = ref<AnalyzeResult | null>(null);
 const question = ref('');
 const chatMessages = ref<ChatMessage[]>([]);
 const chatScroll = ref<HTMLElement | null>(null);
+const draftTitle = ref('');
+const draftDescription = ref('');
+const draftDeadline = ref('');
 
 const canAnalyze = computed(() => Boolean(props.dealId) && !pending.value && !creating.value && !props.loadingContext);
 const canCreate = computed(() => Boolean(result.value?.recommendation) && !creating.value && !pending.value);
 const canAskAi = computed(() => Boolean(props.dealId && result.value?.recommendation && question.value.trim() && !asking.value));
-const activityLabel = 'дело';
+const activityLabel = 'задачу';
+const sourceSignals = computed(() => result.value?.recommendation.sourceSignals.filter(Boolean) || []);
+const keyFacts = computed(() => result.value?.recommendation.importantDetails.filter(Boolean) || []);
+
+function toDateTimeLocal(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  const offset = date.getTimezoneOffset() * 60_000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+}
+
+function syncDraft(recommendation: AnalyzeResult['recommendation']) {
+  draftTitle.value = recommendation.title;
+  draftDescription.value = recommendation.description;
+  draftDeadline.value = toDateTimeLocal(recommendation.deadline);
+}
 
 const formattedDeadline = computed(() => {
   const value = result.value?.recommendation.deadline;
@@ -103,6 +124,7 @@ async function analyze() {
     }) as { success: boolean; data: AnalyzeResult };
 
     result.value = response.data;
+    syncDraft(response.data.recommendation);
     chatMessages.value = [];
     toast.add({
       title: 'AI-рекомендация готова',
@@ -212,11 +234,17 @@ async function createActivity() {
       body: {
         dealId: props.dealId,
         mode: 'live',
-        recommendation: result.value.recommendation
+        recommendation: {
+          ...result.value.recommendation,
+          title: draftTitle.value.trim(),
+          description: draftDescription.value.trim(),
+          deadline: new Date(draftDeadline.value).toISOString()
+        }
       }
     }) as { success: boolean; data: AnalyzeResult };
 
     result.value = response.data;
+    syncDraft(response.data.recommendation);
     const createdId = response.data.createdActivityId;
     toast.add({
       title: 'Дело создано',
@@ -247,9 +275,9 @@ async function copyRecommendation() {
   }
 
   await navigator.clipboard?.writeText([
-    result.value.recommendation.title,
+    draftTitle.value,
     '',
-    result.value.recommendation.description
+    draftDescription.value
   ].join('\n'));
 
   toast.add({
@@ -261,118 +289,52 @@ async function copyRecommendation() {
 </script>
 
 <template>
-  <main class="workspace-layout workspace-ai gap-4 p-4">
-    <section class="ai-decision-column">
-      <section class="ai-command-bar work-panel p-5">
-        <div class="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p class="eyebrow">AI следующий шаг</p>
-            <h2 class="mt-1 text-xl font-bold text-label">Одно действие, которое важно сейчас</h2>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-description">AI изучит историю сделки, коммуникации и звонки, затем подготовит одно дело для менеджера.</p>
-          </div>
-          <B24Button
-            :icon="RocketIcon"
-            :loading="pending"
-            :disabled="!canAnalyze"
-            :label="result ? 'Сформировать заново' : 'Сформировать следующий шаг'"
-            class="brand-action"
-            @click="analyze"
-          />
-        </div>
-        <B24Alert
-          v-if="!dealId"
-          class="mt-4"
-          color="air-primary-alert"
-          variant="soft"
-          title="Сделка не определена"
-          description="Откройте виджет из карточки сделки, чтобы AI получил рабочий контекст."
-        />
-        <B24Alert
-          v-else-if="result?.createdActivityId"
-          class="mt-4"
-          color="air-primary-success"
-          variant="soft"
-          title="Дело создано"
-          :description="`CRM ID: ${result.createdActivityId}`"
-        />
-      </section>
-
-      <B24Alert
-        v-if="errorMessage"
-        color="air-primary-alert"
-        variant="soft"
-        title="Не удалось выполнить действие"
-        :description="errorMessage"
-      />
-
-      <article v-if="result" class="ai-recommendation-panel work-panel p-5">
-        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-default pb-4">
-          <div>
-            <p class="eyebrow">Рекомендация</p>
-            <h2 class="mt-1 text-xl font-bold text-label">{{ result.recommendation.title }}</h2>
-            <p class="mt-1 text-sm text-description">Дело · выполнить {{ formattedDeadline }}</p>
-          </div>
-          <B24Badge :label="result.mode === 'live' ? 'Создано в CRM' : 'Готово к созданию'" class="brand-soft" />
-        </div>
-
-        <div class="mt-5 grid gap-5">
-          <div class="ai-recommendation-copy">{{ result.recommendation.description }}</div>
-          <div class="ai-recommendation-meta">
-            <div>
-              <h3>Почему этот шаг</h3>
-              <ul><li v-for="item in result.recommendation.justification" :key="item">{{ item }}</li></ul>
-            </div>
-            <div>
-              <h3>Важно учесть</h3>
-              <ul><li v-for="item in result.recommendation.importantDetails" :key="item">{{ item }}</li></ul>
-            </div>
-          </div>
-          <div class="flex flex-wrap gap-2 border-t border-default pt-4">
-            <B24Button :loading="creating" :disabled="!canCreate" :label="`Создать ${activityLabel}`" class="brand-action" @click="createActivity" />
-            <B24Button :disabled="!result" label="Копировать текст" class="mode-switch-button border border-default" @click="copyRecommendation" />
-          </div>
-          <B24Alert
-            v-if="result.context?.transcriptStats"
-            color="air-primary"
-            variant="soft"
-            title="Звонки в анализе"
-            :description="'Найдено: ' + result.context.transcriptStats.calls + '; готовых: ' + result.context.transcriptStats.native + '; из кэша: ' + result.context.transcriptStats.cached + '; расшифровано сейчас: ' + result.context.transcriptStats.transcribed + '.'"
-          />
-        </div>
-      </article>
-
-      <article v-else class="ai-empty-state work-panel p-8">
-        <RocketIcon class="h-7 w-7 text-[var(--brand-red)]" />
-        <h2 class="mt-3 text-xl font-bold text-label">Готово к анализу сделки</h2>
-        <p class="mt-2 max-w-xl text-sm leading-6 text-description">Создайте рекомендацию, чтобы увидеть приоритетное действие, обоснование и готовый текст для клиента.</p>
-      </article>
+  <main class="workspace-layout re-ai-workspace">
+    <section class="re-ai-command">
+      <div>
+        <p class="re-ai-overline">AI следующий шаг</p>
+        <h2>Подготовьте следующее касание</h2>
+        <p>AI изучит историю сделки, коммуникации и звонки, чтобы предложить одно своевременное действие.</p>
+      </div>
+      <B24Button :icon="RocketIcon" :loading="pending" :disabled="!canAnalyze" :label="result ? 'Сформировать заново' : 'Сформировать следующий шаг'" class="brand-action re-ai-primary" @click="analyze" />
     </section>
 
-    <aside class="ai-chat-panel work-panel overflow-hidden">
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-default px-5 py-4">
-        <div><h2 class="text-base font-bold text-label">Обсудить с AI</h2><p class="mt-1 text-xs text-description">Уточните рекомендации и факты сделки.</p></div>
-        <B24Button v-if="chatMessages.length" label="Очистить" size="xs" class="mode-switch-button" @click="clearChat" />
-      </div>
-      <div ref="chatScroll" class="ai-chat-scroll grid gap-3 px-5 py-4">
-        <div v-if="!chatMessages.length" class="grid gap-2">
-          <p class="text-xs font-semibold uppercase text-description">Быстрые вопросы</p>
-          <div class="grid gap-2">
-            <button type="button" class="ai-question-suggestion" @click="setQuestion('Почему вы рекомендуете именно этот следующий шаг?')">Почему этот шаг?</button>
-            <button type="button" class="ai-question-suggestion" @click="setQuestion('Какие факты в истории сделки важнее всего сейчас?')">Какие факты важны?</button>
-            <button type="button" class="ai-question-suggestion" @click="setQuestion('Что стоит уточнить у клиента перед созданием дела?')">Что уточнить?</button>
-          </div>
-        </div>
-        <div v-for="message in chatMessages" :key="message.id" class="ai-chat-message" :class="message.role === 'user' ? 'ai-chat-message-user' : 'ai-chat-message-assistant'">
-          <p class="mb-1 text-xs font-semibold" :class="message.role === 'user' ? 'text-white/80' : 'text-[var(--brand-red)]'">{{ message.role === 'user' ? 'Вы' : 'AI ассистент' }}</p>
-          <p class="whitespace-pre-wrap text-sm leading-6">{{ message.content }}</p>
-        </div>
-        <div v-if="asking" class="ai-chat-message ai-chat-message-assistant"><p class="text-sm text-description">AI изучает актуальный контекст сделки…</p></div>
-      </div>
-      <form class="grid gap-3 border-t border-default p-4" @submit.prevent="askAi">
-        <label class="sr-only" for="ai-next-step-question">Ваш вопрос</label>
-        <textarea id="ai-next-step-question" v-model="question" class="ai-chat-input" :disabled="asking" maxlength="4000" placeholder="Задайте вопрос по сделке…" rows="3" @keydown="onQuestionKeydown" />
-        <div class="flex items-center justify-between gap-3"><p class="text-xs text-description">Enter — отправить</p><B24Button type="submit" :loading="asking" :disabled="!canAskAi" label="Спросить" class="brand-action" /></div>
-      </form>
-    </aside>
+    <B24Alert v-if="!dealId" color="air-primary-alert" variant="soft" title="Сделка не определена" description="Откройте виджет из карточки сделки, чтобы AI получил рабочий контекст." />
+    <B24Alert v-else-if="result?.createdActivityId" color="air-primary-success" variant="soft" title="Задача создана" :description="`CRM ID: ${result.createdActivityId}`" />
+    <B24Alert v-if="errorMessage" color="air-primary-alert" variant="soft" title="Не удалось выполнить действие" :description="errorMessage" />
+
+    <article v-if="result" class="re-ai-layout">
+      <section class="re-ai-main">
+        <header class="re-ai-deal-heading">
+          <p class="re-ai-overline">Рекомендованный следующий шаг</p>
+          <h1>{{ result.recommendation.title }}</h1>
+          <p>Проверьте текст и срок перед созданием задачи в карточке сделки.</p>
+        </header>
+
+        <section class="re-ai-signals" aria-label="События сделки">
+          <h3>Основано на событиях по сделке</h3>
+          <ol>
+            <li v-for="(item, index) in sourceSignals" :key="item"><span>{{ index + 1 }}</span><p>{{ item }}</p></li>
+            <li v-if="!sourceSignals.length"><span>1</span><p>AI использовал доступную историю сделки и коммуникаций.</p></li>
+          </ol>
+        </section>
+
+        <section class="re-ai-editor">
+          <div class="re-ai-editor-head"><div><p class="re-ai-overline">Создать задачу</p><h3>Черновик следующего касания</h3></div><B24Badge :label="result.mode === 'live' ? 'Создано в CRM' : 'Готово к созданию'" class="brand-soft" /></div>
+          <label>Название задачи<input v-model="draftTitle" :disabled="creating" maxlength="200" /></label>
+          <label>Комментарий<textarea v-model="draftDescription" :disabled="creating" maxlength="4000" rows="5" /></label>
+          <div class="re-ai-fields"><label>Срок исполнения<input v-model="draftDeadline" :disabled="creating" type="datetime-local" /></label><label>Ответственный<input :value="agentName || 'Ответственный менеджер'" readonly /></label></div>
+          <div class="re-ai-editor-actions"><p>Будет создана обычная задача в Bitrix24, привязанная к сделке.</p><div><B24Button :disabled="!result" label="Копировать текст" class="re-ai-secondary" @click="copyRecommendation" /><B24Button :loading="creating" :disabled="!canCreate || !draftTitle.trim() || !draftDescription.trim() || !draftDeadline" :label="`Создать ${activityLabel}`" class="brand-action re-ai-primary" @click="createActivity" /></div></div>
+        </section>
+      </section>
+
+      <aside class="re-ai-sidebar">
+        <section class="re-ai-why"><p class="re-ai-overline">Почему это важно</p><h2>Сейчас подходящее время для контакта</h2><ul><li v-for="item in result.recommendation.justification" :key="item">{{ item }}</li></ul></section>
+        <section class="re-ai-facts"><h3>Ключевые факты</h3><ul><li v-for="item in keyFacts" :key="item">{{ item }}</li><li v-if="!keyFacts.length">Контекст сделки учтён при подготовке рекомендации.</li></ul></section>
+        <section class="re-ai-chat"><div class="re-ai-chat-head"><div><p class="re-ai-overline">Обсудить с AI</p><h3>Уточните рекомендацию</h3></div><button v-if="chatMessages.length" type="button" @click="clearChat">Очистить</button></div><div ref="chatScroll" class="re-ai-chat-scroll"><div v-if="!chatMessages.length" class="re-ai-quick"><button type="button" @click="setQuestion('Почему вы рекомендуете именно этот следующий шаг?')">Почему этот шаг?</button><button type="button" @click="setQuestion('Что стоит уточнить у клиента?')">Что уточнить?</button></div><div v-for="message in chatMessages" :key="message.id" class="re-ai-chat-message" :class="message.role === 'user' ? 'is-user' : ''"><strong>{{ message.role === 'user' ? 'Вы' : 'AI ассистент' }}</strong><p>{{ message.content }}</p></div></div><form @submit.prevent="askAi"><textarea v-model="question" :disabled="asking" maxlength="4000" placeholder="Задайте вопрос по сделке" rows="3" @keydown="onQuestionKeydown" /><B24Button type="submit" :loading="asking" :disabled="!canAskAi" label="Спросить" class="brand-action re-ai-primary" /></form></section>
+      </aside>
+    </article>
+
+    <article v-else class="re-ai-empty"><RocketIcon /><h2>Готово к анализу сделки</h2><p>Сформируйте следующий шаг, чтобы получить понятную рекомендацию и готовый к редактированию черновик задачи.</p></article>
   </main>
 </template>

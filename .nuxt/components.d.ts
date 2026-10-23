@@ -15,6 +15,7 @@ type LazyComponent<T> = DefineComponent<HydrationStrategies, {}, {}, {}, {}, {},
 
 
 export const AiNextStepPanel: typeof import("../components/AiNextStepPanel.vue")['default']
+export const ObjectionNavigator: typeof import("../components/ObjectionNavigator.vue")['default']
 export const ProseA: typeof import("../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/prose/A.vue")['default']
 export const ProseAccordion: typeof import("../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/prose/Accordion.vue")['default']
 export const ProseAccordionItem: typeof import("../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/prose/AccordionItem.vue")['default']
@@ -209,6 +210,7 @@ export const Html: typeof import("../node_modules/nuxt/dist/head/runtime/compone
 export const Body: typeof import("../node_modules/nuxt/dist/head/runtime/components")['Body']
 export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
 export const LazyAiNextStepPanel: LazyComponent<typeof import("../components/AiNextStepPanel.vue")['default']>
+export const LazyObjectionNavigator: LazyComponent<typeof import("../components/ObjectionNavigator.vue")['default']>
 export const LazyProseA: LazyComponent<typeof import("../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/prose/A.vue")['default']>
 export const LazyProseAccordion: LazyComponent<typeof import("../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/prose/Accordion.vue")['default']>
 export const LazyProseAccordionItem: LazyComponent<typeof import("../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/components/prose/AccordionItem.vue")['default']>

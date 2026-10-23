@@ -6,11 +6,23 @@ declare module "nitropack/types" {
     '/api/b24/analyze-next-step': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/b24/analyze-next-step.post').default>>>>
     }
+    '/api/b24/ask-next-step-ai': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/b24/ask-next-step-ai.post').default>>>>
+    }
     '/api/b24/create-call-activity': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/b24/create-call-activity.post').default>>>>
     }
     '/api/b24/load-deal-context': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/b24/load-deal-context.get').default>>>>
+    }
+    '/api/b24/load-navigator-context': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/b24/load-navigator-context.get').default>>>>
+    }
+    '/api/b24/recommend-objection': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/b24/recommend-objection.post').default>>>>
+    }
+    '/api/b24/session': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/b24/session.get').default>>>>
     }
     '/api/debug/client-context': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/debug/client-context.post').default>>>>

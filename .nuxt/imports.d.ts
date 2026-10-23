@@ -29,6 +29,7 @@ export { withCtx, withDirectives, withKeys, withMemo, withModifiers, withScopeId
 export { requestIdleCallback, cancelIdleCallback } from '#app/compat/idle-callback';
 export { setInterval } from '#app/compat/interval';
 export { defineLazyHydrationComponent } from '#app/composables/lazy-hydration';
+export { getB24AuthorizationHeaders, getCurrentB24AuthorizationHeaders } from '../utils/b24-client-auth';
 export { useColorMode } from '../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/composables/color-mode/useColorMode';
 export { defineLocale, extendLocale } from '../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/composables/defineLocale';
 export { defineShortcuts, extractShortcuts } from '../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/composables/defineShortcuts';
@@ -45,3 +46,4 @@ export { useLocale } from '../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/com
 export { useDevice } from '../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/composables/useDevice';
 export { useConfetti } from '../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/composables/useConfetti';
 export { useSpeechRecognition } from '../node_modules/@bitrix24/b24ui-nuxt/dist/runtime/composables/useSpeechRecognition';
+export { useNuxtDevTools } from '../node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools';
