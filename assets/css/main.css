@@ -1253,17 +1253,23 @@ textarea:focus-visible {
   border-radius: 16px;
 }
 
-.re-objection-catalog,
-.re-objection-actions {
-  position: sticky;
-  top: 78px;
-}
-
 .re-objection-catalog-title {
   margin: 0 0 14px;
   color: #1d3653;
   font-size: 15px;
   font-weight: 700;
+}
+
+.re-objection-catalog-title span {
+  display: inline-grid;
+  min-width: 20px;
+  height: 20px;
+  margin-left: 5px;
+  place-items: center;
+  border-radius: 50%;
+  background: #fbecec;
+  color: #bd3535;
+  font-size: 11px;
 }
 
 .re-objection-group + .re-objection-group {
@@ -1312,6 +1318,16 @@ textarea:focus-visible {
 }
 
 .re-objection-purpose { margin: 0; color: #61748b; font-size: 14px; line-height: 1.55; }
+.re-objection-goal { margin-top: 20px; padding: 13px 14px; border-left: 3px solid var(--brand-red); border-radius: 0 10px 10px 0; background: #fbecec; }
+.re-objection-goal .eyebrow { margin-bottom: 6px; }
+.re-objection-goal > p:last-child { margin: 0; color: #4c6177; font-size: 14px; line-height: 1.5; }
+.re-objection-channels { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.re-objection-channels button { min-height: 34px; padding: 0 12px; border: 1px solid #dfe4ea; border-radius: 9px; background: #fff; color: #526a83; cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; }
+.re-objection-channels button:hover { border-color: #e69b9b; background: #fff7f7; }
+.re-objection-channels button.is-active { border-color: #d63f3f; background: #d63f3f; color: #fff; }
+.re-objection-script { margin-top: 16px; padding: 17px; border: 1px solid #f1cccc; border-radius: 12px; background: #fff8f8; }
+.re-objection-script .eyebrow { margin-bottom: 8px; color: #bd3535; }
+.re-objection-script > p:last-child { margin: 0; color: #354f6a; font-size: 14px; line-height: 1.65; white-space: pre-line; }
 .re-objection-steps { display: grid; gap: 14px; margin: 24px 0 0; padding: 0; list-style: none; }
 .re-objection-steps li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 11px; align-items: start; }
 .re-objection-steps li > span { display: grid; width: 28px; height: 28px; place-items: center; border-radius: 50%; background: #d63f3f; color: #fff; font-size: 12px; font-weight: 700; }
@@ -1329,7 +1345,7 @@ textarea:focus-visible {
 
 @media (max-width: 1120px) {
   .re-objection-layout { grid-template-columns: minmax(220px, .72fr) minmax(0, 1.55fr); }
-  .re-objection-actions { position: static; grid-column: 1 / -1; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .re-objection-actions { grid-column: 1 / -1; grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .re-objection-actions > .brand-action { align-self: center; }
   .re-objection-actions > section { padding-top: 0; border-top: 0; border-left: 1px solid #eef0f2; padding-left: 15px; }
   .re-objection-tip { padding: 12px 13px !important; border: 1px solid #f1cccc !important; }
@@ -1340,7 +1356,6 @@ textarea:focus-visible {
   .re-objection-hero h1 { font-size: 22px; }
   .re-objection-search { width: 100%; }
   .re-objection-layout { grid-template-columns: minmax(0, 1fr); }
-  .re-objection-catalog, .re-objection-actions { position: static; }
   .re-objection-actions { grid-template-columns: minmax(0, 1fr); }
   .re-objection-actions > section { padding: 16px 0 0; border-top: 1px solid #eef0f2; border-left: 0; }
   .re-objection-tip { padding: 12px 13px !important; border: 1px solid #f1cccc !important; }

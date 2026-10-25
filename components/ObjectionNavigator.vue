@@ -1,105 +1,117 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import {
+  OBJECTION_CATALOG_GROUPS,
+  OBJECTION_SCENARIOS,
+  type NavigatorChannel
+} from '~/shared/objection-navigator';
 
-type Objection = { id: string; group: string; title: string; clientPhrase: string; purpose: string; steps: Array<{ title: string; text: string }>; nextStep: string; tip: string; examples: string[] };
-defineProps<{ dealId: number | null; agentName: string; clientName: string; loadingContext?: boolean }>();
+const props = defineProps<{
+  dealId: number | null;
+  agentName: string;
+  clientName: string;
+  loadingContext?: boolean;
+}>();
 
 const toast = useToast();
 const search = ref('');
 const activeId = ref('expensive');
+const channel = ref<NavigatorChannel>('message');
 
-const objections: Objection[] = [
-  { id: 'expensive', group: 'Цена', title: 'Дорого', clientPhrase: '«Для меня это дорого»', purpose: 'Понять, с чем клиент сравнивает цену, и вернуть разговор к ценности отдыха.', steps: [
-    { title: 'Присоединитесь', text: 'Понимаю вас — хочется выбрать отдых, который действительно будет стоить своих денег.' },
-    { title: 'Уточните ориентир', text: 'Подскажите, пожалуйста, какая сумма была для вас комфортной и что обязательно должно быть в поездке?' },
-    { title: 'Покажите ценность', text: 'Тогда я отберу варианты, где бюджет работает на важное для вас: локацию, питание, пляж или уровень отеля.' },
-    { title: 'Договоритесь о шаге', text: 'Сравним два-три подходящих варианта и выберем тот, за который вам будет спокойно платить.' }
-  ], nextStep: 'Уточнить бюджет и два главных критерия выбора.', tip: 'Не спорьте с оценкой клиента и не предлагайте скидку до уточняющих вопросов.', examples: ['«Это дорого»', '«Я рассчитывал на меньшую сумму»'] },
-  { id: 'cheaper-elsewhere', group: 'Цена', title: 'В другом месте дешевле', clientPhrase: '«В другом месте мне назвали цену ниже»', purpose: 'Сопоставить предложения по составу, а не соревноваться только цифрой.', steps: [
-    { title: 'Поблагодарите за ориентир', text: 'Спасибо, что сказали — давайте честно сравним предложения.' },
-    { title: 'Попросите детали', text: 'Пришлите, пожалуйста, ссылку или название варианта: проверю даты, тип номера, питание и условия оплаты.' },
-    { title: 'Сравните состав', text: 'Иногда разница появляется из-за другого номера, перелёта, трансфера или условий отмены.' },
-    { title: 'Предложите выбор', text: 'Я вернусь с понятным сравнением и подскажу, где предложение действительно выгоднее.' }
-  ], nextStep: 'Получить ссылку или параметры альтернативного предложения.', tip: 'Не обесценивайте конкурента: сначала проверьте, одинаковы ли условия.', examples: ['«Там дешевле на 20 тысяч»', '«Мне уже прислали вариант выгоднее»'] },
-  { id: 'discount', group: 'Цена', title: 'Дайте скидку', clientPhrase: '«А скидку можете сделать?»', purpose: 'Сохранить ценность подбора и понять, что поможет клиенту принять решение.', steps: [
-    { title: 'Поддержите интерес', text: 'Понимаю, хочется выбрать на самых выгодных условиях.' },
-    { title: 'Выясните решение', text: 'Если условия вас устроят, сможете сегодня определиться с бронированием?' },
-    { title: 'Проверьте возможности', text: 'Я уточню актуальные предложения у партнёров и вернусь только с реальным вариантом выгоды.' },
-    { title: 'Зафиксируйте договорённость', text: 'Как только получу ответ, сразу напишу вам и вместе решим, бронируем ли.' }
-  ], nextStep: 'Понять, является ли стоимость единственным препятствием к бронированию.', tip: 'Не обещайте скидку заранее: сначала договоритесь о следующем решении клиента.', examples: ['«Сделаете скидочку?»', '«Какие у вас есть бонусы?»'] },
-  { id: 'think', group: 'Решение', title: 'Надо подумать', clientPhrase: '«Мне нужно подумать»', purpose: 'Мягко выяснить реальную причину паузы и назначить конкретный контакт.', steps: [
-    { title: 'Дайте пространство', text: 'Конечно, решение лучше принять спокойно.' },
-    { title: 'Уточните сомнение', text: 'Чтобы не отвлекать вас лишним, подскажите: хотите сравнить варианты, обсудить бюджет или остались вопросы по самому отдыху?' },
-    { title: 'Помогите выбрать', text: 'Я могу коротко собрать главное по каждому варианту, чтобы вам было проще обсудить его дома.' },
-    { title: 'Назначьте время', text: 'Когда вам будет удобно вернуться к разговору: сегодня вечером или завтра днём?' }
-  ], nextStep: 'Зафиксировать причину паузы и точное время следующего контакта.', tip: '«Подумаю» — не финальный отказ. Не завершайте диалог без договорённости о времени.', examples: ['«Я подумаю и напишу»', '«Мне надо переварить варианты»'] },
-  { id: 'decision-maker', group: 'Решение', title: 'Надо посоветоваться', clientPhrase: '«Мне нужно посоветоваться с мужем / семьёй»', purpose: 'Сделать клиента уверенным проводником информации для второго участника решения.', steps: [
-    { title: 'Поддержите', text: 'Да, это важное решение — здорово обсудить его вместе.' },
-    { title: 'Уточните критерии', text: 'Что для вашего близкого будет особенно важно: бюджет, перелёт, пляж, питание или сам отель?' },
-    { title: 'Подготовьте материал', text: 'Я соберу короткое сравнение с фотографиями и ключевыми отличиями, чтобы вам было удобно показать варианты.' },
-    { title: 'Договоритесь о связи', text: 'Давайте завтра после обсуждения созвонимся на пять минут и выберем направление дальше.' }
-  ], nextStep: 'Уточнить критерии второго участника и согласовать время обратной связи.', tip: 'Не просите номер второго участника в первом же ответе — помогите клиенту подготовиться к разговору.', examples: ['«Надо обсудить с мужем»', '«Посоветуюсь с семьёй»'] },
-  { id: 'send-more', group: 'Выбор', title: 'Пришлите ещё варианты', clientPhrase: '«А можно посмотреть ещё?»', purpose: 'Сузить поиск и не превратить подборку в бесконечный список.', steps: [
-    { title: 'Поддержите интерес', text: 'Конечно, хочу, чтобы у вас было с чем сравнить.' },
-    { title: 'Поймите, чего не хватило', text: 'В текущих вариантах что хотелось бы изменить в первую очередь: бюджет, отель, район или время вылета?' },
-    { title: 'Сузьте выбор', text: 'Подберу ещё два варианта именно по этому критерию, чтобы сравнение было понятным.' },
-    { title: 'Назначьте просмотр', text: 'Отправлю подборку и напишу, когда будет удобно обсудить впечатления.' }
-  ], nextStep: 'Зафиксировать один главный критерий для новой подборки.', tip: 'Лучше 2–3 релевантных варианта, чем длинный каталог без рекомендации.', examples: ['«Давайте ещё посмотрим»', '«Есть что-нибудь другое?»'] },
-  { id: 'final-price', group: 'Выбор', title: 'Нужна итоговая цена', clientPhrase: '«Почему цена предварительная? Скажите итоговую»', purpose: 'Объяснить изменение цены спокойно и предложить быстрый способ зафиксировать актуальные условия.', steps: [
-    { title: 'Подтвердите запрос', text: 'Понимаю, итоговая сумма важна, чтобы спокойно принять решение.' },
-    { title: 'Объясните кратко', text: 'Стоимость у туроператора меняется по наличию мест и актуальна в момент бронирования.' },
-    { title: 'Дайте опору', text: 'Я проверю цену прямо перед оформлением и заранее напишу вам финальную сумму.' },
-    { title: 'Предложите действие', text: 'Если вариант вам подходит, давайте проверим его сейчас — так увидим точные условия.' }
-  ], nextStep: 'Проверить актуальную стоимость выбранного варианта.', tip: 'Избегайте длинного объяснения механики ценообразования — клиенту нужен ясный план.', examples: ['«Мне нужна окончательная цена»', '«Почему завтра может быть дороже?»'] },
-  { id: 'reviews', group: 'Доверие', title: 'Хочу почитать отзывы', clientPhrase: '«Сначала посмотрю отзывы в интернете»', purpose: 'Помочь клиенту читать отзывы по своим критериям и остаться полезным источником.', steps: [
-    { title: 'Согласитесь', text: 'Это разумно: отзывы помогают увидеть отдых глазами гостей.' },
-    { title: 'Подскажите фокус', text: 'Смотрите, пожалуйста, свежие отзывы именно по вашим датам и обратите внимание на пляж, номера и питание.' },
-    { title: 'Добавьте экспертный взгляд', text: 'Я тоже отмечу, на что обычно жалуются и что гости особенно хвалят в этом отеле.' },
-    { title: 'Вернитесь к диалогу', text: 'Когда посмотрите, пришлите любые сомнения — разберём их вместе.' }
-  ], nextStep: 'Отправить ссылку на отель и договориться о времени обратной связи.', tip: 'Не спорьте с отзывами: помогите отделить актуальные факты от единичных эмоций.', examples: ['«Я сама всё почитаю»', '«Хочу посмотреть рейтинг»'] },
-  { id: 'wait-hot', group: 'Сроки', title: 'Будем ждать горящие', clientPhrase: '«Подождём горящие предложения»', purpose: 'Объяснить компромисс между ценой, выбором и определённостью без давления.', steps: [
-    { title: 'Признайте желание сэкономить', text: 'Понимаю, хочется поймать максимально выгодное предложение.' },
-    { title: 'Сверьте гибкость', text: 'Насколько вы готовы быть гибкими по датам, отелю и аэропорту вылета?' },
-    { title: 'Объясните выбор', text: 'Горящие варианты появляются при остатках мест, поэтому выбор отелей и рейсов может быть ограничен.' },
-    { title: 'Предложите план', text: 'Можем оставить текущий вариант как ориентир и параллельно мониторить предложения в вашем диапазоне.' }
-  ], nextStep: 'Зафиксировать допустимые даты, бюджет и степень гибкости клиента.', tip: 'Не обещайте «горящую» цену — формулируйте ожидания честно.', examples: ['«Подождём ближе к вылету»', '«Вдруг появится горящий тур?»'] },
-  { id: 'why-you', group: 'Доверие', title: 'Почему купить у вас?', clientPhrase: '«Почему я должен бронировать именно у вас?»', purpose: 'Показать ценность сопровождения и прозрачность работы без громких обещаний.', steps: [
-    { title: 'Поблагодарите за вопрос', text: 'Хороший вопрос — вам важно понимать, кому доверяете поездку.' },
-    { title: 'Расскажите по делу', text: 'Я подбираю варианты под ваши критерии, объясняю отличия и остаюсь на связи до возвращения из поездки.' },
-    { title: 'Добавьте прозрачность', text: 'Перед бронированием вы видите состав услуги, условия оплаты и отмены — без неожиданностей.' },
-    { title: 'Верните к выбору', text: 'Давайте покажу, почему из текущих вариантов я выделил именно этот.' }
-  ], nextStep: 'Связать ценность сопровождения с конкретным выбранным вариантом.', tip: 'Говорите о конкретной пользе для этой поездки, а не только о компании в целом.', examples: ['«Чем вы отличаетесь?»', '«Почему не купить самому?»'] }
-];
-
-const groupOrder = ['Цена', 'Решение', 'Выбор', 'Доверие', 'Сроки'];
-const active = computed<Objection>(() => objections.find((item) => item.id === activeId.value) || objections[0]!);
+const active = computed(() => OBJECTION_SCENARIOS.find((item) => item.id === activeId.value) || OBJECTION_SCENARIOS[0]!);
+const activeStep = computed(() => active.value.steps[0]!);
+const availableChannels = computed(() => Object.keys(activeStep.value.text) as NavigatorChannel[]);
 const normalizedSearch = computed(() => search.value.trim().toLocaleLowerCase('ru-RU'));
-const filtered = computed(() => objections.filter((item) => !normalizedSearch.value || [item.title, item.clientPhrase, item.group, ...item.examples].join(' ').toLocaleLowerCase('ru-RU').includes(normalizedSearch.value)));
-const groups = computed(() => groupOrder.map((title) => ({ title, items: filtered.value.filter((item) => item.group === title) })).filter((group) => group.items.length));
-const copyText = computed(() => [active.value.title, ...active.value.steps.map((step) => step.text)].join('\n\n'));
+const filtered = computed(() => OBJECTION_SCENARIOS.filter((scenario) => {
+  const text = [
+    scenario.title,
+    scenario.description,
+    scenario.steps[0]?.goal || '',
+    ...Object.values(scenario.steps[0]?.text || {})
+  ].join(' ').toLocaleLowerCase('ru-RU');
+  return !normalizedSearch.value || text.includes(normalizedSearch.value);
+}));
+const groups = computed(() => OBJECTION_CATALOG_GROUPS.map((group) => ({
+  ...group,
+  items: filtered.value.filter((scenario) => scenario.group === group.id)
+})).filter((group) => group.items.length));
+const responseText = computed(() => renderTemplate(
+  activeStep.value.text[channel.value] || activeStep.value.text[availableChannels.value[0] || 'message'] || '',
+  { clientName: props.clientName, agentName: props.agentName }
+));
+
+watch([active, availableChannels], () => {
+  if (!availableChannels.value.includes(channel.value)) channel.value = availableChannels.value[0] || 'message';
+}, { immediate: true });
 
 function selectObjection(id: string) { activeId.value = id; }
+function channelLabel(value: NavigatorChannel) {
+  if (value === 'call') return 'Звонок';
+  if (value === 'remote') return 'Дистанционно';
+  return 'Сообщение';
+}
+function renderTemplate(template: string, values: Record<string, string>) {
+  const fallbacks: Record<string, string> = { clientName: 'клиент', agentName: 'менеджер', hotel: 'отелю', destination: 'направлению' };
+  return template.replace(/{{(\w+)}}/g, (_, key: string) => values[key]?.trim() || fallbacks[key] || 'данным поездки');
+}
 async function copyAnswer() {
   try {
-    if (navigator.clipboard?.writeText && window.isSecureContext) await navigator.clipboard.writeText(copyText.value);
+    if (navigator.clipboard?.writeText && window.isSecureContext) await navigator.clipboard.writeText(responseText.value);
     else {
-      const textarea = document.createElement('textarea'); textarea.value = copyText.value; textarea.style.cssText = 'position:fixed;opacity:0;pointer-events:none'; document.body.appendChild(textarea); textarea.select(); const copied = document.execCommand('copy'); textarea.remove(); if (!copied) throw new Error('Clipboard unavailable');
+      const textarea = document.createElement('textarea');
+      textarea.value = responseText.value;
+      textarea.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+      document.body.appendChild(textarea);
+      textarea.select();
+      const copied = document.execCommand('copy');
+      textarea.remove();
+      if (!copied) throw new Error('Clipboard unavailable');
     }
     toast.add({ title: 'Ответ скопирован', description: 'Текст можно отредактировать перед отправкой клиенту.', color: 'air-primary-success', duration: 2600 });
-  } catch { toast.add({ title: 'Не удалось скопировать ответ', description: 'Выделите текст и скопируйте его вручную.', color: 'air-primary-alert' }); }
+  } catch {
+    toast.add({ title: 'Не удалось скопировать ответ', description: 'Выделите текст и скопируйте его вручную.', color: 'air-primary-alert' });
+  }
 }
 </script>
 
 <template>
   <main class="re-objection-workspace workspace-layout p-4">
     <header class="re-objection-hero">
-      <div><p class="eyebrow">База знаний</p><h1>Навигатор возражений</h1><p>Готовые отработки для спокойного и уверенного разговора с клиентом.</p></div>
+      <div><p class="eyebrow">База знаний</p><h1>Навигатор возражений</h1><p>Полный перечень типовых возражений и готовых отработок для разговора с клиентом.</p></div>
       <label class="re-objection-search"><span class="sr-only">Поиск возражения</span><input v-model="search" type="search" placeholder="Найти возражение" /></label>
     </header>
+
     <section class="re-objection-layout" aria-label="База знаний по возражениям">
-      <aside class="re-objection-catalog work-panel"><p class="re-objection-catalog-title">Все возражения</p><nav v-if="groups.length" aria-label="Каталог возражений"><section v-for="group in groups" :key="group.title" class="re-objection-group"><h2>{{ group.title }}</h2><button v-for="item in group.items" :key="item.id" type="button" class="re-objection-link" :class="{ 'is-active': item.id === active.id }" :aria-current="item.id === active.id ? 'page' : undefined" @click="selectObjection(item.id)"><span>{{ item.title }}</span><small>{{ item.clientPhrase }}</small></button></section></nav><p v-else class="re-objection-no-results">По этому запросу ничего не найдено.</p></aside>
-      <article class="re-objection-answer work-panel"><p class="eyebrow">Возражение клиента</p><h2>{{ active.title }}</h2><blockquote>{{ active.clientPhrase }}</blockquote><p class="re-objection-purpose">{{ active.purpose }}</p><ol class="re-objection-steps"><li v-for="(step, index) in active.steps" :key="step.title"><span>{{ index + 1 }}</span><div><h3>{{ step.title }}</h3><p>{{ step.text }}</p></div></li></ol></article>
-      <aside class="re-objection-actions work-panel"><B24Button label="Скопировать ответ" class="brand-action w-full" @click="copyAnswer" /><section><p class="eyebrow">Следующий шаг</p><p>{{ active.nextStep }}</p></section><section class="re-objection-tip"><p class="eyebrow">Помните</p><p>{{ active.tip }}</p></section><section><p class="eyebrow">Как это звучит</p><ul><li v-for="example in active.examples" :key="example">{{ example }}</li></ul></section></aside>
+      <aside class="re-objection-catalog work-panel">
+        <p class="re-objection-catalog-title">Все возражения <span>{{ filtered.length }}</span></p>
+        <nav v-if="groups.length" aria-label="Каталог возражений">
+          <section v-for="group in groups" :key="group.id" class="re-objection-group">
+            <h2>{{ group.title }}</h2>
+            <button v-for="item in group.items" :key="item.id" type="button" class="re-objection-link" :class="{ 'is-active': item.id === active.id }" :aria-current="item.id === active.id ? 'page' : undefined" @click="selectObjection(item.id)">
+              <span>{{ item.title }}</span><small>{{ item.description }}</small>
+            </button>
+          </section>
+        </nav>
+        <p v-else class="re-objection-no-results">По этому запросу ничего не найдено.</p>
+      </aside>
+
+      <article class="re-objection-answer work-panel">
+        <p class="eyebrow">Возражение клиента</p>
+        <h2>{{ active.title }}</h2>
+        <p class="re-objection-purpose">{{ active.description }}</p>
+        <section class="re-objection-goal"><p class="eyebrow">Задача менеджера</p><p>{{ activeStep.goal }}</p></section>
+        <div class="re-objection-channels" role="tablist" aria-label="Канал ответа">
+          <button v-for="item in availableChannels" :key="item" type="button" :class="{ 'is-active': channel === item }" :aria-selected="channel === item" role="tab" @click="channel = item">{{ channelLabel(item) }}</button>
+        </div>
+        <section class="re-objection-script"><p class="eyebrow">Готовый ответ</p><p>{{ responseText }}</p></section>
+      </article>
+
+      <aside class="re-objection-actions work-panel">
+        <B24Button label="Скопировать ответ" class="brand-action w-full" @click="copyAnswer" />
+        <section><p class="eyebrow">Выбранный канал</p><p>{{ channelLabel(channel) }}</p></section>
+        <section class="re-objection-tip"><p class="eyebrow">Как использовать</p><p>Сохраните естественный тон, уточните ответ клиента и отредактируйте текст под конкретную ситуацию.</p></section>
+        <section><p class="eyebrow">В каталоге</p><p>{{ OBJECTION_SCENARIOS.length }} возражений и все подготовленные варианты ответов по каналам.</p></section>
+      </aside>
     </section>
   </main>
 </template>
