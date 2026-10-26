@@ -274,17 +274,48 @@ async function copyRecommendation() {
     return;
   }
 
-  await navigator.clipboard?.writeText([
+  const text = [
     draftTitle.value,
     '',
     draftDescription.value
-  ].join('\n'));
+  ].join('\n');
 
-  toast.add({
-    title: 'Рекомендация скопирована',
-    color: 'air-primary',
-    duration: 2400
-  });
+  try {
+    if (navigator.clipboard?.writeText && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const fallback = document.createElement('textarea');
+      fallback.value = text;
+      fallback.setAttribute('readonly', '');
+      fallback.style.position = 'fixed';
+      fallback.style.opacity = '0';
+      fallback.style.pointerEvents = 'none';
+      document.body.appendChild(fallback);
+      let copied = false;
+      try {
+        fallback.select();
+        fallback.setSelectionRange(0, fallback.value.length);
+        copied = document.execCommand('copy');
+      } finally {
+        fallback.remove();
+      }
+      if (!copied) throw new Error('Браузер не разрешил доступ к буферу обмена.');
+    }
+
+    toast.add({
+      title: 'Рекомендация скопирована',
+      color: 'air-primary',
+      duration: 2400
+    });
+  } catch (error: any) {
+    const message = error?.message || 'Не удалось скопировать текст.';
+    toast.add({
+      title: 'Не удалось скопировать',
+      description: message,
+      color: 'air-primary-alert',
+      icon: WarningIcon
+    });
+  }
 }
 </script>
 
